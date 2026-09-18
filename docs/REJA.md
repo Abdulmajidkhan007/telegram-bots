@@ -14,7 +14,7 @@
 
 Sababi o'lchovga asoslangan: 2026-05-03 dan 2026-09-11 gacha **30 ta repo**
 ochilgan, ulardan **jonli havolasi bor — bittasi** (`atoyo-e-commerce` →
-atoyo-uz.web.app). Muammo qurish tezligida emas, **tugatishda**.
+atoyo.uz). Muammo qurish tezligida emas, **tugatishda**.
 
 «30 ta repo» hech kimni hayratlantirmaydi. «Mana mahsulot, mana havolasi,
 mana foydalanuvchilari» — hammasini o'zgartiradi.
