@@ -258,6 +258,33 @@
         "*.session (birinchi ishga tushirishda yaratiladi)"
       ],
       "note": "Userbot — birinchi ishga tushirishda telefon raqami va kod so'raladi, shuning uchun `start all` da o'tkazib yuboriladi."
+    },
+    {
+      "id": "atoyo-rag-bot",
+      "name": "Atoyo RAG Savdo Boti",
+      "desc": "Firestore katalogi ustida RAG qidiruv: mijoz savoliga narx bilan javob beradi, kanal postini forward qiladi, lidni admin guruh va n8n ga uzatadi.",
+      "runtime": "python",
+      "autoStart": false,
+      "install": [
+        [
+          "pip",
+          "install",
+          "-r",
+          "requirements.txt"
+        ]
+      ],
+      "start": [
+        [
+          "python3",
+          "main.py"
+        ]
+      ],
+      "requires": [
+        "Gemini API kaliti",
+        "Firebase serviceAccountKey.json",
+        "python3 sync_db.py (birinchi ishga tushirishdan oldin)"
+      ],
+      "note": "Docker bilan ishga tushirish tavsiya etiladi: docker compose up -d (n8n bilan birga)."
     }
   ]
 }

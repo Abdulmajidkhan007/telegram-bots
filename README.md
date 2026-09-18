@@ -1,6 +1,6 @@
 # 🤖 Telegram Bots Monorepo
 
-**11 ta mustaqil Telegram bot — bitta repoda.** Har bot `bots/<nom>/` papkasida to'liq
+**12 ta mustaqil Telegram bot — bitta repoda.** Har bot `bots/<nom>/` papkasida to'liq
 alohida loyiha: o'z kodi, o'z `package.json`/`requirements.txt`, o'z `.env.example`,
 o'z `README.md`. Papkani nusxalab olsangiz — bot mustaqil ishlaydi.
 
@@ -24,6 +24,7 @@ o'z `README.md`. Papkani nusxalab olsangiz — bot mustaqil ishlaydi.
 | 9 | [`xulosa-ai-bot`](bots/xulosa-ai-bot) | Python | Guruh/kanal yozishmalarini **Gemini AI** bilan xulosalaydi (Telethon userbot) |
 | 10 | [`countlist-ts-node`](bots/countlist-ts-node) | TypeScript | Guruh **xarajatlarini hisoblovchi** bot + NestJS API + React dashboard |
 | 11 | [`atoyo-ai-bot`](bots/atoyo-ai-bot) | Python | Mahsulot rasmlarini **Gemini** bilan tahlil qilib katalog kartochkasi yasaydi (Telethon **userbot**) |
+| 12 | [`atoyo-rag-bot`](bots/atoyo-rag-bot) | Python | Santexnika katalogi ustida **RAG** savol-javob: semantik qidiruv, ovoz va rasm, lid → admin guruh + **n8n** |
 
 Batafsil ma'lumot — har bot papkasidagi `README.md` da.
 
@@ -38,7 +39,7 @@ git clone https://github.com/Abdulmajidkhan007/save-video-downloader-bot.git
 cd save-video-downloader-bot
 ```
 
-Bitta buyruq — **hamma 11 ta bot** yuklab olinadi.
+Bitta buyruq — **hamma 12 ta bot** yuklab olinadi.
 
 ### 2. Botlar ro'yxatini ko'rish
 

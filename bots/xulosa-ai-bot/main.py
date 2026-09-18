@@ -191,6 +191,9 @@ def get_admin_panel_buttons():
 
 
 async def register_handlers(client, client_type):
+    # Guruhga qo'shilgan odam o'zimizmi yoki yo'qmi — shuni solishtirish uchun.
+    me_id = (await client.get_me()).id
+
     async def check_channel_subscription(user_id):
         if client_type == "userbot" or not config.REQUIRED_CHANNEL or config.REQUIRED_CHANNEL == "@kanal_username":
             return True
@@ -224,7 +227,7 @@ async def register_handlers(client, client_type):
 
         # 1. Telegram Havolalari Tahlili
         if ("t.me/" in text or text.startswith("@")) and not text.startswith("/"):
-            allowed, reason = database.check_user_access(user_id)
+            allowed, reason = database.check_user_access(user_id, sender_name)
             if not allowed:
                 await event.reply(f"❌ {reason}\nObuna sotib oling.")
                 return
@@ -255,7 +258,7 @@ async def register_handlers(client, client_type):
 
         if event.is_private and user_id == config.ADMIN_ID and admin_state.get(user_id) == "waiting_broadcast":
             admin_state[user_id] = None
-            users = [u[0] for u in database.get_all_users_list()]
+            users = database.get_all_user_ids()
             sent_count = 0
             await event.reply("⏳ Xabar tarqatilmoqda...")
             for uid in users:
@@ -324,7 +327,7 @@ async def register_handlers(client, client_type):
                 await event.reply(f"⚠️ Kanalga a'zo bo'ling: {config.REQUIRED_CHANNEL}")
                 return
 
-            allowed, reason = database.check_user_access(user_id)
+            allowed, reason = database.check_user_access(user_id, sender_name)
             if not allowed:
                 await event.reply(f"❌ {reason}\nObuna olish uchun chek yuboring.")
                 return
@@ -463,7 +466,11 @@ async def register_handlers(client, client_type):
     @client.on(events.ChatAction)
     async def chat_action_handler(event):
         """Bot guruhga qo'shilganda bazaga saqlash."""
-        if event.user_added:
+        # event.user_added har qanday a'zo qo'shilganda ham rost bo'ladi,
+        # shuning uchun qo'shilgan odam aynan O'ZIMIZ ekanini tekshiramiz —
+        # aks holda guruhga har yangi a'zo kirganda adminga soxta
+        # "Bot guruhga qo'shildi" xabari ketardi.
+        if event.user_added and me_id in (event.user_ids or []):
             chat = await event.get_chat()
             database.save_group(event.chat_id, getattr(chat, 'title', 'Guruh'))
             await notify_admin(f"👥 Bot guruhga qo'shildi!\nGuruh: {getattr(chat, 'title', 'Guruh')}\nID: {event.chat_id}")
