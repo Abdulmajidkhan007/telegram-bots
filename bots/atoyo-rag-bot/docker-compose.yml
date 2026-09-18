@@ -1,0 +1,39 @@
+# Atoyo RAG boti + n8n. Ishga tushirish:
+#   cp .env.example .env   (va to'ldiring)
+#   docker compose run --rm bot python sync_db.py   # katalogni yuklash
+#   docker compose up -d
+
+services:
+  bot:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Konteyner ichida n8n xost nomi bilan topiladi.
+      N8N_WEBHOOK_URL: http://n8n:5678/webhook/atoyo-lead
+      CHROMA_DIR: /app/chroma_db
+      HISTORY_DB: /app/data/history.db
+    volumes:
+      - ./serviceAccountKey.json:/app/serviceAccountKey.json:ro
+      - chroma:/app/chroma_db
+      - hf-cache:/app/.cache
+      - data:/app/data
+    depends_on:
+      - n8n
+
+  n8n:
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      N8N_SECURE_COOKIE: "false"
+      GENERIC_TIMEZONE: Asia/Tashkent
+    volumes:
+      - n8n:/home/node/.n8n
+
+volumes:
+  chroma:
+  hf-cache:
+  data:
+  n8n:

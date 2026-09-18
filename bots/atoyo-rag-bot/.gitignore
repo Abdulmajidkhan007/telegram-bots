@@ -1,0 +1,19 @@
+# Muhit va maxfiy fayllar
+.env
+serviceAccountKey.json
+*.json.key
+
+# Vektor baza va suhbat tarixi
+chroma_db/
+*.db
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+bot_env/
+.venv/
+
+# Modellar keshi
+.cache/

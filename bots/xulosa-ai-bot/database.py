@@ -74,7 +74,7 @@ def get_history(group_id, days=1):
                        (group_id, time_threshold))
         return cursor.fetchall()
 
-def check_user_access(user_id):
+def check_user_access(user_id, first_name="Noma'lum"):
     """Foydalanuvchi ruxsati, obunasi va kunlik limitini tekshirish."""
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     now = datetime.now(timezone.utc)
@@ -83,8 +83,14 @@ def check_user_access(user_id):
         cursor.execute("SELECT sub_until, daily_requests, last_request_date FROM users WHERE user_id = ?", (user_id,))
         row = cursor.fetchone()
 
-        # Foydalanuvchi bazada bo'lmasa
+        # Foydalanuvchi bazada bo'lmasa — darrov sinov muddati bilan ro'yxatga
+        # olamiz. Aks holda /start bosmagan odam bazaga tushmaydi va bu yerga
+        # har safar "yangi" bo'lib kelib, limitni cheksiz aylanib o'taveradi.
         if not row:
+            trial_until = (now + timedelta(days=3)).isoformat()
+            cursor.execute("INSERT INTO users VALUES (?, ?, ?, 1, ?)",
+                           (user_id, first_name, trial_until, today))
+            conn.commit()
             return True, "3 kunlik bepul sinov"
 
         sub_until, daily_requests, last_date = row
@@ -139,8 +145,20 @@ def get_stats():
         total_messages = cursor.fetchone()[0]
         return total_users, total_groups, active_subs, total_messages
 
+def get_all_user_ids():
+    """Broadcast uchun BARCHA foydalanuvchi ID lari — limitsiz.
+
+    get_all_users_list() faqat admin paneldagi ko'rinish uchun 10 ta qaytaradi;
+    xabar tarqatishda o'shani ishlatish 10 kishidan naridagilarni jimgina
+    tashlab ketardi.
+    """
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT user_id FROM users")
+        return [row[0] for row in cursor.fetchall()]
+
 def get_all_users_list():
-    """So'nggi 10 ta foydalanuvchini ro'yxatini olish."""
+    """Admin panelda ko'rsatish uchun so'nggi 10 ta foydalanuvchi."""
     with sqlite3.connect(DB_NAME) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT user_id, first_name, sub_until FROM users ORDER BY user_id DESC LIMIT 10")
