@@ -39,9 +39,10 @@ docs/ARXITEKTURA-TARIXI.md  qarorlar tarixi
 docs/REJA.md        3 oylik reja: navbat, «tugallandi» ta'rifi, arxivlash ro'yxati
 ```
 
-**12 ta bot:** `save-video-downloader-bot`, `anonim-bot`, `arxiv-topadi-bot`,
+**13 ta bot:** `save-video-downloader-bot`, `anonim-bot`, `arxiv-topadi-bot`,
 `gemini-qa-bot`, `idfinder-bot`, `malware-bot`, `quiz-bot` (Node) ·
-`killspam-bot`, `xulosa-ai-bot`, `atoyo-ai-bot`, `atoyo-rag-bot` (Python) ·
+`killspam-bot`, `xulosa-ai-bot`, `atoyo-ai-bot`, `atoyo-rag-bot`,
+`countlist-python` (Python) ·
 `countlist-ts-node` (TypeScript monorepo).
 
 ---

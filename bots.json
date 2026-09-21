@@ -285,6 +285,34 @@
         "python3 sync_db.py (birinchi ishga tushirishdan oldin)"
       ],
       "note": "Docker bilan ishga tushirish tavsiya etiladi: docker compose up -d (n8n bilan birga)."
+    },
+    {
+      "id": "countlist-python",
+      "name": "Countlist (Python)",
+      "desc": "Guruh xarajatlarini hisoblovchi bot + FastAPI API + React dashboard. Ovozli xabarni OpenAI Whisper bilan matnga o'giradi.",
+      "runtime": "python",
+      "autoStart": false,
+      "install": [
+        [
+          "pip",
+          "install",
+          "-r",
+          "bot/requirements.txt"
+        ]
+      ],
+      "start": [
+        [
+          "python3",
+          "-m",
+          "bot.main"
+        ]
+      ],
+      "requires": [
+        "PostgreSQL",
+        "Redis",
+        "OpenAI API kaliti (ovozli xabar uchun, ixtiyoriy)"
+      ],
+      "note": "countlist-ts-node bilan BITTA mahsulotning ikki stegi. docker compose up bilan to'liq ishga tushadi."
     }
   ]
 }
