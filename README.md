@@ -29,6 +29,9 @@ o'z `README.md`. Papkani nusxalab olsangiz — bot mustaqil ishlaydi.
 
 Batafsil ma'lumot — har bot papkasidagi `README.md` da.
 
+> 🐧 **Kali / Debian / Ubuntu'da noldan ishga tushirish:**
+> [`docs/KALI-LINUX.md`](docs/KALI-LINUX.md) — tizim paketlaridan systemd xizmatigacha.
+
 ---
 
 ## 🚀 Tez boshlash

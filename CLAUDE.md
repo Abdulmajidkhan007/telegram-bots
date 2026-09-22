@@ -37,6 +37,7 @@ tools/scan-secrets.js  kalit tekshiruvi (repo public!)
 tools/registry.test.js testlar
 docs/ARXITEKTURA-TARIXI.md  qarorlar tarixi
 docs/REJA.md        3 oylik reja: navbat, «tugallandi» ta'rifi, arxivlash ro'yxati
+docs/KALI-LINUX.md  Linux'da noldan ishga tushirish qo'llanmasi
 ```
 
 **13 ta bot:** `save-video-downloader-bot`, `anonim-bot`, `arxiv-topadi-bot`,
