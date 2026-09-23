@@ -64,8 +64,26 @@ node -v   # v20.x.x kutiladi
 
 ```bash
 sudo apt install -y python3 python3-venv python3-pip
-python3 --version   # 3.11+ kutiladi
+python3 --version
 ```
+
+> ⚠️ **Python 3.14 bilan ehtiyot bo'ling.** Juda yangi versiyada ba'zi
+> kutubxonalarning tayyor g'ildiragi (wheel) hali chiqmagan bo'ladi va pip
+> ularni manbadan qurishga urinadi — bu esa kompilyator, Rust va
+> `libpq-dev` talab qiladi. **Python 3.12 yoki 3.13** eng xavfsiz tanlov.
+>
+> Agar tizimda 3.14 bo'lsa va muammo chiqsa, eskiroq versiyani qo'ying:
+>
+> ```bash
+> sudo apt install -y python3.13 python3.13-venv
+> python3.13 -m venv .venv && source .venv/bin/activate
+> ```
+>
+> PostgreSQL bilan ishlaydigan botlar uchun (har qanday Python versiyasida):
+>
+> ```bash
+> sudo apt install -y libpq-dev build-essential
+> ```
 
 ### Qo'shimcha vositalar
 
@@ -77,6 +95,21 @@ sudo apt install -y yt-dlp || pip install yt-dlp
 # countlist-ts-node uchun (yarn workspaces)
 sudo npm install -g yarn
 ```
+
+### Arxitekturani tekshiring
+
+```bash
+uname -m
+```
+
+- `x86_64` — odatiy kompyuter
+- `aarch64` / `arm64` — ARM qurilma (telefon, Raspberry Pi, ARM VM)
+
+`save-video-downloader-bot` o'rnatilayotganda yt-dlp va ffmpeg binarlarini
+yuklaydi va **arxitekturani o'zi aniqlaydi**. Yuklab bo'lmasa o'rnatish
+yiqilmaydi — ogohlantirish chiqadi va bot tizimdagi (`apt install ffmpeg`
+bilan kelgan) nusxani ishlatadi. Shuning uchun ARM qurilmada `ffmpeg` ni
+apt orqali oldindan qo'ygan ma'qul.
 
 ---
 
@@ -120,10 +153,20 @@ Terminal boshida `(.venv)` paydo bo'ladi. Shundan keyin:
 ```bash
 git clone https://github.com/Abdulmajidkhan007/telegram-bots.git
 cd telegram-bots
-source .venv/bin/activate     # 2-bo'limdagi venv
+git checkout main && git pull    # ⚠️ pastga qarang
+source .venv/bin/activate        # 2-bo'limdagi venv
 
 npm run doctor
 ```
+
+> ⚠️ **`main` branchda ekaningizni tekshiring.** Reponing standart branchi
+> hali `claude/social-media-downloader-bot-wysjjq` bo'lib turibdi va unda
+> **11 ta bot** bor. `atoyo-rag-bot` va `countlist-python` faqat `main` da.
+>
+> ```bash
+> git branch --show-current   # "main" bo'lishi kerak
+> npm run list | head -1      # "13 ta bot" bo'lishi kerak
+> ```
 
 `doctor` Node, Python va boshqa kerakli vositalar borligini tekshiradi.
 Yetishmayotgani bo'lsa — nomini aytadi.
@@ -147,6 +190,23 @@ npm run setup
 
 Har `bots/<id>/.env.example` dan `.env` nusxasi olinadi. **Mavjud `.env`
 fayllar o'zgartirilmaydi** — xavfsiz, qayta-qayta ishlatish mumkin.
+
+> ⚠️ **Eng ko'p uchraydigan tuzoq.** `setup` dan keyin `.env` fayli
+> **darrov paydo bo'ladi**, lekin ichida namuna qiymatlar turadi. Ba'zi
+> namunalar haqiqiyga o'xshaydi — masalan `idfinder-bot` da
+> `BOT_TOKEN=123456:ABC-DEF1234ghIkl-...`. Bot ishga tushadi, lekin
+> to'xtovsiz **`401 Unauthorized`** beradi.
+>
+> `npm run doctor` shuni aytib beradi:
+>
+> ```
+> idfinder-bot   .env.example ✅  .env ⚠️  1 ta to'ldirilmagan
+>
+> ⚠️  Quyidagi qiymatlar bo'sh yoki .env.example dagidek qolgan:
+>    • idfinder-bot: BOT_TOKEN
+> ```
+>
+> `.env ✅` chiqsagina qiymatlar haqiqatan almashtirilgan degani.
 
 Endi har birini to'ldirish kerak:
 
@@ -414,6 +474,11 @@ journalctl -u telegram-botlar -f      # jonli loglar
 | `yt-dlp: not found` | vosita o'rnatilmagan | `pip install yt-dlp` (venv ichida) |
 | `429 Too Many Requests` (Gemini) | kalit kvotasi tugagan | kuting yoki yangi kalit |
 | `sqlite3.OperationalError: database is locked` | bir baza ikki jarayonda | ikkinchi nusxani to'xtating |
+| `xz: File format not recognized` | ffmpeg yuklanmagan (server xato sahifa qaytargan) | `sudo apt install -y ffmpeg` — bot uni tizimdan topadi |
+| `fatal error: libpq-fe.h: No such file` | psycopg2 manbadan qurilyapti | `sudo apt install -y libpq-dev build-essential` |
+| `PyO3's maximum supported version (3.13)` | Python 3.14, kutubxona hali qo'llamaydi | Python 3.12/3.13 bilan venv yarating |
+| `Exec format error` binarni ishga tushirganda | ARM qurilmada x86 binar | `rm -rf bots/save-video-downloader-bot/bin` va qayta o'rnating |
+| `npm run list` 11 ta bot ko'rsatadi | eski branchdasiz | `git checkout main && git pull` |
 | Bot javob bermaydi, xato ham yo'q | `.env` bo'sh yoki noto'g'ri papkada | `cat bots/<id>/.env` bilan tekshiring |
 
 ### Ishlab turgan botlarni ko'rish

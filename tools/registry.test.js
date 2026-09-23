@@ -6,7 +6,7 @@ const assert = require('node:assert');
 const path = require('path');
 const fs = require('fs');
 
-const { validateRegistry, resolveTargets, padWidth } = require('./registry');
+const { unfilledKeys, validateRegistry, resolveTargets, padWidth } = require('./registry');
 const { findFilledEnvSecrets, FORBIDDEN_NAME } = require('./scan-secrets');
 
 const realRegistry = JSON.parse(
@@ -126,4 +126,51 @@ test('scan: oddiy fayl nomlariga tegmaydi', () => {
   for (const name of ['main.py', 'session_helper.py', 'README.md', 'package.json']) {
     assert.ok(!FORBIDDEN_NAME.test(name), `${name} taqiqlanmasligi kerak edi`);
   }
+});
+
+// Bug: `doctor` faqat .env FAYLI borligini tekshirardi. `setup` uni
+// .env.example dan nusxalagani uchun fayl darrov paydo bo'lardi, ichida esa
+// "BU_YERGA_YOZING" turardi — bot 401 Unauthorized berardi va sababi
+// hech qayerda ko'rinmasdi.
+test('unfilledKeys: namunadan o\'zgarmagan tokenni ushlaydi', () => {
+  // idfinder-bot dagi haqiqiy holat: .env.example da soxta, lekin haqiqiyga
+  // o'xshash token turadi. Nusxa olingan .env "to'ldirilgan"dek ko'rinardi.
+  const example = 'BOT_TOKEN=123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11\nDATA_DIR=/app/data';
+  const env = 'BOT_TOKEN=123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11\nDATA_DIR=/app/data';
+
+  // DATA_DIR maxfiy emas — u o'zgarmagani normal.
+  assert.deepStrictEqual(unfilledKeys(env, example), ['BOT_TOKEN']);
+});
+
+test('unfilledKeys: token almashtirilgan bo\'lsa ogohlantirmaydi', () => {
+  const example = 'BOT_TOKEN=123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11';
+  const env = 'BOT_TOKEN=8199999999:AAH-menikiHaqiqiyToken_xyz';
+  assert.deepStrictEqual(unfilledKeys(env, example), []);
+});
+
+test("unfilledKeys: to'ldirilmagan qiymatlarni topadi", () => {
+  const env = [
+    'BOT_TOKEN=BU_YERGA_YOZING',
+    'API_HASH=your_api_hash_here',
+    'ADMIN_ID=',
+    '# izoh qatori',
+    '',
+    'GEMINI_API_KEY=AIzaHaqiqiyKalit123',
+  ].join('\n');
+
+  assert.deepStrictEqual(unfilledKeys(env), ['BOT_TOKEN', 'API_HASH', 'ADMIN_ID']);
+});
+
+test("unfilledKeys: to'liq to'ldirilgan .env da bo'sh ro'yxat", () => {
+  const env = 'BOT_TOKEN=123456:AAH_haqiqiy\nADMIN_ID=777\n';
+  assert.deepStrictEqual(unfilledKeys(env), []);
+});
+
+test('unfilledKeys: qo\'shtirnoqli qiymatlar ham tekshiriladi', () => {
+  assert.deepStrictEqual(unfilledKeys('API_HASH="BU_YERGA_YOZING"'), ['API_HASH']);
+  assert.deepStrictEqual(unfilledKeys("TOKEN='haqiqiy-qiymat'"), []);
+});
+
+test('unfilledKeys: izoh va buzuq qatorlar yiqitmaydi', () => {
+  assert.deepStrictEqual(unfilledKeys('# BOT_TOKEN=BU_YERGA_YOZING\nchala qator\n=qiymat'), []);
 });

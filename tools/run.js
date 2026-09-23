@@ -14,7 +14,7 @@
 const fs = require('fs');
 const path = require('path');
 const { spawn, spawnSync } = require('child_process');
-const { validateRegistry, resolveTargets, padWidth } = require('./registry');
+const { validateRegistry, resolveTargets, padWidth, unfilledKeys } = require('./registry');
 
 const ROOT = path.resolve(__dirname, '..');
 const BOTS_DIR = path.join(ROOT, 'bots');
@@ -189,6 +189,7 @@ function cmdDoctor(bots) {
   }
   console.log('');
   const w = padWidth(bots);
+  const toldirilmagan = [];
   for (const bot of bots) {
     const hasEnvExample = fs.existsSync(path.join(bot.dir, '.env.example'));
     const hasEnv = fs.existsSync(path.join(bot.dir, '.env'));
@@ -196,14 +197,35 @@ function cmdDoctor(bots) {
       bot.runtime === 'node'
         ? fs.existsSync(path.join(bot.dir, 'node_modules'))
         : null;
+    // .env bor bo'lsa — ichi ham to'ldirilganmi?
+    let envHolat = '.env ❌ (npm run setup)';
+    let bosh = [];
+    if (hasEnv) {
+      bosh = unfilledKeys(
+        fs.readFileSync(path.join(bot.dir, '.env'), 'utf8'),
+        hasEnvExample ? fs.readFileSync(path.join(bot.dir, '.env.example'), 'utf8') : '',
+      );
+      envHolat = bosh.length ? `.env ⚠️  ${bosh.length} ta to'ldirilmagan` : '.env ✅';
+      if (bosh.length) toldirilmagan.push(`${bot.id}: ${bosh.join(', ')}`);
+    }
     const parts = [
       hasEnvExample ? '.env.example ✅' : '.env.example ❌',
-      hasEnv ? '.env ✅' : '.env ❌ (npm run setup)',
+      envHolat,
     ];
     if (deps !== null) parts.push(deps ? 'deps ✅' : 'deps ❌ (npm run install:all)');
     console.log(`  ${bot.id.padEnd(w)}  ${parts.join('  ')}`);
   }
   console.log('');
+
+  if (toldirilmagan.length) {
+    console.log("⚠️  Quyidagi qiymatlar bo'sh yoki .env.example dagidek qolgan:\n");
+    for (const qator of toldirilmagan) console.log(`   • ${qator}`);
+    console.log(
+      "\n   Token/kalit turidagilari to'ldirilmasa bot 401 Unauthorized beradi." +
+      '\n   Ba\'zilari ixtiyoriy bo\'lishi mumkin — .env.example dagi izohga qarang.' +
+      '\n   Tahrirlash: nano bots/<bot-id>/.env\n',
+    );
+  }
 }
 
 // --- CLI -------------------------------------------------------------------

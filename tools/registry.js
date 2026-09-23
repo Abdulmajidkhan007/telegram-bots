@@ -74,4 +74,53 @@ function padWidth(bots) {
   return bots.reduce((max, b) => Math.max(max, b.id.length), 0);
 }
 
-module.exports = { validateRegistry, resolveTargets, padWidth, VALID_RUNTIMES };
+// .env dagi qaysi kalitlar hali to'ldirilmagan.
+//
+// Faqat fayl borligini tekshirish yetarli emas edi: `setup` .env.example dan
+// nusxa oladi, shuning uchun fayl DARROV paydo bo'ladi. Ichida esa namuna
+// qiymat turadi — idfinder-bot da u hatto HAQIQIY tokenga o'xshaydi
+// (`123456:ABC-DEF...`). Bot 401 Unauthorized berardi, sababi esa
+// hech qayerda ko'rinmasdi.
+//
+// Shuning uchun uch xil belgi tekshiriladi:
+//   1. qiymat bo'sh
+//   2. qiymat ochiq-oydin joy egallovchi (BU_YERGA..., your_key_here, ...)
+//   3. qiymat .env.example dagisi bilan AYNAN bir xil — ya'ni tegilmagan.
+//      Bu faqat maxfiy ko'rinishli kalitlarga qo'llanadi, aks holda
+//      DATA_DIR=/app/data kabi to'g'ri standart qiymatlar ham ogohlantirardi.
+const PLACEHOLDER = /^(BU_YERGA|your_|YOUR_|sizning_|SIZNING_|xxx|XXX|<|CHANGE|REPLACE)/;
+const MAXFIY_KALIT = /(TOKEN|KEY|SECRET|PASSWORD|PASS|HASH|SESSION|DATABASE_URL|WEBHOOK|API_ID)/i;
+
+function parseEnv(text) {
+  const map = new Map();
+  for (const line of String(text || '').split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eq = trimmed.indexOf('=');
+    if (eq <= 0) continue;
+    const key = trimmed.slice(0, eq).trim();
+    const value = trimmed.slice(eq + 1).trim().replace(/^["']|["']$/g, '');
+    map.set(key, value);
+  }
+  return map;
+}
+
+function unfilledKeys(envText, exampleText) {
+  const example = parseEnv(exampleText);
+  const bosh = [];
+
+  for (const [key, value] of parseEnv(envText)) {
+    if (value === '' || PLACEHOLDER.test(value)) {
+      bosh.push(key);
+      continue;
+    }
+    // Namunadagi qiymat o'zgarmagan — maxfiy kalitlar uchun bu xato belgisi.
+    if (MAXFIY_KALIT.test(key) && example.has(key) && example.get(key) === value) {
+      bosh.push(key);
+    }
+  }
+  return bosh;
+}
+
+module.exports = {
+  unfilledKeys, validateRegistry, resolveTargets, padWidth, VALID_RUNTIMES };

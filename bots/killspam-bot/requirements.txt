@@ -1,7 +1,14 @@
-aiogram==3.13.0
-sqlalchemy==2.0.30
-psycopg2-binary==2.9.9
-python-dotenv==1.0.1
+# Versiyalar qattiq qadalmagan: Python 3.13/3.14 chiqqach 3.13.0 ga qadalgan
+# aiogram pydantic<2.9 ni tortardi, uning pydantic-core'i esa PyO3 0.22 ga
+# tayanadi va u Python 3.13 dan narisini qo'llamaydi — o'rnatish yiqilardi.
+aiogram>=3.15,<4
+# Aniq talab: aiogram eski pydantic'ni tanlab qolmasin.
+pydantic>=2.12
+sqlalchemy>=2.0.30,<3
+# 2.9.9 da cp314 g'ildiragi yo'q edi — pip manbadan qurishga urinib,
+# libpq-fe.h topilmagani uchun yiqilardi. 2.9.11 dan boshlab g'ildirak bor.
+psycopg2-binary>=2.9.11
+python-dotenv>=1.0.1
 google-genai>=1.0.0
 nudenet>=3.4.2
 cryptography>=42.0.0
