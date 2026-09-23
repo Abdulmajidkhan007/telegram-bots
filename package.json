@@ -18,6 +18,7 @@
     "bot": "node tools/run.js start",
     "scan": "node tools/scan-secrets.js",
     "test": "node --test tools/registry.test.js",
-    "check": "npm run test && npm run scan"
+    "check": "npm run test && npm run scan",
+    "env": "node tools/set-env.js"
   }
 }

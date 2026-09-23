@@ -208,6 +208,10 @@ fayllar o'zgartirilmaydi** — xavfsiz, qayta-qayta ishlatish mumkin.
 >
 > `.env ✅` chiqsagina qiymatlar haqiqatan almashtirilgan degani.
 
+> 💡 Yangi bot qo'shilgandan keyin (`git pull` dan so'ng) `npm run setup` ni
+> **qayta ishlating** — u faqat yetishmayotgan `.env` larni yaratadi,
+> mavjudlariga tegmaydi.
+
 Endi har birini to'ldirish kerak:
 
 ```bash
@@ -234,6 +238,82 @@ nano bots/gemini-qa-bot/.env
 
 **Guruh yoki kanal ID sini bilish kerak bo'lsa:** avval `idfinder-bot` ni
 ishga tushiring — u aynan shuning uchun yozilgan.
+
+### Qaysi kalit HAQIQATAN majburiy
+
+`doctor` bo'sh qolgan hamma qiymatni sanaydi, lekin ularning ko'pi
+**ixtiyoriy** — standart qiymati bilan ishlayveradi. Kodda tekshirilgani
+(bo'lmasa bot ishga tushmaydi) faqat shular:
+
+| Bot | Majburiy | Qolganlari |
+|---|---|---|
+| `idfinder-bot` | `BOT_TOKEN` | ixtiyoriy |
+| `anonim-bot` | `BOT_TOKEN` | ixtiyoriy |
+| `arxiv-topadi-bot` | `BOT_TOKEN` | ixtiyoriy |
+| `quiz-bot` | `BOT_TOKEN` | ixtiyoriy |
+| `save-video-downloader-bot` | `BOT_TOKEN` | ixtiyoriy |
+| `malware-bot` | `BOT_TOKEN`, `VT_KEY` | ixtiyoriy |
+| `gemini-qa-bot` | `TELEGRAM_TOKEN`, `GEMINI_API_KEY` | ixtiyoriy |
+| `killspam-bot` | `BOT_TOKEN`, `DATABASE_URL` | ixtiyoriy |
+| `xulosa-ai-bot` | `API_ID`, `API_HASH`, `GEMINI_API_KEY` + (`BOT_TOKEN` yoki `STRING_SESSION`) | ixtiyoriy |
+| `atoyo-ai-bot` | `API_ID`, `API_HASH`, `GEMINI_API_KEY`, `SOURCE_GROUP_ID`, `TARGET_GROUP_ID` | ixtiyoriy |
+| `atoyo-rag-bot` | `TELEGRAM_BOT_TOKEN`, `GEMINI_API_KEY` | ixtiyoriy |
+| `countlist-ts-node` | `BOT_TOKEN`, `DATABASE_URL` | ixtiyoriy |
+| `countlist-python` | `BOT_TOKEN`, `DATABASE_URL` | ixtiyoriy |
+
+> ⚠️ **Har botga ALOHIDA token kerak.** Bitta tokenni ikki botda ishlatsangiz
+> Telegram `Conflict: terminated by other getUpdates` xatosini beradi.
+> @BotFather da `/newbot` ni 13 marta bajaring.
+>
+> `GEMINI_API_KEY` va `ADMIN_ID` esa — **bitta qiymat hammasiga** yetadi.
+
+### Papkama-papka yurish shart emas
+
+Repo ildizidan turib to'g'ridan-to'g'ri tahrirlash mumkin:
+
+```bash
+nano bots/idfinder-bot/.env
+```
+
+Yoki tayyor vosita bilan — fayl ochmasdan:
+
+```bash
+# bitta botga
+npm run env -- idfinder-bot BOT_TOKEN=8199999999:AAH-sizning-tokeningiz
+
+# bir nechta kalitni birdan
+npm run env -- gemini-qa-bot TELEGRAM_TOKEN=... GEMINI_API_KEY=AIza...
+
+# umumiy qiymat — kalit qaysi botda bor bo'lsa, o'shalarga yoziladi
+npm run env -- all ADMIN_ID=123456789
+npm run env -- all GEMINI_API_KEY=AIza...
+```
+
+Vosita izohlarni va qatorlar tartibini tegmasdan qoldiradi, kalit yo'q
+bo'lsa oxiriga qo'shadi. `all` rejimida **faqat mavjud kalitlar**
+almashtiriladi — har botga begona o'zgaruvchi qo'shilmaydi.
+
+### Tavsiya qilingan tartib
+
+```bash
+# 1. Har botga token oling (@BotFather -> /newbot), keyin:
+npm run env -- idfinder-bot   BOT_TOKEN=...
+npm run env -- quiz-bot       BOT_TOKEN=...
+npm run env -- anonim-bot     BOT_TOKEN=...
+npm run env -- arxiv-topadi-bot BOT_TOKEN=...
+npm run env -- malware-bot    BOT_TOKEN=... VT_KEY=...
+npm run env -- gemini-qa-bot  TELEGRAM_TOKEN=... GEMINI_API_KEY=...
+npm run env -- save-video-downloader-bot BOT_TOKEN=...
+
+# 2. Umumiy qiymatlar
+npm run env -- all ADMIN_ID=<o'z Telegram ID ingiz>
+
+# 3. Tekshirish
+npm run doctor
+```
+
+7 ta Node boti uchun shuncha yetadi. Qolgan 6 tasi PostgreSQL, Redis yoki
+Telethon session talab qiladi — 7-bo'limga qarang.
 
 ---
 

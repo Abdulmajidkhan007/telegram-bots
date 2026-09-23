@@ -122,5 +122,30 @@ function unfilledKeys(envText, exampleText) {
   return bosh;
 }
 
+// .env matnidagi bitta kalit qiymatini almashtiradi.
+//
+// Izohlar, tartib va boshqa qatorlar tegilmaydi — .env.example dagi
+// tushuntirishlar foydalanuvchiga keyin ham kerak bo'ladi. Kalit topilmasa,
+// oxiriga qo'shiladi.
+function setEnvValue(text, key, value) {
+  const lines = String(text || '').split('\n');
+  const re = new RegExp(`^\\s*${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*=`);
+  let topildi = false;
+
+  const yangi = lines.map((line) => {
+    if (topildi || !re.test(line)) return line;
+    topildi = true;
+    return `${key}=${value}`;
+  });
+
+  if (!topildi) {
+    // Oxirida bo'sh qator bo'lsa, kalitni o'sha bo'shliqdan oldin qo'yamiz.
+    while (yangi.length && yangi[yangi.length - 1].trim() === '') yangi.pop();
+    yangi.push(`${key}=${value}`, '');
+  }
+  return yangi.join('\n');
+}
+
 module.exports = {
+  setEnvValue,
   unfilledKeys, validateRegistry, resolveTargets, padWidth, VALID_RUNTIMES };

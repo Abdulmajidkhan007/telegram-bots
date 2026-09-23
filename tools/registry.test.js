@@ -6,7 +6,7 @@ const assert = require('node:assert');
 const path = require('path');
 const fs = require('fs');
 
-const { unfilledKeys, validateRegistry, resolveTargets, padWidth } = require('./registry');
+const { setEnvValue, unfilledKeys, validateRegistry, resolveTargets, padWidth } = require('./registry');
 const { findFilledEnvSecrets, FORBIDDEN_NAME } = require('./scan-secrets');
 
 const realRegistry = JSON.parse(
@@ -173,4 +173,39 @@ test('unfilledKeys: qo\'shtirnoqli qiymatlar ham tekshiriladi', () => {
 
 test('unfilledKeys: izoh va buzuq qatorlar yiqitmaydi', () => {
   assert.deepStrictEqual(unfilledKeys('# BOT_TOKEN=BU_YERGA_YOZING\nchala qator\n=qiymat'), []);
+});
+
+test('setEnvValue: mavjud kalitni almashtiradi, izohlarni saqlaydi', () => {
+  const env = [
+    '# BotFather tokeni',
+    'BOT_TOKEN=BU_YERGA_YOZING',
+    '',
+    '# Admin ID',
+    'ADMIN_ID=',
+  ].join('\n');
+
+  const natija = setEnvValue(env, 'BOT_TOKEN', '8199:AAH-yangi');
+
+  assert.match(natija, /^BOT_TOKEN=8199:AAH-yangi$/m);
+  assert.match(natija, /# BotFather tokeni/);
+  assert.match(natija, /# Admin ID/);
+});
+
+test('setEnvValue: kalit yo\'q bo\'lsa oxiriga qo\'shadi', () => {
+  const natija = setEnvValue('BOT_TOKEN=abc\n', 'YANGI_KALIT', 'qiymat');
+  assert.match(natija, /^YANGI_KALIT=qiymat$/m);
+  assert.match(natija, /^BOT_TOKEN=abc$/m);
+});
+
+test('setEnvValue: faqat BIRINCHI mos qatorni o\'zgartiradi', () => {
+  // Takrorlangan kalit bo'lsa .env oxirgisini oladi, lekin biz faylni
+  // ikkilantirib yubormasligimiz kerak.
+  const natija = setEnvValue('A=1\nA=2\n', 'A', '9');
+  assert.strictEqual(natija.match(/^A=/gm).length, 2);
+  assert.match(natija, /^A=9$/m);
+});
+
+test('setEnvValue: qiymatdagi = belgisi buzilmaydi', () => {
+  const natija = setEnvValue('URL=\n', 'URL', 'postgres://u:p@h/db?x=1');
+  assert.match(natija, /^URL=postgres:\/\/u:p@h\/db\?x=1$/m);
 });
