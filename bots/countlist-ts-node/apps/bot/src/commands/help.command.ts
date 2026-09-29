@@ -3,28 +3,30 @@ import { BotContext } from '../types/context';
 
 export function registerHelpCommand(bot: Telegraf<BotContext>): void {
   bot.command('help', async (ctx) => {
-    await ctx.replyWithMarkdownV2(
-      `📚 *Yordam — Expense Tracker Bot*\n\n` +
-      `*💬 Xarajat qo'shish:*\n` +
-      `Shunchaki matn yuboring:\n` +
-      `\\• \`500000 so'm ovqatga\`\n` +
-      `\\• \`2 mln remontga\`\n` +
-      `\\• \`50k taksi\`\n` +
-      `\\• \`150000 telefonga\`\n\n` +
-      `*📊 Statistika:*\n` +
+    await ctx.reply(
+      `📚 Expense Tracker — Yordam\n\n` +
+      `💬 Xarajat qo'shish (guruhda):\n` +
+      `  500000 so'm ovqatga\n` +
+      `  2 mln remontga\n` +
+      `  50k taksi\n\n` +
+      `📊 Statistika:\n` +
       `/today — Bugungi xarajatlar\n` +
-      `/week — Haftalik statistika\n` +
+      `/week  — Haftalik statistika\n` +
       `/month — Oylik statistika\n` +
-      `/stats — Umumiy statistika\n` +
-      `/top — Top kategoriyalar\n\n` +
-      `*⚙️ Boshqaruv:*\n` +
-      `/categories — Kategoriyalar ro'yxati\n` +
-      `/limit — Oylik limitni ko'rish/o'rnatish\n` +
-      `/balance — Balans va chegara\n` +
-      `/export — Ma'lumotlarni eksport qilish\n` +
-      `/settings — Bot sozlamalari\n\n` +
-      `*ℹ️ Eslatma:*\n` +
-      `Bot guruh admini bo'lishi kerak\\!`,
+      `/top   — Top kategoriyalar\n\n` +
+      `🏷️ Kategoriyalar:\n` +
+      `/categories — Ko'rish va boshqarish\n` +
+      `  ✏️ tahrirlash  🗑️ o'chirish  ➕ yangi\n\n` +
+      `📤 Export:\n` +
+      `/export — CSV yoki Excel yuklab olish\n\n` +
+      `⚙️ Boshqaruv:\n` +
+      `/settings — Bot sozlamalari\n` +
+      `/limit    — Oylik limit\n\n` +
+      `🔐 Admin (faqat ADMIN_TELEGRAM_ID uchun):\n` +
+      `/admin    — Admin panel va statistika\n` +
+      `/allusers — Barcha foydalanuvchilar\n` +
+      `/userstat {id} — Foydalanuvchi ma'lumoti\n\n` +
+      `ℹ️ Bot guruh admini bo'lishi kerak!`,
     );
   });
 }

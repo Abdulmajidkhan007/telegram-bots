@@ -10,6 +10,8 @@ import { GroupsPage } from './pages/GroupsPage';
 import { LimitsPage } from './pages/LimitsPage';
 import { ExportsPage } from './pages/ExportsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { UsersPage } from './pages/UsersPage';
+import { RecurringPage } from './pages/RecurringPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { useAppSelector } from './hooks/useAppSelector';
 
@@ -43,9 +45,9 @@ function App() {
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="categories" element={<CategoriesPage />} />
           <Route path="groups" element={<GroupsPage />} />
-          <Route path="users" element={<OverviewPage />} />
+          <Route path="users" element={<UsersPage />} />
           <Route path="limits" element={<LimitsPage />} />
-          <Route path="recurring" element={<OverviewPage />} />
+          <Route path="recurring" element={<RecurringPage />} />
           <Route path="exports" element={<ExportsPage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>

@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Plus, Search, Filter, Trash2, Edit } from 'lucide-react';
+import { Plus, Search, Trash2 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
 import { PageLoader } from '@/components/ui/LoadingSpinner';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { expensesApi } from '@/services/api';
+import { expensesApi, categoriesApi } from '@/services/api';
 import { useAppSelector } from '@/hooks/useAppSelector';
 import { formatAmount, formatDate } from '@/utils/format';
 import { queryClient } from '@/services/query-client';
 import toast from 'react-hot-toast';
+
+const today = new Date().toISOString().split('T')[0];
 
 export function ExpensesPage() {
   const selectedGroupId = useAppSelector((s) => s.ui.selectedGroupId);
@@ -19,6 +20,8 @@ export function ExpensesPage() {
   const [page, setPage] = useState(1);
   const [month, setMonth] = useState<number | undefined>(new Date().getMonth() + 1);
   const [year] = useState(new Date().getFullYear());
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [form, setForm] = useState({ amount: '', description: '', categoryId: '', date: today, currency: 'UZS' });
 
   const { data, isLoading } = useQuery({
     queryKey: ['expenses', selectedGroupId, page, month, year, search],
@@ -29,10 +32,36 @@ export function ExpensesPage() {
     enabled: !!selectedGroupId,
   });
 
+  const { data: categories } = useQuery({
+    queryKey: ['categories', selectedGroupId],
+    queryFn: () => categoriesApi.list(selectedGroupId || undefined).then((r) => r.data?.data || r.data),
+  });
+
+  const createMutation = useMutation({
+    mutationFn: () =>
+      expensesApi.create({
+        amount: parseFloat(form.amount),
+        description: form.description,
+        groupId: selectedGroupId!,
+        categoryId: form.categoryId || undefined,
+        date: form.date,
+        currency: form.currency,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      setShowAddForm(false);
+      setForm({ amount: '', description: '', categoryId: '', date: today, currency: 'UZS' });
+      toast.success("Xarajat qo'shildi");
+    },
+    onError: () => toast.error('Xatolik yuz berdi'),
+  });
+
   const deleteMutation = useMutation({
     mutationFn: (id: string) => expensesApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       toast.success("Xarajat o'chirildi");
     },
   });
@@ -42,22 +71,86 @@ export function ExpensesPage() {
 
   if (isLoading) return <PageLoader />;
 
+  const cats = Array.isArray(categories) ? categories : [];
+
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">Xarajatlar</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-            {meta?.total || 0} ta xarajat
+            {meta?.total || expenses.length} ta xarajat
           </p>
         </div>
-        <Button variant="primary" className="gap-2">
+        <Button variant="primary" onClick={() => setShowAddForm((v) => !v)}>
           <Plus size={16} />
           Qo'shish
         </Button>
       </div>
 
-      {/* Filters */}
+      {showAddForm && (
+        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
+          <Card>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4">Yangi xarajat</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div>
+                <label className="label">Miqdor *</label>
+                <input
+                  type="number"
+                  value={form.amount}
+                  onChange={(e) => setForm((p) => ({ ...p, amount: e.target.value }))}
+                  placeholder="50000"
+                  className="input-field"
+                  min="0"
+                />
+              </div>
+              <div>
+                <label className="label">Tavsif *</label>
+                <input
+                  type="text"
+                  value={form.description}
+                  onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+                  placeholder="Non sotib olindi"
+                  className="input-field"
+                />
+              </div>
+              <div>
+                <label className="label">Kategoriya</label>
+                <select
+                  value={form.categoryId}
+                  onChange={(e) => setForm((p) => ({ ...p, categoryId: e.target.value }))}
+                  className="input-field"
+                >
+                  <option value="">Tanlanmagan</option>
+                  {cats.map((c: any) => (
+                    <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="label">Sana</label>
+                <input
+                  type="date"
+                  value={form.date}
+                  onChange={(e) => setForm((p) => ({ ...p, date: e.target.value }))}
+                  className="input-field"
+                />
+              </div>
+            </div>
+            <div className="flex gap-2 mt-4">
+              <Button
+                loading={createMutation.isPending}
+                onClick={() => createMutation.mutate()}
+                disabled={!form.amount || !form.description.trim() || !selectedGroupId}
+              >
+                Saqlash
+              </Button>
+              <Button variant="secondary" onClick={() => setShowAddForm(false)}>Bekor</Button>
+            </div>
+          </Card>
+        </motion.div>
+      )}
+
       <Card padding="sm">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
@@ -72,7 +165,7 @@ export function ExpensesPage() {
           </div>
           <select
             value={month}
-            onChange={(e) => setMonth(Number(e.target.value))}
+            onChange={(e) => { setMonth(Number(e.target.value)); setPage(1); }}
             className="input-field w-full sm:w-36"
           >
             {Array.from({ length: 12 }, (_, i) => (
@@ -84,7 +177,6 @@ export function ExpensesPage() {
         </div>
       </Card>
 
-      {/* Table */}
       {expenses.length === 0 ? (
         <EmptyState
           icon="💸"
@@ -150,17 +242,12 @@ export function ExpensesPage() {
                       </span>
                     </td>
                     <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-1">
-                        <button className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600">
-                          <Edit size={14} />
-                        </button>
-                        <button
-                          onClick={() => deleteMutation.mutate(exp.id)}
-                          className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-500"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => deleteMutation.mutate(exp.id)}
+                        className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-500 transition-colors"
+                      >
+                        <Trash2 size={14} />
+                      </button>
                     </td>
                   </motion.tr>
                 ))}
@@ -168,27 +255,16 @@ export function ExpensesPage() {
             </table>
           </div>
 
-          {/* Pagination */}
           {meta && meta.totalPages > 1 && (
             <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100 dark:border-slate-800">
               <p className="text-xs text-slate-500">
                 {(page - 1) * meta.limit + 1} – {Math.min(page * meta.limit, meta.total)} / {meta.total}
               </p>
               <div className="flex items-center gap-1">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  disabled={page === 1}
-                  onClick={() => setPage((p) => p - 1)}
-                >
+                <Button variant="secondary" size="sm" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
                   ←
                 </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  disabled={page === meta.totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                >
+                <Button variant="secondary" size="sm" disabled={page === meta.totalPages} onClick={() => setPage((p) => p + 1)}>
                   →
                 </Button>
               </div>
