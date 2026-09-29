@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 
-// BigInt serialization fix — Fastify/JSON can't serialize BigInt natively
 (BigInt.prototype as unknown as { toJSON: () => string }).toJSON = function () {
   return this.toString();
 };
@@ -21,22 +20,23 @@ async function bootstrap() {
     new FastifyAdapter({ logger: config.nodeEnv === 'development' }),
   );
 
-  // CORS
+  // CORS — allow localhost and all *.railway.app origins
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      'http://localhost:5173',
-      process.env.WEB_URL || 'http://localhost:3000',
-    ],
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      const allowed =
+        !origin ||
+        origin.includes('localhost') ||
+        origin.endsWith('.railway.app') ||
+        origin === (process.env.WEB_URL || '');
+      callback(null, allowed);
+    },
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
 
-  // Global prefix
   app.setGlobalPrefix('api/v1');
 
-  // Validation
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -46,7 +46,6 @@ async function bootstrap() {
     }),
   );
 
-  // Swagger
   if (config.nodeEnv !== 'production') {
     const swaggerConfig = new DocumentBuilder()
       .setTitle('Expense Tracker API')
