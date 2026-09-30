@@ -29,5 +29,7 @@ export const config = {
   api: {
     url: process.env.API_URL || 'http://localhost:3001',
   },
+  // Ixtiyoriy: bo'lmasa ovozli xabarlar e'tiborsiz qoladi (ishga tushishda log'ga yoziladi).
+  openaiApiKey: process.env.OPENAI_API_KEY || '',
   nodeEnv: process.env.NODE_ENV || 'development',
 } as const;

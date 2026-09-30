@@ -131,6 +131,32 @@ Monorepo'dan keyin Railway repo ildizini quradi va `bots/` ichidagi
 `bots/<id>`** qo'yiladi. Shunda har bot alohida servis bo'lib, o'z
 Variables to'plamiga ega bo'ladi — kalitlar aralashmaydi.
 
+## 8. countlist: nega TypeScript versiyasi qoldi (2026-09-30)
+
+`countlist-python` (aiogram + FastAPI) va `countlist-ts-node` (Telegraf +
+NestJS + Prisma) — bitta mahsulot. Ikkisini parallel yuritish har tuzatishni
+ikki marta qilish demakdir, shuning uchun bittasi qoldi.
+
+**O'lchov (taxmin emas):**
+- Imkoniyatlar: TS da admin panel, botda kategoriya CRUD, PDF/CSV/Excel eksport,
+  4 valyuta, refresh token, Redis kesh bor. Python dashboard'idagi Limitlar va
+  Takroriy sahifalari — 19 qatorli bo'sh shablon.
+- Python'da bor, TS da yo'q edi: ovozli xabar (Whisper) va summa **oxirida**
+  yozilgan xabarlar (`taksi 15000`) — TS ularni `null` qaytarib jimgina
+  o'tkazib yuborardi.
+- Ikkala parser bir xil 13 ta kiritma bilan solishtirildi. Ikkalasida ham
+  `1,5 mln` = 15 mln xatosi bor edi.
+- TS parser `Sogliq`/`Talim`/`Kongilochar` qaytarardi, seed'dagi nomlar esa
+  `Sog'liq`/`Ta'lim`/`Ko'ngilochar` — bunday xarajatlar kategoriyasiz
+  saqlanardi. Haqiqiy PostgreSQL da tasdiqlandi.
+
+**Qaror:** TS qoldi. Ovozli xabar, summa-oxirida formati va qo'shimcha kalit
+so'zlar ko'chirildi, yuqoridagi ikki xato regressiya testlari bilan tuzatildi.
+Summa oxirida yalang son (valyuta/ko'paytiruvchisiz) kamida 500 bo'lishi
+kerak — aks holda guruhdagi «soat 5» ham xarajat bo'lib qolardi.
+→ *Ikki nusxani solishtirganda «qaysi biri kattaroq» emas, bir xil kiritmada
+nima qaytarishini o'lcha.*
+
 ---
 
 ## Keyingi qadamlar (ochiq savollar)
