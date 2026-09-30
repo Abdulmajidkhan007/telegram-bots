@@ -1,45 +1,68 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Wallet, Send, Eye, EyeOff } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { Wallet, Send, AlertTriangle } from 'lucide-react';
 import { useAppDispatch } from '@/hooks/useAppSelector';
 import { setAuth } from '@/store/slices/auth.slice';
 import { authApi } from '@/services/api';
 import toast from 'react-hot-toast';
 
+const BOT_USERNAME = import.meta.env.VITE_TELEGRAM_BOT_USERNAME;
+
+declare global {
+  interface Window {
+    onTelegramAuth?: (user: Record<string, unknown>) => void;
+  }
+}
+
 export function LoginPage() {
-  const [telegramId, setTelegramId] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
+  const widgetRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!telegramId || !firstName) {
-      toast.error('Telegram ID va ismni kiriting');
-      return;
-    }
+  useEffect(() => {
+    if (!BOT_USERNAME || !widgetRef.current) return;
 
-    setLoading(true);
-    try {
-      const { data } = await authApi.loginTelegram(telegramId, firstName, username);
-      const payload = data.data || data;
-      dispatch(setAuth({
-        user: payload.user,
-        accessToken: payload.accessToken,
-        refreshToken: payload.refreshToken,
-      }));
-      toast.success(`Xush kelibsiz, ${payload.user.firstName}!`);
-      navigate('/');
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Kirish muvaffaqiyatsiz');
-    } finally {
-      setLoading(false);
-    }
-  };
+    // Widget faqat BotFather'da /setdomain qilingan domenda ishlaydi.
+    // Kirish ma'lumotini Telegram imzolaydi — ID ni qo'lda yozib kirish
+    // (avvalgi forma) istalgan odamga boshqaning akkauntini ochib berardi.
+    window.onTelegramAuth = async (user) => {
+      setLoading(true);
+      try {
+        const { data } = await authApi.loginTelegram(user);
+        const payload = data.data || data;
+        dispatch(setAuth({
+          user: payload.user,
+          accessToken: payload.accessToken,
+          refreshToken: payload.refreshToken,
+        }));
+        toast.success(`Xush kelibsiz, ${payload.user.firstName}!`);
+        navigate('/');
+      } catch (err: any) {
+        toast.error(err.response?.data?.message || `Kirish muvaffaqiyatsiz: ${err.message}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const script = document.createElement('script');
+    script.src = 'https://telegram.org/js/telegram-widget.js?22';
+    script.async = true;
+    script.setAttribute('data-telegram-login', BOT_USERNAME);
+    script.setAttribute('data-size', 'large');
+    script.setAttribute('data-radius', '12');
+    script.setAttribute('data-request-access', 'write');
+    script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+    script.onerror = () => toast.error("Telegram widget yuklanmadi: telegram.org ga ulanishni tekshiring");
+    widgetRef.current.appendChild(script);
+
+    const container = widgetRef.current;
+    return () => {
+      container.innerHTML = '';
+      delete window.onTelegramAuth;
+    };
+  }, [dispatch, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-brand-900 flex items-center justify-center p-4">
@@ -71,68 +94,33 @@ export function LoginPage() {
             <p className="text-slate-400 text-sm mt-1">Xarajatlaringizni boshqaring</p>
           </div>
 
-          {/* Demo note */}
+          {/* Kirish */}
           <div className="bg-brand-500/10 border border-brand-500/20 rounded-xl p-4 mb-6">
             <div className="flex items-start gap-2">
               <Send size={15} className="text-brand-400 mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-brand-300 text-xs font-medium mb-0.5">Bot orqali kirish</p>
+                <p className="text-brand-300 text-xs font-medium mb-0.5">Telegram orqali kirish</p>
                 <p className="text-brand-400/80 text-xs">
-                  Telegram botingizdan /start bosing va dashboard linkini oling. Yoki quyida Telegram ID ni kiriting.
+                  Tugmani bosing va Telegram'da tasdiqlang.
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                Telegram ID *
-              </label>
-              <input
-                type="text"
-                value={telegramId}
-                onChange={(e) => setTelegramId(e.target.value)}
-                placeholder="123456789"
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500/50 transition-all text-sm"
-              />
+          {BOT_USERNAME ? (
+            <div className="flex flex-col items-center gap-3 min-h-[48px]">
+              <div ref={widgetRef} />
+              {loading && <p className="text-slate-400 text-sm">Kirilmoqda...</p>}
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                Ism *
-              </label>
-              <input
-                type="text"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                placeholder="Ali"
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500/50 transition-all text-sm"
-              />
+          ) : (
+            <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/20 rounded-xl p-4">
+              <AlertTriangle size={15} className="text-red-400 mt-0.5 flex-shrink-0" />
+              <p className="text-red-300 text-xs">
+                Kirish sozlanmagan: web servisiga <code>VITE_TELEGRAM_BOT_USERNAME</code> (bot username,
+                @ belgisisiz) qo'shib qayta build qiling.
+              </p>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                Username (ixtiyoriy)
-              </label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="alijon"
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500/50 transition-all text-sm"
-              />
-            </div>
-
-            <Button
-              type="submit"
-              loading={loading}
-              className="w-full py-3 text-base bg-brand-500 hover:bg-brand-600 rounded-xl font-semibold"
-            >
-              Kirish
-            </Button>
-          </form>
+          )}
 
           <p className="text-center text-slate-500 text-xs mt-6">
             Telegram botni guruhga qo'shib, /start bosing

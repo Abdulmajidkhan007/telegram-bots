@@ -39,6 +39,10 @@ RUN cd apps/bot && npx tsc
 # Build Web
 ARG VITE_API_URL=https://your-api.railway.app
 ENV VITE_API_URL=$VITE_API_URL
+# Telegram Login Widget uchun bot username (@ siz). Railway servis
+# o'zgaruvchisini build argument sifatida uzatadi.
+ARG VITE_TELEGRAM_BOT_USERNAME=
+ENV VITE_TELEGRAM_BOT_USERNAME=$VITE_TELEGRAM_BOT_USERNAME
 RUN cd apps/web && npx vite build
 
 # ── API runner ────────────────────────────────────────────
