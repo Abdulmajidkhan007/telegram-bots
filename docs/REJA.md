@@ -74,9 +74,10 @@ ajrata olmaydi.
 
 **Qaror sizniki:**
 
-- `countlist` (Python: aiogram + FastAPI + Whisper) va `countlist-ts-node`
-  (TypeScript: NestJS + Prisma) — **bitta mahsulot, ikki stek**. Ikkalasi ham
-  jiddiy yozilgan. Bittasini tanlab, ikkinchisini arxivlash kerak.
+- ~~`countlist` (Python) va `countlist-ts-node` — bitta mahsulot, ikki stek.~~
+  **Hal qilindi (2026-09-30):** `countlist-ts-node` qoldi. Python versiyasidagi
+  ovozli xabar (Whisper) va parser imkoniyatlari unga ko'chirildi,
+  `bots/countlist-python` o'chirildi. Sabablari — `docs/ARXITEKTURA-TARIXI.md`.
 - `calculator`, `bank`, `taxi`, `social-app`, `chat-app` — o'quv loyihalari.
   Saqlash yomon emas, lekin README'ga «o'quv loyihasi» deb yozib qo'ying,
   shunda ular jiddiy ish bilan aralashmaydi.

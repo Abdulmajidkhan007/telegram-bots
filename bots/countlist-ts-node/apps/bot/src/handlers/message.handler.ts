@@ -4,6 +4,8 @@ import { BotContext } from '../types/context';
 import { ExpenseService } from '../services/expense.service';
 import { logger } from '../utils/logger';
 import { sendCategoryList } from '../commands/categories.command';
+import { config } from '../config';
+import { transcribeVoice, VoiceError, MAX_VOICE_SECONDS } from '../services/voice.service';
 
 function parseCategoryInput(text: string): { icon: string; name: string } {
   const parts = text.trim().split(/\s+/);
@@ -79,6 +81,51 @@ export function registerMessageHandlers(
       }
     } catch (error) {
       logger.error('Message handler error:', error);
+    }
+  });
+
+  if (!config.openaiApiKey) {
+    logger.info('OPENAI_API_KEY yo\'q — ovozli xabarlar orqali xarajat qo\'shish o\'chiq.');
+  }
+
+  bot.on('voice', async (ctx) => {
+    // Kalit bo'lmasa jim turamiz: guruhdagi har ovozli xabarga "sozlanmagan"
+    // deb javob berish suhbatni buzadi. Holat ishga tushishda log'da ko'rinadi.
+    if (!config.openaiApiKey || !ctx.dbGroup || !ctx.dbUser) return;
+
+    const voice = ctx.message.voice;
+    if (voice.duration > MAX_VOICE_SECONDS) return;
+
+    try {
+      const link = await ctx.telegram.getFileLink(voice.file_id);
+      const text = await transcribeVoice(link.toString(), config.openaiApiKey);
+
+      const result = text
+        ? await expenseService.parseAndCreate({
+            rawText: text,
+            userId: ctx.dbUser.id,
+            groupId: ctx.dbGroup.id,
+            telegramMsgId: BigInt(ctx.message.message_id),
+          })
+        : null;
+
+      // Ovozda xarajat topilmasa javob bermaymiz — oddiy suhbat bo'lishi mumkin.
+      if (!result) {
+        logger.debug(`Ovozda xarajat topilmadi: "${text}"`);
+        return;
+      }
+
+      await ctx.replyWithMarkdownV2(
+        `🎙 ${text}\n\n${result.formatted}`.replace(/[_*[\]()~`>#+\-=|{}.!]/g, '\\$&'),
+        { reply_parameters: { message_id: ctx.message.message_id } },
+      );
+    } catch (error) {
+      logger.error('Voice handler error:', error);
+      if (error instanceof VoiceError) {
+        await ctx.reply(`❌ ${error.userMessage}`, {
+          reply_parameters: { message_id: ctx.message.message_id },
+        });
+      }
     }
   });
 

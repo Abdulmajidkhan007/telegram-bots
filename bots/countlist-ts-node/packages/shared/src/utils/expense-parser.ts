@@ -32,6 +32,10 @@ const CURRENCY_MAP: Record<string, Currency> = {
   '₽': 'RUB',
 };
 
+// Qiymatlar packages/database/prisma/seed.ts dagi kategoriya NOMLARI bilan
+// harfma-harf bir xil bo'lishi shart: bot kategoriyani name bo'yicha qidiradi,
+// mos kelmasa xarajat kategoriyasiz saqlanadi (test shuni tekshiradi).
+// Tartib muhim: birinchi mos kelgan kalit so'z yutadi.
 const CATEGORY_KEYWORDS: Record<string, string> = {
   ovqat: 'Oziq-ovqat',
   taom: 'Oziq-ovqat',
@@ -41,78 +45,125 @@ const CATEGORY_KEYWORDS: Record<string, string> = {
   gosht: 'Oziq-ovqat',
   sabzavot: 'Oziq-ovqat',
   meva: 'Oziq-ovqat',
+  bozor: 'Oziq-ovqat',
+  supermarket: 'Oziq-ovqat',
+  "do'kon": 'Oziq-ovqat',
+  mahsulot: 'Oziq-ovqat',
+  qahva: 'Oziq-ovqat',
+  choy: 'Oziq-ovqat',
+  // "gaz" (Uy-joy) dan oldin turishi shart: "maGAZin" ichida "gaz" bor.
+  magazin: 'Oziq-ovqat',
   transport: 'Transport',
   taksi: 'Transport',
   metro: 'Transport',
   avtobus: 'Transport',
   benzin: 'Transport',
   yoqilg: 'Transport',
+  marshrutka: 'Transport',
+  yandex: 'Transport',
+  uber: 'Transport',
   telefon: 'Texnologiya',
-  telefonga: 'Texnologiya',
   internet: 'Texnologiya',
   kompyuter: 'Texnologiya',
   remont: 'Uy-joy',
   ijara: 'Uy-joy',
-  uy: 'Uy-joy',
+  kvartira: 'Uy-joy',
+  mebel: 'Uy-joy',
   kommunal: 'Uy-joy',
+  elektr: 'Uy-joy',
+  gaz: 'Uy-joy',
+  suv: 'Uy-joy',
+  uy: 'Uy-joy',
   kiyim: 'Kiyim-kechak',
   oyoq: 'Kiyim-kechak',
+  poyabzal: 'Kiyim-kechak',
+  "ko'ylak": 'Kiyim-kechak',
+  kurtka: 'Kiyim-kechak',
+  sumka: 'Kiyim-kechak',
   sport: 'Sport',
   gym: 'Sport',
-  dori: 'Sogliq',
-  kasalxona: 'Sogliq',
-  shifokor: 'Sogliq',
-  "o'qish": 'Talim',
-  oqish: 'Talim',
-  kurs: 'Talim',
-  kitob: 'Talim',
-  "ta'lim": 'Talim',
-  talim: 'Talim',
-  kino: 'Kongilochar',
-  restoran: 'Kongilochar',
-  cafe: 'Kongilochar',
-  kafe: 'Kongilochar',
+  dori: "Sog'liq",
+  kasalxona: "Sog'liq",
+  shifoxona: "Sog'liq",
+  klinika: "Sog'liq",
+  shifokor: "Sog'liq",
+  "o'qish": "Ta'lim",
+  oqish: "Ta'lim",
+  kurs: "Ta'lim",
+  kitob: "Ta'lim",
+  "ta'lim": "Ta'lim",
+  talim: "Ta'lim",
+  dars: "Ta'lim",
+  repetitor: "Ta'lim",
+  maktab: "Ta'lim",
+  kino: "Ko'ngilochar",
+  teatr: "Ko'ngilochar",
+  konsert: "Ko'ngilochar",
+  restoran: "Ko'ngilochar",
+  cafe: "Ko'ngilochar",
+  kafe: "Ko'ngilochar",
+  sayohat: 'Sayohat',
+  "sovg'a": "Sovg'a",
+  sovga: "Sovg'a",
 };
 
+const MULT = 'mln|million|milion|млн|mlrd|миллиард|k|ming|мин';
+const CUR = "so['`]?m|uzs|usd|dollar|доллар|\\$|eur|euro|евро|€|rub|rubl|рубль|₽|сум";
+const NUM = '\\d[\\d\\s,.]*';
+
+// Summa oxirida, valyuta va ko'paytiruvchisiz yozilganda shundan kichik son
+// xarajat hisoblanmaydi: guruhdagi "soat 5", "xona 12" kabi gaplar yozilib
+// qolmasin. 500 so'mdan kichik xarajat amalda bo'lmaydi.
+const MIN_BARE_TRAILING_AMOUNT = 500;
+
+/**
+ * "1,5" -> 1.5 (o'nlik), "1,500,000" / "15 000" -> 1500000 (minglik ajratgich).
+ * Avval vergul butunlay o'chirilardi va "1,5 mln" 15 mln bo'lib qolardi.
+ */
+function parseNumber(raw: string): number {
+  const s = raw.replace(/\s/g, '');
+  if (/^\d{1,3}([.,]\d{3})+$/.test(s)) return parseFloat(s.replace(/[.,]/g, ''));
+  return parseFloat(s.replace(',', '.'));
+}
+
+function build(
+  rawAmount: string,
+  multiplierKey: string | undefined,
+  currencyKey: string | undefined,
+  description: string,
+): ExpenseParseResult | null {
+  let amount = parseNumber(rawAmount);
+  if (isNaN(amount)) return null;
+
+  const mult = multiplierKey?.toLowerCase();
+  if (mult && MULTIPLIERS[mult]) amount *= MULTIPLIERS[mult];
+  if (amount <= 0) return null;
+
+  const cur = currencyKey?.toLowerCase();
+  const currency: Currency = cur && CURRENCY_MAP[cur] ? CURRENCY_MAP[cur] : 'UZS';
+
+  const desc = description.trim().replace(/\s+(uchun|ga)$/i, '').trim();
+  if (!desc) return null;
+
+  return { amount, currency, description: desc, categoryHint: detectCategory(desc) };
+}
+
 export function parseExpenseText(text: string): ExpenseParseResult | null {
-  const normalizedText = text.toLowerCase().trim();
+  const t = text.toLowerCase().trim();
 
-  // Pattern: number [multiplier] [currency] description
-  // or: number [currency] description
-  const patterns = [
-    /^(\d[\d\s,.]*)\s*(mln|million|milion|млн|mlrd|миллиард|k|ming|мин)?\s*(so['`]?m|uzs|usd|dollar|доллар|\$|eur|euro|евро|€|rub|rubl|рубль|₽|сум)?\s+(.+)$/i,
-    /^(\d[\d\s,.]*)\s*(mln|million|milion|млн|mlrd|миллиард|k|ming|мин)\s+(.+)$/i,
-    /^(\d[\d\s,.]*)\s+(.+)$/i,
-  ];
+  // 1) Summa boshida: "500000 so'm ovqatga", "2 mln remontga", "50k non"
+  const lead = t.match(new RegExp(`^(${NUM})\\s*(${MULT})?\\s*(${CUR})?\\s+(.+)$`, 'i'));
+  if (lead) {
+    const r = build(lead[1], lead[2], lead[3], lead[4]);
+    if (r) return r;
+  }
 
-  for (const pattern of patterns) {
-    const match = normalizedText.match(pattern);
-    if (!match) continue;
-
-    const rawAmount = match[1].replace(/[\s,]/g, '').replace(',', '.');
-    let amount = parseFloat(rawAmount);
-    if (isNaN(amount)) continue;
-
-    // Apply multiplier
-    const multiplierKey = match[2]?.toLowerCase();
-    if (multiplierKey && MULTIPLIERS[multiplierKey]) {
-      amount *= MULTIPLIERS[multiplierKey];
-    }
-
-    // Detect currency
-    const currencyKey = match[3]?.toLowerCase();
-    const currency: Currency = currencyKey && CURRENCY_MAP[currencyKey]
-      ? CURRENCY_MAP[currencyKey]
-      : 'UZS';
-
-    // Extract description (last capture group)
-    const description = (match[match.length - 1] || '').trim();
-    if (!description) continue;
-
-    // Detect category from description
-    const categoryHint = detectCategory(description);
-
-    return { amount, currency, description, categoryHint };
+  // 2) Summa oxirida: "taksi 15000", "remont uchun 2 mln", "kitob 10$"
+  const trail = t.match(new RegExp(`^(.*?\\D)\\s*(${NUM})\\s*(${MULT})?\\s*(${CUR})?$`, 'i'));
+  if (trail) {
+    const bare = !trail[3] && !trail[4];
+    const r = build(trail[2], trail[3], trail[4], trail[1]);
+    if (r && !(bare && r.amount < MIN_BARE_TRAILING_AMOUNT)) return r;
   }
 
   return null;

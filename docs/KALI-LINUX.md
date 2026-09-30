@@ -1,4 +1,4 @@
-# 13 ta botni Kali Linux'da ishga tushirish
+# 12 ta botni Kali Linux'da ishga tushirish
 
 > Noldan: tizimni tayyorlash → klon → kalitlar → bitta bot → hammasi.
 > Har qadam tekshiriladigan: buyruq beriladi, natija nima bo'lishi aytiladi.
@@ -35,7 +35,7 @@ npm run bot gemini-qa-bot
 
 # 8. Hammasini birdan
 npm start          # faqat avtomatik ishga tushadiganlar (7 ta)
-npm run start:all  # qo'shimcha xizmat talab qiladiganlar bilan (13 ta)
+npm run start:all  # qo'shimcha xizmat talab qiladiganlar bilan (12 ta)
 ```
 
 Quyida har qadam batafsil.
@@ -161,11 +161,11 @@ npm run doctor
 
 > ⚠️ **`main` branchda ekaningizni tekshiring.** Reponing standart branchi
 > hali `claude/social-media-downloader-bot-wysjjq` bo'lib turibdi va unda
-> **11 ta bot** bor. `atoyo-rag-bot` va `countlist-python` faqat `main` da.
+> **11 ta bot** bor. `atoyo-rag-bot` faqat `main` da.
 >
 > ```bash
 > git branch --show-current   # "main" bo'lishi kerak
-> npm run list | head -1      # "13 ta bot" bo'lishi kerak
+> npm run list | head -1      # "12 ta bot" bo'lishi kerak
 > ```
 
 `doctor` Node, Python va boshqa kerakli vositalar borligini tekshiradi.
@@ -233,8 +233,7 @@ nano bots/gemini-qa-bot/.env
 | **xulosa-ai-bot** | `API_ID`, `API_HASH`, `BOT_TOKEN` yoki `STRING_SESSION`, `GEMINI_API_KEY` | [my.telegram.org](https://my.telegram.org) + @BotFather + AI Studio |
 | **atoyo-ai-bot** | `API_ID`, `API_HASH`, `GEMINI_API_KEY` | my.telegram.org + AI Studio |
 | **atoyo-rag-bot** | `TELEGRAM_BOT_TOKEN`, `GEMINI_API_KEY`, `serviceAccountKey.json` | @BotFather, AI Studio, Firebase Console |
-| **countlist-ts-node** | `BOT_TOKEN`, PostgreSQL, Redis | @BotFather + baza |
-| **countlist-python** | `BOT_TOKEN`, PostgreSQL, Redis, (`OPENAI_API_KEY`) | @BotFather + baza |
+| **countlist-ts-node** | `BOT_TOKEN`, PostgreSQL, Redis, (`OPENAI_API_KEY`) | @BotFather + baza |
 
 **Guruh yoki kanal ID sini bilish kerak bo'lsa:** avval `idfinder-bot` ni
 ishga tushiring — u aynan shuning uchun yozilgan.
@@ -259,7 +258,6 @@ ishga tushiring — u aynan shuning uchun yozilgan.
 | `atoyo-ai-bot` | `API_ID`, `API_HASH`, `GEMINI_API_KEY`, `SOURCE_GROUP_ID`, `TARGET_GROUP_ID` | ixtiyoriy |
 | `atoyo-rag-bot` | `TELEGRAM_BOT_TOKEN`, `GEMINI_API_KEY` | ixtiyoriy |
 | `countlist-ts-node` | `BOT_TOKEN`, `DATABASE_URL` | ixtiyoriy |
-| `countlist-python` | `BOT_TOKEN`, `DATABASE_URL` | ixtiyoriy |
 
 > ⚠️ **Har botga ALOHIDA token kerak.** Bitta tokenni ikki botda ishlatsangiz
 > Telegram `Conflict: terminated by other getUpdates` xatosini beradi.
@@ -438,19 +436,17 @@ docker compose up -d
 > Birinchi ishga tushirishda embedding modeli (~100 MB) yuklanadi — internet
 > kerak, keyin keshdan o'qiladi.
 
-### countlist-ts-node va countlist-python — PostgreSQL + Redis
-
-Eng oson yo'li Docker:
+### countlist-ts-node — PostgreSQL + Redis
 
 ```bash
-sudo apt install -y docker.io docker-compose-plugin
-sudo systemctl start docker
-
-cd bots/countlist-python
-docker compose up -d        # bot + API + dashboard + PostgreSQL + Redis
+sudo apt install -y postgresql redis-server
+sudo systemctl start postgresql redis-server
 ```
 
-Qo'lda ko'tarish uchun `bots/countlist-python/SETUP_NO_DOCKER.md` ga qarang.
+Baza yaratish, `prisma db push` va bot/API/dashboard'ni ishga tushirish —
+`bots/countlist-ts-node/README.md` dagi «Ishga tushurish» bo'limida.
+Ovozli xabar orqali xarajat qo'shish uchun `.env` ga `OPENAI_API_KEY`
+yozing (ixtiyoriy — bo'lmasa bot ovozli xabarlarga javob bermaydi).
 
 ---
 
@@ -462,7 +458,7 @@ Qo'lda ko'tarish uchun `bots/countlist-python/SETUP_NO_DOCKER.md` ga qarang.
 npm start
 ```
 
-### Hammasi — 13 ta
+### Hammasi — 12 ta
 
 ```bash
 source .venv/bin/activate
