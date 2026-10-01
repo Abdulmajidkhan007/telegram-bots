@@ -51,7 +51,7 @@ Bot: ✅ Xarajat qo'shildi
 ### 🤖 Telegram Bot
 
 - ✅ Natural matn parsing: `500000 so'm`, `2 mln`, `50k`, summa oxirida ham: `taksi 15000`
-- ✅ Ovozli xabar orqali xarajat (OpenAI Whisper, `OPENAI_API_KEY` ixtiyoriy)
+- ✅ Ovozli xabar orqali xarajat (Google Gemini yoki OpenAI Whisper — `GEMINI_API_KEY` yoki `OPENAI_API_KEY`, ixtiyoriy)
 - ✅ Avtomatik kategoriya aniqlash
 - ✅ `/start /help /today /week /month /stats /top /categories /limit /export /settings`
 - ✅ Inline keyboard menyular

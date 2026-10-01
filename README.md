@@ -22,7 +22,7 @@ o'z `README.md`. Papkani nusxalab olsangiz — bot mustaqil ishlaydi.
 | 7 | [`quiz-bot`](bots/quiz-bot) | Node | IT yo'nalishlari bo'yicha **test** boti: yakka va guruh testlari, reyting |
 | 8 | [`killspam-bot`](bots/killspam-bot) | Python | Guruhlarni **spam** va zararli havolalardan tozalaydi (PostgreSQL kerak) |
 | 9 | [`xulosa-ai-bot`](bots/xulosa-ai-bot) | Python | Guruh/kanal yozishmalarini **Gemini AI** bilan xulosalaydi (Telethon userbot) |
-| 10 | [`countlist-ts-node`](bots/countlist-ts-node) | TypeScript | Guruh **xarajatlarini hisoblovchi** bot + NestJS API + React dashboard, ovozli xabar **Whisper** bilan |
+| 10 | [`countlist-ts-node`](bots/countlist-ts-node) | TypeScript | Guruh **xarajatlarini hisoblovchi** bot + NestJS API + React dashboard, ovozli xabar **Gemini / Whisper** bilan |
 | 11 | [`atoyo-ai-bot`](bots/atoyo-ai-bot) | Python | Mahsulot rasmlarini **Gemini** bilan tahlil qilib katalog kartochkasi yasaydi (Telethon **userbot**) |
 | 12 | [`atoyo-rag-bot`](bots/atoyo-rag-bot) | Python | Santexnika katalogi ustida **RAG** savol-javob: semantik qidiruv, ovoz va rasm, lid → admin guruh + **n8n** |
 
