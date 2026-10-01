@@ -74,8 +74,10 @@ api.interceptors.response.use(
 
 // Typed API methods
 export const authApi = {
-  loginTelegram: (telegramId: string, firstName: string, username?: string) =>
-    api.post('/auth/telegram', { telegramId, firstName, username }),
+  // Telegram Login Widget qaytargan obyekt O'ZGARTIRILMASDAN yuboriladi:
+  // server uning imzosini (hash) hamma maydonlar bo'yicha tekshiradi.
+  loginTelegram: (widgetData: Record<string, unknown>) =>
+    api.post('/auth/telegram', widgetData),
   refresh: (refreshToken: string) => api.post('/auth/refresh', { refreshToken }),
   logout: () => api.post('/auth/logout'),
   me: () => api.get('/auth/me'),

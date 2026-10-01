@@ -364,10 +364,25 @@ Guruhda quyidagicha xabar yuboring:
 
 ### Dashboard ga kirish
 
-1. Telegramda `/start` bosib **Telegram ID** ni oling
-2. <http://localhost:3000/login> ga boring
-3. Telegram ID va ismni kiriting
-4. Login qiling
+Kirish **Telegram Login Widget** orqali: Telegram foydalanuvchini tasdiqlaydi
+va ma'lumotni bot tokeni bilan imzolaydi, API esa imzoni tekshiradi.
+(Avval Telegram ID ni qo'lda yozib kirilardi — ID ochiq ma'lumot bo'lgani uchun
+istalgan odam boshqaning akkauntiga kira olardi.)
+
+Bir martalik sozlash:
+
+1. **BotFather** → `/setdomain` → botingizni tanlang → web dashboard domeni
+   (masalan `expense-web.up.railway.app`). Busiz widget «Bot domain invalid» deydi.
+2. **web** servisi: `VITE_TELEGRAM_BOT_USERNAME` = bot username (`@` siz).
+   Bu build vaqtida o'qiladi — o'zgartirgach qayta build qiling.
+3. **api** servisi: `BOT_TOKEN` (bot bilan bir xil token) — imzo shu bilan
+   tekshiriladi. Bo'lmasa kirish 503 qaytaradi.
+4. **api** servisi: `JWT_SECRET` va `JWT_REFRESH_SECRET` — tasodifiy uzun
+   qiymat (`openssl rand -hex 32`). `NODE_ENV=production` da ular bo'lmasa
+   yoki `.env.example` dagi namuna qiymatda bo'lsa API **ishga tushmaydi**:
+   repo public, namuna kalit bilan istalgan odam token yasay olardi.
+
+Keyin dashboard'ga kirib, **Telegram orqali kirish** tugmasini bosing.
 
 ---
 
@@ -653,7 +668,7 @@ yarn workspace @expense-tracker/shared test
 # Ovozli xabar servisi (Telegram va OpenAI mock qilingan)
 yarn workspace @expense-tracker/bot test
 
-# API tests
+# Telegram kirish imzosini tekshirish (node:test)
 yarn workspace @expense-tracker/api test
 
 # E2E tests

@@ -157,6 +157,23 @@ kerak — aks holda guruhdagi «soat 5» ham xarajat bo'lib qolardi.
 → *Ikki nusxani solishtirganda «qaysi biri kattaroq» emas, bir xil kiritmada
 nima qaytarishini o'lcha.*
 
+## 9. countlist dashboard: kirish imzo bilan (2026-09-30)
+
+**O'lchov:** `POST /auth/telegram` `{ telegramId, firstName }` olib, hech narsani
+tekshirmasdan token berardi — haqiqiy API'da boshqa foydalanuvchi ID si bilan
+token olindi. Ustiga `JWT_SECRET` bo'lmasa kod `fallback_secret_change_this`
+ni ishlatardi (repo public) — shu kalit bilan qo'lda yasalgan token
+`/auth/me` dan boshqaning ma'lumotini qaytardi.
+
+**Qaror:** Telegram Login Widget + serverda HMAC imzo tekshiruvi
+(`telegram-auth.ts`, toza funksiya, 7 test). Production'da JWT kaliti yo'q
+yoki namuna qiymatda bo'lsa API ishga tushmaydi — jim xavfli ishlagandan ko'ra
+ochiq yiqilgani yaxshi.
+
+**Hali ochiq:** analytics/kategoriya/limit/eksport endpointlari `groupId` ga
+a'zolikni tekshirmaydi — kirgan har kim boshqa guruh ID sini bersa uning
+ma'lumotini oladi. Alohida tuzatish kerak.
+
 ---
 
 ## Keyingi qadamlar (ochiq savollar)
