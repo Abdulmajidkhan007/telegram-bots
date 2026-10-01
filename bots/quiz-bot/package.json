@@ -1,6 +1,7 @@
 {
   "name": "quiz-bot",
   "version": "1.0.0",
+  "license": "MIT",
   "description": "IT yo'nalishlari bo'yicha test boti (Telegram)",
   "main": "index.js",
   "scripts": {

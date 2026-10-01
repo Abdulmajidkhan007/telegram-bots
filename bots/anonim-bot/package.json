@@ -1,6 +1,7 @@
 {
   "name": "anonim-bot",
   "version": "2.2.1",
+  "license": "MIT",
   "description": "Anonim savol-javob Telegram boti (referral, bloklash, shikoyat, admin panel, kanal obunasi)",
   "main": "index.js",
   "type": "commonjs",
