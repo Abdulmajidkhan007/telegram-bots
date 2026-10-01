@@ -66,9 +66,19 @@ function escMd(s) {
   return String(s).replace(/([_*`\[])/g, '\\$1');
 }
 
+// Majburiy kanalni Markdown matnida ko'rsatish (entity — *...* — ichida EMAS).
+// "_" ni o'chirmaymiz, escape qilamiz: @Atoyo_santexnika -> @Atoyo\_santexnika.
+// O'chirsak Telegram uni boshqa akkauntga mention qilib ko'rsatardi.
+function channelLabel(ch) {
+  if (!ch) return '—';
+  if (ch.title && ch.title !== `@${ch.username}`) return escMd(ch.title);
+  if (ch.username) return '@' + escMd(ch.username);
+  return String(ch.id || '—');
+}
+
 module.exports = {
   setBotUsername, getBotUsername,
   linkFor, shareKeyboard, linkBlock,
   anonActionKeyboard, channelSubKeyboard, adminPanelKeyboard,
-  safeName, escMd,
+  safeName, escMd, channelLabel,
 };

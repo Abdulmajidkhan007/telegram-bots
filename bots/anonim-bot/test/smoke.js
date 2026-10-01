@@ -232,6 +232,23 @@ const mkCb = (userId, data, chatId, msgId) => ({
   await handlers.handleCallback(bot, mkCb(999, 'a:ch', 999, 9001));
   ok(calls.editMessageText.some((c) => c.text.includes('Kanallar')), 'Kanallar sahifasi');
 
+  // Regressiya: REQUIRED_CHANNELS dan kelgan "@Atoyo_santexnika" admin panelda
+  // "@Atoyosantexnika" bo'lib chiqardi — safeName "_" ni o'chirardi, Telegram esa
+  // buni BOSHQA akkauntga mention qilib ko'rsatardi.
+  const savedChannels = state.channels;
+  state.channels = [{ username: 'Atoyo_santexnika', title: '@Atoyo_santexnika', id: null }];
+  await handlers.handleCallback(bot, mkCb(999, 'a:ch', 999, 9001));
+  const chPage = calls.editMessageText.filter((c) => c.text.includes('Kanallar')).pop();
+  ok(!chPage.text.includes('Atoyosantexnika'), "kanal ro'yxatida '_' yo'qolmadi");
+  ok(chPage.text.includes('@Atoyo\\_santexnika'), "username Markdown uchun to'g'ri escape qilingan");
+  ok(chPage.text.split('Atoyo').length - 1 === 1, 'title = @username bo\'lsa ikki marta yozilmaydi');
+  const chBtns = chPage.options.reply_markup.inline_keyboard.flat().map((b) => b.text);
+  ok(chBtns.includes('🗑 @Atoyo_santexnika'), "o'chirish tugmasida to'liq username");
+  ok(util.channelLabel({ username: 'Atoyo_santexnika', title: '@Atoyo_santexnika' }) === '@Atoyo\\_santexnika',
+    "channelLabel: obuna xabarlarida ham '_' saqlanadi");
+  ok(util.channelLabel({ id: -100123, title: 'My_Kanal', username: null }) === 'My\\_Kanal', 'channelLabel: title escape');
+  state.channels = savedChannels;
+
   // 17) Admin emas — rad etiladi
   await handlers.handleCallback(bot, mkCb(111, 'a:stats', 111, 1));
   ok(calls.answerCallbackQuery.some((c) => c.opts.text && c.opts.text.includes('admin uchun')), 'Admin bo\'lmagan rad etildi');
