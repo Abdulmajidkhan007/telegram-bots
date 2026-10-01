@@ -8,6 +8,7 @@ import { groupsApi } from '@/services/api';
 import { useAppDispatch, useAppSelector } from '@/hooks/useAppSelector';
 import { setSelectedGroup } from '@/store/slices/ui.slice';
 import { formatAmount } from '@/utils/format';
+import { queryClient } from '@/services/query-client';
 
 export function GroupsPage() {
   const dispatch = useAppDispatch();
@@ -36,7 +37,10 @@ export function GroupsPage() {
     <div className="space-y-5">
       <div>
         <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">Guruhlar</h1>
-        <p className="text-sm text-slate-500 mt-0.5">{groupList.length} ta guruh</p>
+        <p className="text-sm text-slate-500 mt-0.5">
+          {groupList.length} ta guruh — bot qo'shilgan va siz yozgan guruhlar. Kartani bosib tanlang
+          (yoki tepadagi ro'yxatdan).
+        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -51,7 +55,10 @@ export function GroupsPage() {
             >
               <Card
                 hover
-                onClick={() => dispatch(setSelectedGroup(group.id))}
+                onClick={() => {
+                  dispatch(setSelectedGroup(group.id));
+                  queryClient.invalidateQueries();
+                }}
                 className={isSelected ? 'ring-2 ring-brand-500 ring-offset-2' : ''}
               >
                 <div className="flex items-start justify-between mb-4">
