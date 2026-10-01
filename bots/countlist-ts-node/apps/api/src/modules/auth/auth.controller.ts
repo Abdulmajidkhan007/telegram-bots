@@ -9,6 +9,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { User } from '@prisma/client';
 import { verifyTelegramLogin } from './telegram-auth';
+import { verifyLoginLink } from '@expense-tracker/shared';
 import { configuration } from '../../config/configuration';
 
 @ApiTags('Auth')
@@ -35,6 +36,31 @@ export class AuthController {
     // 'in' bilan toraytiramiz: bu paketda strict o'chiq, `!result.ok` turni toraytirmaydi.
     if ('reason' in result) {
       this.logger.warn(`Telegram kirish rad etildi: ${result.reason}`);
+      throw new UnauthorizedException(result.reason);
+    }
+
+    return this.authService.loginWithTelegram(
+      BigInt(result.user.id),
+      result.user.firstName,
+      result.user.username,
+    );
+  }
+
+  @Public()
+  @Post('bot-link')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Bot /login bergan havola orqali kirish (imzo va muddat tekshiriladi)" })
+  async loginBotLink(@Body() body: { token?: string }) {
+    const botToken = configuration().bot.token;
+    if (!botToken) {
+      this.logger.error("BOT_TOKEN API servisida o'rnatilmagan — kirish havolasini tekshirib bo'lmaydi");
+      throw new ServiceUnavailableException("Kirish sozlanmagan: API servisiga BOT_TOKEN qo'shing");
+    }
+
+    const result = verifyLoginLink(body?.token, botToken);
+    // 'in' bilan toraytiramiz: bu paketda strict o'chiq.
+    if ('reason' in result) {
+      this.logger.warn(`Havola orqali kirish rad etildi: ${result.reason}`);
       throw new UnauthorizedException(result.reason);
     }
 

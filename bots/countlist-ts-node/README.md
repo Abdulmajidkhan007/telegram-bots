@@ -384,6 +384,14 @@ Bir martalik sozlash:
 
 Keyin dashboard'ga kirib, **Telegram orqali kirish** tugmasini bosing.
 
+**Muqobil — bot havolasi (`/login`).** Telegram ba'zan botga widget'ni bermaydi
+(BotFather: «Web login is currently unavailable»). Shunda botga **shaxsiy
+chatda** `/login` yozing: bot 10 daqiqa amal qiladigan shaxsiy havola yuboradi.
+Havola bot tokeni bilan imzolanadi, API uni tekshiradi; BotFather domeniga
+bog'liq emas. Buning uchun **bot** servisida `WEB_URL`, **api** servisida
+`BOT_TOKEN` bo'lishi kifoya. Guruhda `/login` havola bermaydi — aks holda
+guruhdagi har kim so'ragan odam nomidan kira olardi.
+
 ---
 
 ## 🔌 API Endpoints
@@ -393,7 +401,8 @@ To'liq hujjatlar: <http://localhost:3001/api/docs>
 ### Auth
 
 ```
-POST   /api/v1/auth/telegram      # Telegram orqali login
+POST   /api/v1/auth/telegram      # Telegram Login Widget orqali login
+POST   /api/v1/auth/bot-link      # Bot /login havolasi orqali login
 POST   /api/v1/auth/refresh       # Token yangilash
 POST   /api/v1/auth/logout        # Chiqish
 GET    /api/v1/auth/me            # Joriy foydalanuvchi

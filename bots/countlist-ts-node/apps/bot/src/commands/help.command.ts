@@ -21,6 +21,7 @@ export function registerHelpCommand(bot: Telegraf<BotContext>): void {
       `/export — CSV yoki Excel yuklab olish\n\n` +
       `⚙️ Boshqaruv:\n` +
       `/settings — Bot sozlamalari\n` +
+      `/login    — Dashboard'ga kirish havolasi (shaxsiy chatda)\n` +
       `/limit    — Oylik limit\n\n` +
       `🔐 Admin (faqat ADMIN_TELEGRAM_ID uchun):\n` +
       `/admin    — Admin panel va statistika\n` +

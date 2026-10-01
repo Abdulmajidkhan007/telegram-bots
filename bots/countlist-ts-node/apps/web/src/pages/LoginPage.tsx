@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Wallet, Send, AlertTriangle } from 'lucide-react';
@@ -21,30 +21,43 @@ export function LoginPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  // Widget ham, bot havolasi ham bir xil javob qaytaradi — kirishni bitta joyda yakunlaymiz.
+  const finishLogin = useCallback(async (request: Promise<{ data: any }>) => {
+    setLoading(true);
+    try {
+      const { data } = await request;
+      const payload = data.data || data;
+      dispatch(setAuth({
+        user: payload.user,
+        accessToken: payload.accessToken,
+        refreshToken: payload.refreshToken,
+      }));
+      toast.success(`Xush kelibsiz, ${payload.user.firstName}!`);
+      navigate('/');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || `Kirish muvaffaqiyatsiz: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [dispatch, navigate]);
+
+  // Bot /login bergan havola: /login#token=... . Token # dan keyin keladi —
+  // serverga ham, loglarga ham tushmaydi. O'qigach manzil satridan darhol
+  // o'chiramiz: tarixda va "ulashish"da qolib ketmasin.
+  useEffect(() => {
+    const match = window.location.hash.match(/(?:^#|&)token=([^&]+)/);
+    if (!match) return;
+    window.history.replaceState(null, '', window.location.pathname);
+    void finishLogin(authApi.loginBotLink(decodeURIComponent(match[1])));
+  }, [finishLogin]);
+
   useEffect(() => {
     if (!BOT_USERNAME || !widgetRef.current) return;
 
     // Widget faqat BotFather'da /setdomain qilingan domenda ishlaydi.
     // Kirish ma'lumotini Telegram imzolaydi — ID ni qo'lda yozib kirish
     // (avvalgi forma) istalgan odamga boshqaning akkauntini ochib berardi.
-    window.onTelegramAuth = async (user) => {
-      setLoading(true);
-      try {
-        const { data } = await authApi.loginTelegram(user);
-        const payload = data.data || data;
-        dispatch(setAuth({
-          user: payload.user,
-          accessToken: payload.accessToken,
-          refreshToken: payload.refreshToken,
-        }));
-        toast.success(`Xush kelibsiz, ${payload.user.firstName}!`);
-        navigate('/');
-      } catch (err: any) {
-        toast.error(err.response?.data?.message || `Kirish muvaffaqiyatsiz: ${err.message}`);
-      } finally {
-        setLoading(false);
-      }
-    };
+    window.onTelegramAuth = (user) => { void finishLogin(authApi.loginTelegram(user)); };
 
     const script = document.createElement('script');
     script.src = 'https://telegram.org/js/telegram-widget.js?22';
@@ -62,7 +75,7 @@ export function LoginPage() {
       container.innerHTML = '';
       delete window.onTelegramAuth;
     };
-  }, [dispatch, navigate]);
+  }, [finishLogin]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-brand-900 flex items-center justify-center p-4">
@@ -122,9 +135,18 @@ export function LoginPage() {
             </div>
           )}
 
-          <p className="text-center text-slate-500 text-xs mt-6">
-            Telegram botni guruhga qo'shib, /start bosing
+          <p className="text-center text-slate-400 text-xs mt-6">
+            Tugma ishlamasa: botga shaxsiy chatda <code>/login</code> yozing — u kirish havolasini yuboradi.
+            {BOT_USERNAME && (
+              <>
+                {' '}
+                <a className="text-brand-300 underline" href={`https://t.me/${BOT_USERNAME}?start=login`}>
+                  Botni ochish
+                </a>
+              </>
+            )}
           </p>
+          {loading && !BOT_USERNAME && <p className="text-center text-slate-400 text-sm mt-3">Kirilmoqda...</p>}
         </div>
       </motion.div>
     </div>
