@@ -170,9 +170,12 @@ ni ishlatardi (repo public) — shu kalit bilan qo'lda yasalgan token
 yoki namuna qiymatda bo'lsa API ishga tushmaydi — jim xavfli ishlagandan ko'ra
 ochiq yiqilgani yaxshi.
 
-**Hali ochiq:** analytics/kategoriya/limit/eksport endpointlari `groupId` ga
-a'zolikni tekshirmaydi — kirgan har kim boshqa guruh ID sini bersa uning
-ma'lumotini oladi. Alohida tuzatish kerak.
+**Keyin yopildi (2026-10-01):** analytics, xarajatlar, kategoriya, limit,
+eksport va guruh summary endpointlari `groupId` ga a'zolikni tekshirmasdi —
+haqiqiy API'da begona foydalanuvchi 12 ta endpointning hammasida 200 oldi.
+Endi hammasi `common/access/GroupAccessService` orqali o'tadi (bitta joy —
+yangi endpoint qo'shilganda ham shu chaqiriladi). Umumiy standart
+kategoriyani (groupId=null) API orqali o'zgartirib bo'lmaydi.
 
 ---
 

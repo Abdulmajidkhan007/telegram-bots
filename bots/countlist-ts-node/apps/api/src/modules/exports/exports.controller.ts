@@ -5,13 +5,17 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '@prisma/client';
 import { FastifyReply } from 'fastify';
+import { GroupAccessService } from '../../common/access/group-access.service';
 
 @ApiTags('Exports')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('exports')
 export class ExportsController {
-  constructor(private exportsService: ExportsService) {}
+  constructor(
+    private exportsService: ExportsService,
+    private access: GroupAccessService,
+  ) {}
 
   @Post('generate')
   @ApiOperation({ summary: 'Generate and download export file' })
@@ -27,6 +31,7 @@ export class ExportsController {
     },
     @Res() reply: FastifyReply,
   ) {
+    await this.access.assertMember(user.id, body.groupId);
     const result = await this.exportsService.generateExport({
       groupId: body.groupId,
       userId: user.id,

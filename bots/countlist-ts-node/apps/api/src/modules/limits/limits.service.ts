@@ -78,6 +78,10 @@ export class LimitsService {
     return result;
   }
 
+  findById(id: string) {
+    return this.prisma.monthlyLimit.findUnique({ where: { id } });
+  }
+
   async deleteLimit(id: string) {
     return this.prisma.monthlyLimit.update({
       where: { id },

@@ -3,27 +3,36 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AnalyticsService } from './analytics.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { subMonths, subDays } from 'date-fns';
+import { User } from '@prisma/client';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { GroupAccessService } from '../../common/access/group-access.service';
 
 @ApiTags('Analytics')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('analytics')
 export class AnalyticsController {
-  constructor(private analyticsService: AnalyticsService) {}
+  constructor(
+    private analyticsService: AnalyticsService,
+    private access: GroupAccessService,
+  ) {}
 
   @Get('dashboard/:groupId')
   @ApiOperation({ summary: 'Get dashboard overview stats' })
-  getDashboard(@Param('groupId') groupId: string) {
+  async getDashboard(@Param('groupId') groupId: string, @CurrentUser() user: User) {
+    await this.access.assertMember(user.id, groupId);
     return this.analyticsService.getDashboardStats(groupId);
   }
 
   @Get('full/:groupId')
   @ApiOperation({ summary: 'Get full analytics data' })
-  getFull(
+  async getFull(
+    @CurrentUser() user: User,
     @Param('groupId') groupId: string,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
+    await this.access.assertMember(user.id, groupId);
     const end = endDate ? new Date(endDate) : new Date();
     const start = startDate ? new Date(startDate) : subMonths(end, 1);
     return this.analyticsService.getFullAnalytics(groupId, start, end);
@@ -31,10 +40,12 @@ export class AnalyticsController {
 
   @Get('trends/:groupId')
   @ApiOperation({ summary: 'Get expense trends for charts' })
-  getTrends(
+  async getTrends(
+    @CurrentUser() user: User,
     @Param('groupId') groupId: string,
     @Query('period') period: 'daily' | 'weekly' | 'monthly' = 'monthly',
   ) {
+    await this.access.assertMember(user.id, groupId);
     const end = new Date();
     const start = period === 'daily'
       ? subDays(end, 30)

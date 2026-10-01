@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD, APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { PrismaModule } from './prisma/prisma.module';
+import { AccessModule } from './common/access/access.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ExpensesModule } from './modules/expenses/expenses.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
@@ -20,6 +21,7 @@ import { Reflector } from '@nestjs/core';
   imports: [
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
     PrismaModule,
+    AccessModule,
     AuthModule,
     ExpensesModule,
     AnalyticsModule,

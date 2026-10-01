@@ -4,13 +4,17 @@ import { GroupsService } from './groups.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '@prisma/client';
+import { GroupAccessService } from '../../common/access/group-access.service';
 
 @ApiTags('Groups')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('groups')
 export class GroupsController {
-  constructor(private groupsService: GroupsService) {}
+  constructor(
+    private groupsService: GroupsService,
+    private access: GroupAccessService,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'Get my groups' })
@@ -26,7 +30,8 @@ export class GroupsController {
 
   @Get(':id/summary')
   @ApiOperation({ summary: 'Get group summary stats' })
-  getSummary(@Param('id') id: string) {
+  async getSummary(@Param('id') id: string, @CurrentUser() user: User) {
+    await this.access.assertMember(user.id, id);
     return this.groupsService.getGroupSummary(id);
   }
 
