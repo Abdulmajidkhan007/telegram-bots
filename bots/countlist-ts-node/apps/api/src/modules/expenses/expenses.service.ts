@@ -4,10 +4,14 @@ import { Prisma, Expense } from '@prisma/client';
 import { getWeekNumber, getDayOfYear } from '@expense-tracker/shared';
 import { CreateExpenseDto, UpdateExpenseDto } from './dto/expense.dto';
 import { PaginationMeta } from '@expense-tracker/shared';
+import { GroupAccessService } from '../../common/access/group-access.service';
 
 @Injectable()
 export class ExpensesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private access: GroupAccessService,
+  ) {}
 
   async create(userId: string, dto: CreateExpenseDto): Promise<Expense> {
     const now = dto.date ? new Date(dto.date) : new Date();
@@ -91,7 +95,8 @@ export class ExpensesService {
       include: { category: true, user: true, group: true },
     });
 
-    if (!expense) throw new NotFoundException('Expense not found');
+    // Faqat o'sha guruh a'zosi ko'radi; update/remove ham shu orqali o'tadi.
+    await this.access.assertMemberOfRecord(userId, expense, 'Expense not found');
     return expense;
   }
 

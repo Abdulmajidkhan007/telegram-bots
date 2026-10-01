@@ -16,6 +16,7 @@ import { ExpensesService } from './expenses.service';
 import { CreateExpenseDto, UpdateExpenseDto, ExpenseQueryDto } from './dto/expense.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { GroupAccessService } from '../../common/access/group-access.service';
 import { User } from '@prisma/client';
 
 @ApiTags('Expenses')
@@ -23,19 +24,24 @@ import { User } from '@prisma/client';
 @UseGuards(JwtAuthGuard)
 @Controller('expenses')
 export class ExpensesController {
-  constructor(private expensesService: ExpensesService) {}
+  constructor(
+    private expensesService: ExpensesService,
+    private access: GroupAccessService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create expense' })
-  create(@CurrentUser() user: User, @Body() dto: CreateExpenseDto) {
+  async create(@CurrentUser() user: User, @Body() dto: CreateExpenseDto) {
+    await this.access.assertMember(user.id, dto.groupId);
     return this.expensesService.create(user.id, dto);
   }
 
   @Get()
   @ApiOperation({ summary: 'List expenses with filters' })
-  findAll(@Query() query: ExpenseQueryDto, @CurrentUser() user: User) {
+  async findAll(@Query() query: ExpenseQueryDto, @CurrentUser() user: User) {
+    const groupId = await this.access.assertMember(user.id, query.groupId);
     return this.expensesService.findAll({
-      groupId: query.groupId || '',
+      groupId,
       userId: query.userId,
       categoryId: query.categoryId,
       month: query.month ? Number(query.month) : undefined,
@@ -51,11 +57,13 @@ export class ExpensesController {
 
   @Get('stats/:groupId')
   @ApiOperation({ summary: 'Get group expense statistics' })
-  getStats(
+  async getStats(
+    @CurrentUser() user: User,
     @Param('groupId') groupId: string,
     @Query('month') month?: string,
     @Query('year') year?: string,
   ) {
+    await this.access.assertMember(user.id, groupId);
     const now = new Date();
     return this.expensesService.getGroupStats(
       groupId,

@@ -19,10 +19,18 @@ export class CategoriesService {
       where: {
         isActive: true,
         deletedAt: null,
-        OR: [{ isDefault: true }, { groupId: groupId || undefined }],
+        // Umumiy standartlar (groupId=null) + faqat so'ralgan guruhniki.
+        // `groupId: undefined` ga tayanmaymiz — filtr aniq yozilgan bo'lsin.
+        OR: groupId
+          ? [{ isDefault: true, groupId: null }, { groupId }]
+          : [{ isDefault: true, groupId: null }],
       },
       orderBy: [{ isDefault: 'desc' }, { name: 'asc' }],
     });
+  }
+
+  findById(id: string): Promise<Category | null> {
+    return this.prisma.category.findUnique({ where: { id } });
   }
 
   async create(dto: CreateCategoryDto): Promise<Category> {
