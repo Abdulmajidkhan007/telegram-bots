@@ -177,6 +177,15 @@ Endi hammasi `common/access/GroupAccessService` orqali o'tadi (bitta joy —
 yangi endpoint qo'shilganda ham shu chaqiriladi). Umumiy standart
 kategoriyani (groupId=null) API orqali o'zgartirib bo'lmaydi.
 
+
+**Bot havolasi (`/login`) nega qo'shildi (2026-10-01):** BotFather @COUNTLIST_BOT
+uchun «Web login is currently unavailable» deb widget domenini o'rnatishni rad
+etdi — dashboard'ga umuman kirib bo'lmay qoldi. Havola tokeni shared'da
+(`login-link.ts`): bot imzolaydi, API tekshiradi, kalit BOT_TOKEN dan alohida
+yorliq bilan olinadi. 10 daqiqa amal qiladi; bir martalik emas (holatsiz) —
+shuning uchun faqat shaxsiy chatda beriladi va URL fragmentida (`#token=`)
+uzatiladi: serverga, nginx loglariga va Referer'ga tushmaydi.
+
 ---
 
 ## Keyingi qadamlar (ochiq savollar)

@@ -78,6 +78,8 @@ export const authApi = {
   // server uning imzosini (hash) hamma maydonlar bo'yicha tekshiradi.
   loginTelegram: (widgetData: Record<string, unknown>) =>
     api.post('/auth/telegram', widgetData),
+  // Bot /login bergan havoladagi token.
+  loginBotLink: (token: string) => api.post('/auth/bot-link', { token }),
   refresh: (refreshToken: string) => api.post('/auth/refresh', { refreshToken }),
   logout: () => api.post('/auth/logout'),
   me: () => api.get('/auth/me'),

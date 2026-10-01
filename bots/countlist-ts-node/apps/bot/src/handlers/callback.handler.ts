@@ -173,7 +173,8 @@ export function registerCallbackHandlers(
 
     if (webUrl) {
       await ctx.reply(
-        '⚙️ Sozlamalar\n\nTo\'liq boshqaruv uchun veb-dashboardga o\'ting:',
+        '⚙️ Sozlamalar\n\nTo\'liq boshqaruv uchun veb-dashboardga o\'ting. ' +
+        'Kirish uchun botga shaxsiy chatda /login yozing.',
         Markup.inlineKeyboard([
           [Markup.button.url('🌐 Dashboard ochish', webUrl)],
           [Markup.button.callback('⬅️ Orqaga', 'back:main')],

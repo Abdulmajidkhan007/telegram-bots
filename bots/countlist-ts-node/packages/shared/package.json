@@ -5,7 +5,7 @@
   "types": "src/index.ts",
   "scripts": {
     "build": "tsc",
-    "test": "tsc && node --test test/expense-parser.test.js"
+    "test": "tsc && node --test test/expense-parser.test.js test/login-link.test.js"
   },
   "dependencies": {
     "zod": "^3.22.4"

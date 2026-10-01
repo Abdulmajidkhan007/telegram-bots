@@ -11,6 +11,7 @@ import { registerStartCommand } from './commands/start.command';
 import { registerHelpCommand } from './commands/help.command';
 import { registerStatsCommands } from './commands/stats.command';
 import { registerExportCommand } from './commands/export.command';
+import { registerLoginCommand } from './commands/login.command';
 import { registerCategoryCommands } from './commands/categories.command';
 import { registerAdminCommands } from './commands/admin.command';
 import { registerCallbackHandlers } from './handlers/callback.handler';
@@ -34,6 +35,7 @@ async function bootstrap() {
   registerHelpCommand(bot);
   registerStatsCommands(bot, expenseService);
   registerExportCommand(bot);
+  registerLoginCommand(bot);
   registerCategoryCommands(bot, prisma);
   registerAdminCommands(bot, prisma);
 

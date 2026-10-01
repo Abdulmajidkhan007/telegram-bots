@@ -1,11 +1,15 @@
 import { Telegraf } from 'telegraf';
 import { BotContext } from '../types/context';
 import { mainInlineKeyboard } from '../keyboards/main.keyboard';
+import { sendLoginLink } from './login.command';
 
 export function registerStartCommand(bot: Telegraf<BotContext>): void {
   bot.start(async (ctx) => {
     const firstName = ctx.from?.first_name || 'Do\'stim';
     const isGroup = ctx.chat?.type === 'group' || ctx.chat?.type === 'supergroup';
+
+    // Guruhdagi "Shaxsiy chatda olish" tugmasi t.me/<bot>?start=login ga olib keladi.
+    if (ctx.payload === 'login') return sendLoginLink(ctx);
 
     if (!isGroup) {
       await ctx.replyWithMarkdownV2(
@@ -26,6 +30,7 @@ export function registerStartCommand(bot: Telegraf<BotContext>): void {
         `/categories \\- Kategoriyalar\n` +
         `/limit \\- Limitlar\n` +
         `/export \\- Eksport\n` +
+        `/login \\- Dashboard'ga kirish havolasi\n` +
         `/help \\- Yordam`,
         mainInlineKeyboard(),
       );
