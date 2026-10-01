@@ -229,7 +229,7 @@
         "PostgreSQL",
         "Redis",
         "yarn (workspaces)",
-        "OpenAI API kaliti (ovozli xabar uchun, ixtiyoriy)"
+        "Gemini yoki OpenAI API kaliti (ovozli xabar uchun, ixtiyoriy)"
       ],
       "note": "Ichki monorepo (yarn workspaces) + PostgreSQL/Redis kerak. Alohida README ga qarang."
     },

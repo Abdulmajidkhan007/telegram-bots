@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 import { resolve } from 'path';
+import { pickVoiceProvider } from './services/voice.service';
 
 dotenv.config({ path: resolve(__dirname, '../../../.env') });
 
@@ -29,7 +30,8 @@ export const config = {
   api: {
     url: process.env.API_URL || 'http://localhost:3001',
   },
-  // Ixtiyoriy: bo'lmasa ovozli xabarlar e'tiborsiz qoladi (ishga tushishda log'ga yoziladi).
-  openaiApiKey: process.env.OPENAI_API_KEY || '',
+  // Ixtiyoriy: GEMINI_API_KEY yoki OPENAI_API_KEY. Ikkalasi ham bo'lmasa ovozli
+  // xabarlar e'tiborsiz qoladi (ishga tushishda log'ga yoziladi).
+  voice: pickVoiceProvider(process.env),
   nodeEnv: process.env.NODE_ENV || 'development',
 } as const;

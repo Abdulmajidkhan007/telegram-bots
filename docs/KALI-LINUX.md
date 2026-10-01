@@ -233,7 +233,7 @@ nano bots/gemini-qa-bot/.env
 | **xulosa-ai-bot** | `API_ID`, `API_HASH`, `BOT_TOKEN` yoki `STRING_SESSION`, `GEMINI_API_KEY` | [my.telegram.org](https://my.telegram.org) + @BotFather + AI Studio |
 | **atoyo-ai-bot** | `API_ID`, `API_HASH`, `GEMINI_API_KEY` | my.telegram.org + AI Studio |
 | **atoyo-rag-bot** | `TELEGRAM_BOT_TOKEN`, `GEMINI_API_KEY`, `serviceAccountKey.json` | @BotFather, AI Studio, Firebase Console |
-| **countlist-ts-node** | `BOT_TOKEN`, PostgreSQL, Redis, (`OPENAI_API_KEY`) | @BotFather + baza |
+| **countlist-ts-node** | `BOT_TOKEN`, PostgreSQL, Redis, (`GEMINI_API_KEY` yoki `OPENAI_API_KEY`) | @BotFather + baza |
 
 **Guruh yoki kanal ID sini bilish kerak bo'lsa:** avval `idfinder-bot` ni
 ishga tushiring — u aynan shuning uchun yozilgan.
@@ -445,8 +445,9 @@ sudo systemctl start postgresql redis-server
 
 Baza yaratish, `prisma db push` va bot/API/dashboard'ni ishga tushirish —
 `bots/countlist-ts-node/README.md` dagi «Ishga tushurish» bo'limida.
-Ovozli xabar orqali xarajat qo'shish uchun `.env` ga `OPENAI_API_KEY`
-yozing (ixtiyoriy — bo'lmasa bot ovozli xabarlarga javob bermaydi).
+Ovozli xabar orqali xarajat qo'shish uchun `.env` ga `GEMINI_API_KEY` yoki
+`OPENAI_API_KEY` yozing (ixtiyoriy — ikkalasi ham bo'lmasa bot ovozli xabarlarga
+javob bermaydi).
 
 ---
 

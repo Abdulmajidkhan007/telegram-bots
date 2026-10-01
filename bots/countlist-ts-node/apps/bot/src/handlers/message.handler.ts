@@ -84,21 +84,23 @@ export function registerMessageHandlers(
     }
   });
 
-  if (!config.openaiApiKey) {
-    logger.info('OPENAI_API_KEY yo\'q — ovozli xabarlar orqali xarajat qo\'shish o\'chiq.');
+  if (config.voice) {
+    logger.info(`Ovozli xabarlar yoqilgan: ${config.voice.name}`);
+  } else {
+    logger.info('GEMINI_API_KEY ham, OPENAI_API_KEY ham yo\'q — ovozli xabarlar orqali xarajat qo\'shish o\'chiq.');
   }
 
   bot.on('voice', async (ctx) => {
     // Kalit bo'lmasa jim turamiz: guruhdagi har ovozli xabarga "sozlanmagan"
     // deb javob berish suhbatni buzadi. Holat ishga tushishda log'da ko'rinadi.
-    if (!config.openaiApiKey || !ctx.dbGroup || !ctx.dbUser) return;
+    if (!config.voice || !ctx.dbGroup || !ctx.dbUser) return;
 
     const voice = ctx.message.voice;
     if (voice.duration > MAX_VOICE_SECONDS) return;
 
     try {
       const link = await ctx.telegram.getFileLink(voice.file_id);
-      const text = await transcribeVoice(link.toString(), config.openaiApiKey);
+      const text = await transcribeVoice(link.toString(), config.voice);
 
       const result = text
         ? await expenseService.parseAndCreate({
