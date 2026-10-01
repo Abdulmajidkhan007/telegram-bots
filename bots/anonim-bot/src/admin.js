@@ -155,13 +155,19 @@ async function showChannels(bot, chatId, msgId) {
     text += "_Kanal yo'q (majburiy obuna o'chiq)._\n\n";
   } else {
     state.channels.forEach((ch, i) => {
+      // safeName ishlatilmaydi: u "_" ni o'chirib, @Atoyo_santexnika ni
+      // @Atoyosantexnika ga aylantirardi — Telegram buni BOSHQA akkauntga
+      // mention qilib ko'rsatardi. Escape qilamiz, o'chirmaymiz.
       const uname = ch.username ? '@' + util.escMd(ch.username) : '';
+      // REQUIRED_CHANNELS dan kelganda title "@username" ning o'zi — takrorlamaymiz.
+      const title = ch.title && ch.title !== `@${ch.username}` ? util.escMd(ch.title) : '';
       const id = ch.id ? `(id: ${ch.id})` : '';
-      text += `${i + 1}. ${util.safeName(ch.title) || '—'} ${uname} ${id}\n`;
+      text += `${i + 1}. ${[title, uname, id].filter(Boolean).join(' ') || '—'}\n`;
     });
   }
+  // Tugma matni Markdown emas — hech narsa o'chirilmaydi.
   const rows = state.channels.map((ch, i) => [{
-    text: `🗑 ${util.safeName(ch.title) || ch.username || ch.id}`,
+    text: `🗑 ${ch.username ? '@' + ch.username : (ch.title || ch.id)}`.slice(0, 64),
     callback_data: `chrm:${i}`,
   }]);
   rows.push([{ text: '➕ Yangi kanal', callback_data: 'a:ch:add' }]);
@@ -397,7 +403,7 @@ async function handleAdminCallback(bot, query) {
 async function notifyChannelJoin(bot, channel, user) {
   const ADMIN_ID = process.env.ADMIN_ID;
   if (!ADMIN_ID) return;
-  const chTitle = util.safeName(channel.title || '') || channel.username || channel.id;
+  const chTitle = util.channelLabel(channel);
   const fullName = [user.first_name, user.last_name].filter(Boolean).map(util.safeName).join(' ');
   const text =
     `✅ *Yangi obunachi!*\n\n` +
@@ -413,7 +419,7 @@ async function notifyChannelJoin(bot, channel, user) {
 async function notifyChannelLeave(bot, channel, user) {
   const ADMIN_ID = process.env.ADMIN_ID;
   if (!ADMIN_ID) return;
-  const chTitle = util.safeName(channel.title || '') || channel.username || channel.id;
+  const chTitle = util.channelLabel(channel);
   const fullName = [user.first_name, user.last_name].filter(Boolean).map(util.safeName).join(' ');
   const text =
     `❌ *Kanaldan chiqdi*\n\n` +
