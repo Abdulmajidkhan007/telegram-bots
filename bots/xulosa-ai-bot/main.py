@@ -14,6 +14,15 @@ from google import genai
 import config
 import database
 
+# Kalitlar yetishmasa, kutubxona ichidagi tushunarsiz xato o'rniga
+# aniq ro'yxat chiqarib to'xtaymiz.
+_missing = config.missing_settings()
+if _missing:
+    print("❌ .env da quyidagilar to'ldirilmagan (bots/xulosa-ai-bot/.env):", file=sys.stderr)
+    for _m in _missing:
+        print(f"   • {_m}", file=sys.stderr)
+    sys.exit(1)
+
 # Baza initsializatsiyasi va media papka yaratish
 database.init_db()
 os.makedirs("temp_media", exist_ok=True)

@@ -37,6 +37,14 @@ test('har bir bot papkasida .env.example bor va .env yo\'q', () => {
   }
 });
 
+// Har bot mustaqil — papkani nusxalab olgan odam litsenziyani ham olsin.
+test('har bir bot papkasida LICENSE bor', () => {
+  for (const b of realRegistry.bots) {
+    const lic = path.join(__dirname, '..', 'bots', b.id, 'LICENSE');
+    assert.ok(fs.existsSync(lic), `${b.id}: LICENSE yo'q`);
+  }
+});
+
 test('har bir bot papkasida README bor va muallif ko\'rsatilgan', () => {
   for (const b of realRegistry.bots) {
     const readme = path.join(__dirname, '..', 'bots', b.id, 'README.md');

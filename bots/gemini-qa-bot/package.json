@@ -1,6 +1,7 @@
 {
   "name": "gemini-qa-bot",
   "version": "1.0.0",
+  "license": "MIT",
   "description": "Gemini API bilan savollarga javob beruvchi Telegram bot",
   "main": "index.js",
   "scripts": {

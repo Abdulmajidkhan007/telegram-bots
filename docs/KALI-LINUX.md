@@ -453,6 +453,21 @@ javob bermaydi).
 
 ## 8. Hammasini birdan ishga tushirish
 
+### Lokal (userbot/RAG) botlar — tmux'da birdaniga
+
+`xulosa-ai-bot`, `atoyo-ai-bot`, `atoyo-rag-bot` uchun har birida `.venv`
+va to'ldirilgan `.env` bo'lgach:
+
+```bash
+npm run local              # har bot alohida tmux oynasida
+tmux attach -t botlar      # ko'rish; oynalar orasida: Ctrl+B, keyin 0/1/2
+                           # chiqish (botlar ishlayveradi): Ctrl+B, keyin D
+tmux kill-session -t botlar   # hammasini to'xtatish
+```
+
+Bot yiqilsa oyna yopilmaydi — xato matni o'sha yerda qoladi.
+
+
 ### Faqat avtomatik ishga tushadiganlar (7 ta Node boti)
 
 ```bash

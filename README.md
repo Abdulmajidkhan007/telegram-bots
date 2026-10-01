@@ -206,9 +206,15 @@ Shunda Railway faqat o'sha papkani quradi va uning `package.json` idagi
 
 ## 📄 Litsenziya
 
-Root va aksar botlar — MIT. **`bots/killspam-bot`** o'zining
-[PolyForm Noncommercial 1.0.0](bots/killspam-bot/LICENSE) litsenziyasi ostida —
-o'sha papka uchun shu litsenziya amal qiladi.
+Har bot papkasida o'z `LICENSE` fayli bor — papkani alohida nusxalab olsangiz,
+litsenziya ham birga ketadi.
+
+| Bot | Litsenziya | Nimaga ruxsat |
+|-----|-----------|----------------|
+| `save-video-downloader-bot`, `anonim-bot`, `arxiv-topadi-bot`, `gemini-qa-bot`, `idfinder-bot`, `malware-bot`, `quiz-bot`, `xulosa-ai-bot`, `countlist-ts-node`, `atoyo-ai-bot`, `atoyo-rag-bot` | [MIT](LICENSE) | Istalgan maqsadda, tijoratda ham — faqat mualliflik va litsenziya matni saqlansin |
+| `killspam-bot` | [PolyForm Noncommercial 1.0.0](bots/killspam-bot/LICENSE) | Faqat notijorat maqsadda |
+
+Repo ildizi (`tools/`, `docs/` va boshqalar) — [MIT](LICENSE).
 
 ---
 
