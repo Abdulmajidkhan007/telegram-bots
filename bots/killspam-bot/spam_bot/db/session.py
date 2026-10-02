@@ -3,10 +3,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 from ..core.config import DATABASE_URL
+from .url import normalize_db_url
 
-_url = DATABASE_URL or ""
-if _url.startswith("postgres://"):  # Railway/Heroku style; SQLAlchemy needs postgresql://
-    _url = "postgresql://" + _url[len("postgres://"):]
+_url = normalize_db_url(DATABASE_URL)
 # SSL for genuinely remote hosts; skip sqlite (no SSL), localhost, and Railway's
 # private network.
 _local = _url.startswith("sqlite") or any(
