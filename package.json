@@ -20,6 +20,7 @@
     "test": "node --test tools/registry.test.js",
     "check": "npm run test && npm run scan",
     "env": "node tools/set-env.js",
+    "setup:local": "bash tools/setup-local.sh",
     "local": "bash tools/tmux-local.sh"
   }
 }

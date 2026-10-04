@@ -185,6 +185,7 @@
       "desc": "Guruh/kanal yozishmalarini Gemini AI bilan xulosalovchi bot (Telethon, Python).",
       "runtime": "python",
       "autoStart": false,
+      "local": true,
       "install": [
         [
           "pip",
@@ -239,6 +240,7 @@
       "desc": "Mahsulot rasmlarini Gemini bilan tahlil qilib katalog kartochkasi yasaydi va topicga joylaydi (Telethon userbot).",
       "runtime": "python",
       "autoStart": false,
+      "local": true,
       "install": [
         [
           "pip",
@@ -266,7 +268,15 @@
       "desc": "Firestore katalogi ustida RAG qidiruv: mijoz savoliga narx bilan javob beradi, kanal postini forward qiladi, lidni admin guruh va n8n ga uzatadi.",
       "runtime": "python",
       "autoStart": false,
+      "local": true,
       "install": [
+        [
+          "pip",
+          "install",
+          "torch",
+          "--index-url",
+          "https://download.pytorch.org/whl/cpu"
+        ],
         [
           "pip",
           "install",

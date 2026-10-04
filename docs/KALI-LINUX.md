@@ -3,7 +3,7 @@
 > Noldan: tizimni tayyorlash → klon → kalitlar → bitta bot → hammasi.
 > Har qadam tekshiriladigan: buyruq beriladi, natija nima bo'lishi aytiladi.
 
-**Oxirgi yangilanish:** 2026-09-22
+**Oxirgi yangilanish:** 2026-10-04
 
 ---
 
@@ -326,6 +326,14 @@ Bu har bot papkasida `npm install` yoki `pip install -r requirements.txt`
 bajaradi. Node botlari uchun bir necha daqiqa, Python botlari uchun —
 `atoyo-rag-bot` og'ir (sentence-transformers, chromadb ~1 GB).
 
+> ⚠️ **torch va CUDA.** PyPI'dagi `torch` Linux'da (telefon/aarch64 ham)
+> NVIDIA CUDA kutubxonalarini (`nvidia-*-cu13`, ~6 GB) tortadi — GPU'siz
+> qurilmada ular ishlamaydi, faqat joy oladi. Shuning uchun `atoyo-rag-bot`
+> ning birinchi o'rnatish qadami — CPU torch
+> (`--index-url https://download.pytorch.org/whl/cpu`, bots.json da).
+> `.venv` ichida `site-packages/nvidia` papkasi paydo bo'lsa — o'sha `.venv`
+> ni o'chirib, qayta o'rnating.
+
 Faqat bittasini o'rnatish:
 
 ```bash
@@ -455,10 +463,13 @@ javob bermaydi).
 
 ### Lokal (userbot/RAG) botlar — tmux'da birdaniga
 
-`xulosa-ai-bot`, `atoyo-ai-bot`, `atoyo-rag-bot` uchun har birida `.venv`
-va to'ldirilgan `.env` bo'lgach:
+Node botlari Railway'da bo'lsa, kompyuterda faqat shu uchtasi kerak:
+`xulosa-ai-bot`, `atoyo-ai-bot`, `atoyo-rag-bot` (bots.json da `"local": true`).
+Ularni ildizdagi umumiy `.venv` siz, har birini o'z `.venv` iga o'rnatish:
 
 ```bash
+npm run setup:local        # 3 ta .venv + .env (bor bo'lsa tegilmaydi), CPU torch
+npm run env -- <bot> KALIT=qiymat   # .env larni to'ldirish
 npm run local              # har bot alohida tmux oynasida
 tmux attach -t botlar      # ko'rish; oynalar orasida: Ctrl+B, keyin 0/1/2
                            # chiqish (botlar ishlayveradi): Ctrl+B, keyin D

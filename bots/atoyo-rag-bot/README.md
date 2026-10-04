@@ -48,8 +48,12 @@ n8n panel: http://localhost:5678 — u yerda `atoyo-lead` webhook oqimini yarati
 
 ### Qo'lda
 
+Monorepo ildizidan bitta buyruq: `npm run setup:local`. Yoki shu papkada:
+
 ```bash
-python3 -m venv venv && source venv/bin/activate
+python3 -m venv .venv && source .venv/bin/activate
+# Avval CPU torch: PyPI'dagisi Linux'da ~6 GB CUDA kutubxonalarini tortadi
+pip install torch --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements.txt
 cp .env.example .env          # to'ldiring
 python3 sync_db.py            # katalogni vektor bazaga yuklash
