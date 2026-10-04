@@ -14,7 +14,7 @@
 const fs = require('fs');
 const path = require('path');
 const { spawn, spawnSync } = require('child_process');
-const { validateRegistry, resolveTargets, padWidth, unfilledKeys } = require('./registry');
+const { validateRegistry, resolveTargets, localBots, padWidth, unfilledKeys } = require('./registry');
 
 const ROOT = path.resolve(__dirname, '..');
 const BOTS_DIR = path.join(ROOT, 'bots');
@@ -248,8 +248,11 @@ function main(argv) {
       return cmdInstall(resolveTargets(target || 'all', bots, { includeManual: true }));
     case 'start':
       return cmdStart(resolveTargets(target || 'all', bots, { includeManual }));
+    case 'local-ids':
+      // Shell skriptlar uchun: har qatorda bitta id, boshqa hech narsa.
+      return localBots(bots).forEach((b) => console.log(b.id));
     default:
-      throw new Error(`Noma'lum buyruq: "${command}". Mavjud: list, setup, install, start, doctor`);
+      throw new Error(`Noma'lum buyruq: "${command}". Mavjud: list, setup, install, start, doctor, local-ids`);
   }
 }
 

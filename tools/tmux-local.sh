@@ -6,14 +6,14 @@
 #   tmux attach -t botlar               # ko'rish (oynalar: Ctrl+B, keyin 0/1/2)
 #   tmux kill-session -t botlar         # hammasini to'xtatish
 #
-# Har bot o'z papkasidagi .venv dan ishlaydi (avval: python3 -m venv .venv &&
-# .venv/bin/pip install -r requirements.txt). .env to'ldirilmagan bo'lsa bot
+# Har bot o'z papkasidagi .venv dan ishlaydi (avval: npm run setup:local). .env to'ldirilmagan bo'lsa bot
 # nima yetishmasligini yozib to'xtaydi — oyna yopilmaydi, xabarni o'qiysiz.
 set -euo pipefail
 
 SESSION=botlar
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-BOTS=(xulosa-ai-bot atoyo-ai-bot atoyo-rag-bot)
+# Ro'yxat bots.json dagi "local": true dan olinadi (setup-local.sh bilan bir xil).
+mapfile -t BOTS < <(node "$ROOT/tools/run.js" local-ids)
 
 command -v tmux >/dev/null || { echo "tmux yo'q: sudo apt install -y tmux  (Termux: pkg install tmux)"; exit 1; }
 
@@ -26,7 +26,7 @@ first=1
 for bot in "${BOTS[@]}"; do
   dir="$ROOT/bots/$bot"
   if [ ! -x "$dir/.venv/bin/python" ]; then
-    echo "⚠️  $bot: .venv yo'q — o'tkazib yuborildi. Avval: cd bots/$bot && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt"
+    echo "⚠️  $bot: .venv yo'q — o'tkazib yuborildi. Avval: npm run setup:local"
     continue
   fi
   if [ ! -f "$dir/.env" ]; then

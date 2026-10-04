@@ -27,6 +27,9 @@ function validateRegistry(raw) {
     if (!VALID_RUNTIMES.includes(bot.runtime)) {
       throw new Error(`bots.json: "${bot.id}" — runtime "${bot.runtime}" noma'lum (${VALID_RUNTIMES.join('/')})`);
     }
+    if (bot.local !== undefined && typeof bot.local !== 'boolean') {
+      throw new Error(`bots.json: "${bot.id}" — "local" true yoki false bo'lishi kerak`);
+    }
     assertSteps(bot.id, 'install', bot.install);
     assertSteps(bot.id, 'start', bot.start);
     if (bot.start.length === 0) {
@@ -67,6 +70,13 @@ function resolveTargets(target, bots, opts = {}) {
     throw new Error(`"${target}" nomli bot yo'q. Mavjudlari: ${bots.map((b) => b.id).join(', ')}`);
   }
   return [bot];
+}
+
+// Railway'ga qo'yilmaydigan, faqat o'z kompyuterda ishlaydigan botlar
+// (Telethon userbot, og'ir RAG). setup-local.sh va tmux-local.sh shu ro'yxatni
+// oladi — ro'yxat ikki skriptda alohida yozilsa, biri eskirib qolardi.
+function localBots(bots) {
+  return bots.filter((b) => b.local === true);
 }
 
 /** Log satrlarini tekislash uchun eng uzun id uzunligi. */
@@ -148,4 +158,4 @@ function setEnvValue(text, key, value) {
 
 module.exports = {
   setEnvValue,
-  unfilledKeys, validateRegistry, resolveTargets, padWidth, VALID_RUNTIMES };
+  unfilledKeys, validateRegistry, resolveTargets, localBots, padWidth, VALID_RUNTIMES };

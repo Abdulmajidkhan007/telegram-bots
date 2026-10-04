@@ -6,7 +6,7 @@ const assert = require('node:assert');
 const path = require('path');
 const fs = require('fs');
 
-const { setEnvValue, unfilledKeys, validateRegistry, resolveTargets, padWidth } = require('./registry');
+const { setEnvValue, unfilledKeys, validateRegistry, resolveTargets, localBots, padWidth } = require('./registry');
 const { findFilledEnvSecrets, FORBIDDEN_NAME } = require('./scan-secrets');
 
 const realRegistry = JSON.parse(
@@ -91,6 +91,42 @@ test('resolveTargets: "all" autoStart:false ni o\'tkazib yuboradi', () => {
 test('resolveTargets: includeManual bilan hammasini oladi', () => {
   const bots = [bot({ id: 'x' }), bot({ id: 'y', autoStart: false })];
   assert.strictEqual(resolveTargets('all', bots, { includeManual: true }).length, 2);
+});
+
+test('validateRegistry: "local" boolean bo\'lmasa rad etadi', () => {
+  assert.throws(() => validateRegistry({ bots: [bot({ local: 'ha' })] }), /local/);
+});
+
+test('localBots: faqat local:true bo\'lganlarni oladi', () => {
+  const bots = [bot({ id: 'x' }), bot({ id: 'y', local: true }), bot({ id: 'z', local: false })];
+  assert.deepStrictEqual(localBots(bots).map((b) => b.id), ['y']);
+});
+
+test('haqiqiy bots.json: lokal botlar — python va start all da o\'tkazib yuboriladi', () => {
+  const local = localBots(realRegistry.bots);
+  assert.deepStrictEqual(local.map((b) => b.id).sort(), ['atoyo-ai-bot', 'atoyo-rag-bot', 'xulosa-ai-bot']);
+  for (const b of local) {
+    assert.strictEqual(b.runtime, 'python', b.id);
+    assert.strictEqual(b.autoStart, false, b.id);
+  }
+});
+
+// Regressiya: PyPI'dagi torch Linux'da (aarch64 ham) nvidia-*-cu13 ni tortadi —
+// GPU'siz telefonda ~6-7 GB bekorga ketardi. CPU torch requirements'dan OLDIN
+// o'rnatilsa, sentence-transformers uni tayyor topadi va CUDA'ni tortmaydi.
+test('haqiqiy bots.json: torch kerak bo\'lgan bot CPU torch\'ni requirements\'dan oldin o\'rnatadi', () => {
+  const needsTorch = realRegistry.bots.filter((b) => {
+    const req = path.join(__dirname, '..', 'bots', b.id, 'requirements.txt');
+    return fs.existsSync(req) && /^(torch|sentence-transformers)\b/m.test(fs.readFileSync(req, 'utf8'));
+  });
+  assert.ok(needsTorch.length > 0, 'torch talab qiladigan bot topilmadi — test eskirganmi?');
+  for (const b of needsTorch) {
+    const steps = b.install.map((s) => s.join(' '));
+    const cpu = steps.findIndex((s) => /torch .*--index-url https:\/\/download\.pytorch\.org\/whl\/cpu/.test(s));
+    const req = steps.findIndex((s) => /-r requirements\.txt/.test(s));
+    assert.ok(cpu !== -1, `${b.id}: CPU torch qadami yo'q`);
+    assert.ok(cpu < req, `${b.id}: CPU torch requirements'dan keyin turibdi`);
+  }
 });
 
 test('padWidth: eng uzun id uzunligini beradi', () => {
