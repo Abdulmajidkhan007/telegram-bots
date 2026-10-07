@@ -150,6 +150,29 @@
       "requires": []
     },
     {
+      "id": "kino-bot",
+      "name": "Kino Kod Bot",
+      "desc": "Kino kodi yuborilsa videoni beradigan bot: majburiy obuna, admin panel (kino/admin/kanal boshqaruvi, reklama, statistika), JSON baza (Python).",
+      "runtime": "python",
+      "autoStart": true,
+      "install": [
+        [
+          "pip",
+          "install",
+          "-r",
+          "requirements.txt"
+        ]
+      ],
+      "start": [
+        [
+          "python3",
+          "main.py"
+        ]
+      ],
+      "requires": [],
+      "note": "Railway'da Volume kerak (DATA_DIR=/data) — aks holda baza har deploy'da o'chadi. Eski database.json bosh adminning /restore buyrug'i bilan yuklanadi."
+    },
+    {
       "id": "killspam-bot",
       "name": "Spam Protection Bot",
       "desc": "Guruhlarni spam, behayo kontent va zararli APK havolalaridan tozalovchi bot (Python).",

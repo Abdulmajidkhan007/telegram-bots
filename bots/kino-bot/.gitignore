@@ -1,0 +1,14 @@
+# Sirlar
+.env
+
+# Baza — ichida foydalanuvchilar ID va ismlari bor, repo PUBLIC
+database.json
+database.json.tmp
+*.json.bak
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+.pytest_cache/
