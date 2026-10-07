@@ -95,7 +95,10 @@ keyin qaytib ko'riladi.
 
 <!-- Yangi g'oyalarni shu yerga qo'shing: sana + bir qator tavsif -->
 
-- _(hozircha bo'sh)_
+- 2026-10-07 — **hr-bot**: umumiy (multi-tenant) HR bot — CV qabul, AI ball,
+  vakansiya yopilganda har nomzodga javob. Reja: [`HR-BOT-PROMPT.md`](HR-BOT-PROMPT.md)
+- 2026-10-07 — **bot-factory**: shablondan bot yasovchi platforma (alohida repo,
+  hr-bot MVP'dan keyin). Reja: [`BOT-FACTORY-PROMPT.md`](BOT-FACTORY-PROMPT.md)
 
 ---
 
