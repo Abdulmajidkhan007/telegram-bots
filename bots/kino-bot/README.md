@@ -16,6 +16,8 @@ Admin kinolarni, adminlarni, majburiy obuna kanallarini bot ichidan boshqaradi.
   yoki yopiq kanaldan **forward**). Bot admin bo'lmagan kanal qo'shilmaydi.
   Obunani tekshirib bo'lmasa (bot kanaldan chiqarilgan) foydalanuvchi bloklanmaydi — log'ga yoziladi
 - 🎬 Kino qo'shish / o'chirish — bosqichma-bosqich, video bilan
+- ⏳ Soatlik chegara: bir foydalanuvchiga soatiga `MOVIES_PER_HOUR` (standart 20) ta kino —
+  hamma kodlarni skript bilan yig'ishni sekinlashtiradi; adminlarga qo'llanmaydi, 0 — o'chiq
 - 📋 Kinolar ro'yxati — kod, nom, yil va yuklab olishlar soni (25 tadan sahifalab, ⬅️ ➡️)
 - 👑 Adminlar ro'yxati (bosh adminni o'chirib bo'lmaydi)
 - 📣 Reklama — foydalanuvchilarga yoki guruhlarga (istalgan format)

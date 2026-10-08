@@ -51,11 +51,13 @@ async def main():
 
     db.configure(config.DB_FILE, config.SUPER_ADMIN_ID)
     common.PROTECT_CONTENT = config.PROTECT_CONTENT
+    common.MOVIE_LIMIT = common.HourlyLimit(config.MOVIES_PER_HOUR)
     # Bazani darhol o'qib ko'ramiz: buzilgan bo'lsa bot birinchi foydalanuvchida
     # emas, shu yerda aniq xabar bilan to'xtaydi.
     data = db.load_db()
     logger.info("Baza: %s — %d kino, %d foydalanuvchi", config.DB_FILE, len(data["movies"]), len(data["users"]))
     logger.info("Kontent himoyasi (forward/saqlash taqiqi): %s", "yoqilgan" if config.PROTECT_CONTENT else "o'chirilgan")
+    logger.info("Kino chegarasi: %s", f"soatiga {config.MOVIES_PER_HOUR} ta" if config.MOVIES_PER_HOUR else "yo'q")
 
     bot = Bot(token=config.BOT_TOKEN)
     # Shu nuqtadan keyingi har ERROR log bosh adminga ham boradi (cheklangan, token yashirilgan).

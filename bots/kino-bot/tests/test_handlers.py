@@ -346,3 +346,46 @@ def test_oddiy_foydalanuvchi_javob_tugmasini_ishlata_olmaydi(baza):
     _support_reset()
     calls, _ = _run([_callback(ODDIY, "sp:r:999"), {"message": _msg(ODDIY, "salom")}])
     assert not any(isinstance(c, (SendMessage, CopyMessage)) and getattr(c, "chat_id", None) == 999 for c in calls)
+
+
+# --- Soatlik kino chegarasi ---
+
+def _limit(n):
+    import common
+    common.MOVIE_LIMIT = common.HourlyLimit(n)
+
+
+def test_chegaradan_oshgan_kino_berilmaydi(baza):
+    from aiogram.methods import SendVideo
+    _limit(2)
+    try:
+        db.add_movie("7", "Kino", "-", "-", "-", "-", "VID")
+        calls, _ = _run([{"message": _msg(ODDIY, "7")} for _ in range(3)])
+        assert sum(isinstance(c, SendVideo) for c in calls) == 2
+        assert any(isinstance(c, SendMessage) and "Soatiga 2 tadan" in c.text for c in calls)
+    finally:
+        _limit(20)
+
+
+def test_topilmagan_kod_chegaraga_sanalmaydi(baza):
+    from aiogram.methods import SendVideo
+    _limit(1)
+    try:
+        db.add_movie("7", "Kino", "-", "-", "-", "-", "VID")
+        calls, _ = _run([{"message": _msg(ODDIY, "999")}, {"message": _msg(ODDIY, "7")}])
+        assert sum(isinstance(c, SendVideo) for c in calls) == 1
+    finally:
+        _limit(20)
+
+
+def test_adminga_chegara_yoq(baza):
+    from aiogram.methods import SendVideo
+    from common import MovieSearch
+    _limit(1)
+    try:
+        db.add_movie("7", "Kino", "-", "-", "-", "-", "VID")
+        calls, _ = _run([{"message": _msg(SUPER, "/kino")}, {"message": _msg(SUPER, "7")},
+                         {"message": _msg(SUPER, "/kino")}, {"message": _msg(SUPER, "7")}])
+        assert sum(isinstance(c, SendVideo) for c in calls) == 2
+    finally:
+        _limit(20)

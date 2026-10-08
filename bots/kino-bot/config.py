@@ -35,3 +35,10 @@ DB_FILE: Path = DATA_DIR / "database.json"
 
 # Kinoni forward/saqlash/skrinshotdan himoyalash. Standart: yoqilgan.
 PROTECT_CONTENT: bool = os.getenv("PROTECT_CONTENT", "true").strip().lower() not in ("0", "false", "no", "yoq", "yo'q")
+
+# Bir foydalanuvchiga soatiga nechta kino (skript bilan hammasini yig'ishni
+# sekinlashtiradi). 0 — chegara yo'q. Adminlarga qo'llanmaydi.
+try:
+    MOVIES_PER_HOUR: int = max(0, int(os.getenv("MOVIES_PER_HOUR", "20").strip() or 20))
+except ValueError:
+    raise SystemExit("❌ MOVIES_PER_HOUR faqat butun son bo'lsin (masalan 20, 0 — cheklovsiz)")
