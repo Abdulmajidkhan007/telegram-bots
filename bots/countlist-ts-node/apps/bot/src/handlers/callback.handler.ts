@@ -167,27 +167,32 @@ export function registerCallbackHandlers(
     await ctx.deleteMessage().catch(() => {});
   });
 
-  bot.action('settings:menu', async (ctx) => {
+  // Limit, takroriy to'lov va sozlamalar dashboard'da boshqariladi —
+  // bu tugmalar avval javobsiz edi (handler yo'q edi).
+  async function replyDashboard(ctx: BotContext, title: string, path: string) {
     await ctx.answerCbQuery();
     const webUrl = getWebUrl();
-
-    if (webUrl) {
+    if (!webUrl) {
       await ctx.reply(
-        '⚙️ Sozlamalar\n\nTo\'liq boshqaruv uchun veb-dashboardga o\'ting. ' +
-        'Kirish uchun botga shaxsiy chatda /login yozing.',
-        Markup.inlineKeyboard([
-          [Markup.button.url('🌐 Dashboard ochish', webUrl)],
-          [Markup.button.callback('⬅️ Orqaga', 'back:main')],
-        ]),
-      );
-    } else {
-      await ctx.reply(
-        '⚙️ Sozlamalar\n\n' +
+        `${title}\n\n` +
         'Veb-dashboard uchun Railway BOT servisiga quyidagini qo\'shing:\n' +
         'WEB_URL = https://sizning-web-url.railway.app',
       );
+      return;
     }
-  });
+    await ctx.reply(
+      `${title}\n\nBu bo'lim veb-dashboardda boshqariladi. ` +
+      'Kirish uchun botga shaxsiy chatda /login yozing.',
+      Markup.inlineKeyboard([
+        [Markup.button.url('🌐 Dashboard ochish', webUrl.replace(/\/+$/, '') + path)],
+        [Markup.button.callback('⬅️ Orqaga', 'back:main')],
+      ]),
+    );
+  }
+
+  bot.action('settings:menu', (ctx) => replyDashboard(ctx, '⚙️ Sozlamalar', '/settings'));
+  bot.action('limits:view', (ctx) => replyDashboard(ctx, '💰 Limitlar', '/limits'));
+  bot.action('recurring:list', (ctx) => replyDashboard(ctx, '🔄 Takroriy xarajatlar', '/recurring'));
 
   // ── Admin callbacks ────────────────────────────────────────────
   bot.action(/^admin:users:(\d+)$/, async (ctx) => {

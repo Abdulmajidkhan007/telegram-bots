@@ -16,6 +16,7 @@ import { registerCategoryCommands } from './commands/categories.command';
 import { registerAdminCommands } from './commands/admin.command';
 import { registerCallbackHandlers } from './handlers/callback.handler';
 import { registerMessageHandlers } from './handlers/message.handler';
+import { applyBotProfile } from './profile';
 
 async function bootstrap() {
   const prisma = new PrismaClient();
@@ -45,6 +46,8 @@ async function bootstrap() {
   bot.catch((err, ctx) => {
     logger.error(`Bot error for ${ctx.updateType}:`, err);
   });
+
+  await applyBotProfile(bot.telegram, config.bot.adminId);
 
   if (config.bot.webhookUrl && config.nodeEnv === 'production') {
     await bot.launch({ webhook: { domain: config.bot.webhookUrl } });
