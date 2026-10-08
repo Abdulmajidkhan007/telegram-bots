@@ -7,14 +7,14 @@ const { directionsRows, subsRows } = require('../src/menus');
 
 const items = n => Array.from({ length: n }, (_, i) => ({ text: `b${i}`, callback_data: `x:${i}` }));
 
-test("grid: 6 tadan, 2 qator x 3 ustun, navigatsiya faqat kerak bo'lsa", () => {
+test("grid: 6 tadan, 3 qator x 2 ustun, navigatsiya faqat kerak bo'lsa", () => {
   const one = grid(items(5), 0, 'p');
-  assert.deepStrictEqual(one.rows.map(r => r.length), [3, 2]);
+  assert.deepStrictEqual(one.rows.map(r => r.length), [2, 2, 1]);
   assert.strictEqual(one.pages, 1);
 
   const first = grid(items(14), 0, 'p');
-  assert.deepStrictEqual(first.rows.slice(0, 2).map(r => r.length), [3, 3]);
-  assert.deepStrictEqual(first.rows[2].map(b => b.callback_data), ['noop', 'p:1']);   // ⬅️ yo'q
+  assert.deepStrictEqual(first.rows.slice(0, 3).map(r => r.length), [2, 2, 2]);
+  assert.deepStrictEqual(first.rows[3].map(b => b.callback_data), ['noop', 'p:1']);   // ⬅️ yo'q
 
   const last = grid(items(14), 2, 'p');
   assert.deepStrictEqual(last.rows[0].map(b => b.text), ['b12', 'b13']);

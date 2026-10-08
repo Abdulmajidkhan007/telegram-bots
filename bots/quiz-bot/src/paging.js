@@ -1,12 +1,12 @@
 // ============================================================
-//  Inline tugmalarni sahifalash: 2 qator x 3 ustun = 6 ta tugma,
+//  Inline tugmalarni sahifalash: 3 qator x 2 ustun = 6 ta tugma,
 //  pastda ⬅️ 1/3 ➡️. Yo'nalish va bo'limlar ko'payganda (40+) bitta
 //  ustunli uzun ro'yxat ekrandan chiqib ketardi.
 //  Toza funksiya (I/O yo'q) — test/paging.test.js da sinaladi.
 // ============================================================
-// Egasi so'ragan joylashuv: 6 ta tugma 2 qatorda. Uzun nomlar telefonda
-// "…" bilan qisqarsa — PER_ROW = 2 qilish kifoya (3 qator bo'ladi).
-const PER_ROW = 3;
+// Qatorda 2 ta: 3 ta bo'lganda telefonda "Dizayn (UI/", "Kiberxavfsi" kabi
+// nomlar kesilib, o'qib bo'lmay qolardi (egasi skrinshotda ko'rsatgan).
+const PER_ROW = 2;
 const PER_PAGE = 6;
 
 // items: [{ text, callback_data }]; navPrefix: "dirs" -> "dirs:2"

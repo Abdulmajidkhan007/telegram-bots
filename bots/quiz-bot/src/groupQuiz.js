@@ -13,6 +13,7 @@
 const storage = require('./storage');
 const questions = require('./questions');
 const menus = require('./menus');
+const { pollText, parseCount, countPrompt } = require('./format');
 const { COUNT_OPTIONS, TIME_OPTIONS } = require('../config');
 
 let BOT_ID = null;
@@ -41,7 +42,10 @@ function shuffle(arr) {
 function prepareQuestion(q) {
   const opts = (q.options || []).map((opt, i) => ({ opt, correct: i === q.correct }));
   const sh = shuffle(opts);
-  return { text: q.q || q.question || '', options: sh.map(x => x.opt), correct: sh.findIndex(x => x.correct) };
+  return {
+    text: q.q || q.question || '', options: sh.map(x => x.opt),
+    correct: sh.findIndex(x => x.correct), section: q.section || null
+  };
 }
 function fullName(user) {
   const n = [user.first_name, user.last_name].filter(Boolean).join(' ');
@@ -104,13 +108,17 @@ function renderSubs(bot, chatId, messageId, s, page = 0) {
 }
 function renderCount(bot, chatId, messageId) {
   const rows = [COUNT_OPTIONS.map(c => ({ text: c + ' ta', callback_data: 'gcnt:' + c }))];
+  rows.push([{ text: '✍️ Boshqa son', callback_data: 'gcnt:x' }]);
   rows.push([{ text: '⬅️ Orqaga', callback_data: 'gb:sub' }]);
   editTo(bot, chatId, messageId, "🔢 Nechta savol?", rows);
 }
 function renderTime(bot, chatId, messageId) {
   const rows = [TIME_OPTIONS.map(t => ({ text: t + 's', callback_data: 'gtm:' + t }))];
   rows.push([{ text: '⬅️ Orqaga', callback_data: 'gb:cnt' }]);
-  editTo(bot, chatId, messageId, "⏱ Har savolga necha soniya?", rows);
+  const text = "⏱ Har savolga necha soniya?";
+  // Son yozib yuborilganda tahrirlanadigan xabar yo'q — yangisini yuboramiz.
+  if (!messageId) { bot.sendMessage(chatId, text, { reply_markup: { inline_keyboard: rows } }); return; }
+  editTo(bot, chatId, messageId, text, rows);
 }
 function renderSchedule(bot, chatId, messageId) {
   const rows = [SCHEDULE_OPTIONS.map(o => ({ text: o.label, callback_data: 'gsch:' + o.key }))];
@@ -167,7 +175,13 @@ async function handleCallback(bot, query) {
   if (p[0] === 'gdir') { s.dir = p[1]; renderSubs(bot, chatId, messageId, s); return true; }
   if (p[0] === 'gdirp') { renderSubs(bot, chatId, messageId, s, parseInt(p[1], 10)); return true; }
   if (p[0] === 'gsub') { s.sub = p[1]; s.label = questions.getSubLabel(s.dir, s.sub); renderCount(bot, chatId, messageId); return true; }
-  if (p[0] === 'gcnt') { s.count = parseInt(p[1], 10); renderTime(bot, chatId, messageId); return true; }
+  if (p[0] === 'gcnt' && p[1] === 'x') {
+    s.awaitCount = true;
+    editTo(bot, chatId, messageId, countPrompt(questions.getQuestions(s.dir, s.sub).length),
+      [[{ text: '⬅️ Orqaga', callback_data: 'gb:cnt' }]]);
+    return true;
+  }
+  if (p[0] === 'gcnt') { s.awaitCount = false; s.count = parseInt(p[1], 10); renderTime(bot, chatId, messageId); return true; }
   if (p[0] === 'gtm') { s.seconds = parseInt(p[1], 10); renderSchedule(bot, chatId, messageId); return true; }
   if (p[0] === 'gsch') {
     const opt = SCHEDULE_OPTIONS.find(o => o.key === p[1]) || SCHEDULE_OPTIONS[0];
@@ -180,9 +194,25 @@ async function handleCallback(bot, query) {
   if (p[0] === 'gb') {
     if (p[1] === 'dir') { renderDirections(bot, chatId, messageId); return true; }
     if (p[1] === 'sub') { renderSubs(bot, chatId, messageId, s); return true; }
-    if (p[1] === 'cnt') { renderCount(bot, chatId, messageId); return true; }
+    if (p[1] === 'cnt') { s.awaitCount = false; renderCount(bot, chatId, messageId); return true; }
     if (p[1] === 'tm') { renderTime(bot, chatId, messageId); return true; }
   }
+  return true;
+}
+
+// ---------------- "✍️ Boshqa son": egasi yozgan son ----------------
+// true — xabar shu yerda ishlandi (egasi son kutilayotgan bosqichda edi).
+function isAwaitingCount(hostId) { return !!(setups[hostId] && setups[hostId].awaitCount); }
+function cancelCount(hostId) { if (setups[hostId]) setups[hostId].awaitCount = false; }
+function handleCountText(bot, chatId, hostId, text) {
+  const s = setups[hostId];
+  if (!s || !s.awaitCount) return false;
+  const r = parseCount(text, questions.getQuestions(s.dir, s.sub).length);
+  if (r.error) { bot.sendMessage(chatId, '⚠️ ' + r.error); return true; }
+  s.awaitCount = false;
+  s.count = r.n;
+  if (r.note) bot.sendMessage(chatId, 'ℹ️ ' + r.note);
+  renderTime(bot, chatId, null);
   return true;
 }
 
@@ -276,7 +306,7 @@ function sendNext(bot, groupId) {
   const q = session.list[session.index];
 
   bot.sendPoll(groupId,
-    '\u2753 ' + (session.index + 1) + '/' + session.list.length + '  \u2022  ' + q.text,
+    pollText(session.index + 1, session.list.length, q.section, q.text),
     q.options,
     { type: 'quiz', correct_option_id: q.correct, open_period: session.seconds, is_anonymous: false }
   ).then(msg => {
@@ -365,4 +395,7 @@ function finish(bot, groupId) {
   delete groupSessions[groupId];
 }
 
-module.exports = { setBotId, startHosting, handleCallback, handleMyChatMember, handleAnswer };
+module.exports = {
+  setBotId, startHosting, handleCallback, handleMyChatMember, handleAnswer,
+  isAwaitingCount, cancelCount, handleCountText
+};

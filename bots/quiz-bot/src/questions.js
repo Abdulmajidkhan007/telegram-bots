@@ -105,12 +105,19 @@ function getSubs(directionKey) {
     .map(([key, v]) => ({ key, label: v.label, count: v.questions.length, order: v.order }))
     .sort(byOrder);
 }
+// Har savolga "section" (masalan "🎨 Frontend › React") qo'shiladi: Aralash'da
+// savol qaysi bo'limdanligi boshqa yo'l bilan bilinmaydi. Nusxa qaytaramiz —
+// TREE dagi asl obyektlar (admin tahrirlaydigan) o'zgarmasin.
+function withSection(d, s) {
+  const section = `${d.emoji} ${d.label} › ${s.label}`;
+  return s.questions.map(q => ({ ...q, section }));
+}
 function getQuestions(directionKey, subKey) {
   const d = TREE[directionKey];
   if (!d) return [];
-  if (subKey === MIX_KEY) return Object.values(d.subs).flatMap(s => s.questions);
+  if (subKey === MIX_KEY) return Object.values(d.subs).flatMap(s => withSection(d, s));
   if (!d.subs[subKey]) return [];
-  return d.subs[subKey].questions;
+  return withSection(d, d.subs[subKey]);
 }
 function getSubLabel(directionKey, subKey) {
   const d = TREE[directionKey];
