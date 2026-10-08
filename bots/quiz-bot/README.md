@@ -7,7 +7,9 @@ IT yo'nalishlari va maktab fanlari bo'yicha Telegram test boti (Node.js, `node-t
 
 - Yakka test: yo'nalish → bo'lim → savol soni → har savolga vaqt → taymerli quiz poll'lar → natija va statistika
 - Guruh testi: bot guruhga e'lon tashlaydi, ishtirokchilar qatnashadi, reyting chiqadi
-- Yo'nalish va bo'limlar 6 tadan (2 qator x 3) sahifalab ko'rsatiladi, ⬅️ 1/3 ➡️ bilan varaqlanadi
+- Yo'nalish va bo'limlar 6 tadan (3 qator x 2) sahifalab ko'rsatiladi, ⬅️ 1/3 ➡️ bilan varaqlanadi
+- Savol soni: 5 / 10 / 20 yoki «✍️ Boshqa son» — istalgan son (1–100) yoziladi; bo'limda kamroq bo'lsa, bori beriladi
+- Har savolda qaysi yo'nalish va bo'limdanligi ko'rinadi (masalan «🎨 Frontend › React») — Aralash'da ayniqsa kerak
 - 🔀 **Aralash** — tanlangan yo'nalishning barcha bo'limlaridan tasodifiy savollar
 - Majburiy kanal obunasi (admin paneldan boshqariladi)
 - Welcome rasm + tanishtiruv matni (yangi foydalanuvchi `/start` bosganda)

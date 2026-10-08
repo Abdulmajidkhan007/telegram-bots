@@ -7,6 +7,7 @@
 // ============================================================
 const storage = require('./storage');
 const questions = require('./questions');
+const { pollText } = require('./format');
 
 const sessions = {};    // userId -> session
 const pollToUser = {};  // poll_id -> userId
@@ -28,7 +29,8 @@ function prepareQuestion(q) {
     text: q.q || q.question || '',
     options: sh.map(x => x.opt),
     correct: sh.findIndex(x => x.correct),
-    explanation: q.explanation || null
+    explanation: q.explanation || null,
+    section: q.section || null
   };
 }
 
@@ -67,7 +69,7 @@ function sendNext(bot, userId) {
 
   bot.sendPoll(
     s.chatId,
-    `❓ ${s.index + 1}/${s.list.length}  •  ${q.text}`,
+    pollText(s.index + 1, s.list.length, q.section, q.text),
     q.options,
     {
       type: 'quiz',

@@ -7,8 +7,9 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..', 'questions');
-// quiz.js savolga "❓ 20/20  •  " prefiksini qo'shadi; Telegram: savol ≤ 300, variant ≤ 100.
-const MAX_Q = 300 - 16;
+// format.pollText savolga "❓ 100/100  •  " (18 belgi) qo'shadi; Telegram: savol ≤ 300, variant ≤ 100.
+// Bo'lim nomi sig'masa qisqaradi, lekin savolning o'zi butun qolishi kerak.
+const MAX_Q = 300 - 18 - 1;
 const MAX_OPT = 100;
 const KEY_RE = /^[a-z0-9-]{1,30}$/;
 
@@ -34,7 +35,8 @@ test("savol fayllari: tuzilma, Telegram chegaralari, takrorlar", () => {
     assert.strictEqual(data.key, path.basename(file, '.json'), `${rel}: key fayl nomiga mos emas`);
     assert.ok(KEY_RE.test(data.key) && KEY_RE.test(dir), `${rel}: key faqat a-z 0-9 - (callback_data uchun)`);
     // Eng uzun callback: handlers.js dagi "tm:<dir>:<sub>:<soni>:<soniya>" — Telegram chegarasi 64 bayt.
-    assert.ok(Buffer.byteLength(`tm:${dir}:${data.key}:20:60`) <= 64, `${rel}: kalitlar juda uzun (callback_data > 64)`);
+    // Soni "✍️ Boshqa son" orqali 100 gacha (3 xona).
+    assert.ok(Buffer.byteLength(`tm:${dir}:${data.key}:100:60`) <= 64, `${rel}: kalitlar juda uzun (callback_data > 64)`);
     assert.ok(!seenKeys.has(`${dir}/${data.key}`));
     seenKeys.add(`${dir}/${data.key}`);
     // Bitta yo'nalishdagi fayllar bir xil nom/emoji bersin — aks holda menyu tasodifiy birini oladi.

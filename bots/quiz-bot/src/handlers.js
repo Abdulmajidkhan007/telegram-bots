@@ -11,8 +11,16 @@ const quiz = require('./quiz');
 const groupQuiz = require('./groupQuiz');
 const admin = require('./admin');
 const menus = require('./menus');
+const { parseCount, countPrompt } = require('./format');
 
 const states = {}; // userId -> { step, phone }
+const countWait = {}; // userId -> { dk, sk } — "✍️ Boshqa son" bosilgan, son kutilmoqda
+
+// Menyu tugmalari: son kutilayotganda bosilsa — kutish bekor, tugma odatdagidek ishlaydi.
+const MENU_TEXTS = new Set([
+  '📝 Test ishlash', '👥 Guruhda test', '📊 Statistikam', '➕ Savol qo\'shish',
+  '🆕 Yangi bo\'lim', '📚 Yangi yo\'nalish', '🛠 Admin panel'
+]);
 
 // Botga kirgandagi tanishtiruv matni
 const INTRO =
@@ -96,13 +104,17 @@ function showSubs(bot, chatId, messageId, dk, page = 0) {
 }
 function showCounts(bot, chatId, messageId, dk, sk) {
   const rows = [COUNT_OPTIONS.map(c => ({ text: `${c} ta`, callback_data: `cnt:${dk}:${sk}:${c}` }))];
+  rows.push([{ text: '✍️ Boshqa son', callback_data: `cntx:${dk}:${sk}` }]);
   rows.push([{ text: '⬅️ Orqaga', callback_data: `dir:${dk}` }]);
   editTo(bot, chatId, messageId, "🔢 Nechta savol?", rows);
 }
 function showTimes(bot, chatId, messageId, dk, sk, count) {
   const rows = [TIME_OPTIONS.map(t => ({ text: `${t}s`, callback_data: `tm:${dk}:${sk}:${count}:${t}` }))];
   rows.push([{ text: '⬅️ Orqaga', callback_data: `sub:${dk}:${sk}` }]);
-  editTo(bot, chatId, messageId, "⏱ Har savolga necha soniya?", rows);
+  const text = "⏱ Har savolga necha soniya?";
+  // Son yozib yuborilganda tahrirlanadigan xabar yo'q — yangisini yuboramiz.
+  if (!messageId) { bot.sendMessage(chatId, text, { reply_markup: { inline_keyboard: rows } }); return; }
+  editTo(bot, chatId, messageId, text, rows);
 }
 
 // ---------------- Statistika ----------------
@@ -232,6 +244,21 @@ function register(bot) {
     const user = storage.getUser(userId);
     if (!user || !user.name) { bot.sendMessage(chatId, "/start bosib ro'yxatdan o'ting."); return; }
 
+    if (MENU_TEXTS.has(text)) {
+      delete countWait[userId];
+      groupQuiz.cancelCount(userId);
+    } else if (countWait[userId]) {
+      const { dk, sk } = countWait[userId];
+      const r = parseCount(text, questions.getQuestions(dk, sk).length);
+      if (r.error) { bot.sendMessage(chatId, '⚠️ ' + r.error); return; }
+      delete countWait[userId];
+      if (r.note) bot.sendMessage(chatId, 'ℹ️ ' + r.note);
+      showTimes(bot, chatId, null, dk, sk, r.n);
+      return;
+    } else if (groupQuiz.handleCountText(bot, chatId, userId, text)) {
+      return;
+    }
+
     if (text === '📝 Test ishlash') { await actTest(bot, chatId, userId); return; }
     if (text === '👥 Guruhda test') { await actGroup(bot, chatId, userId); return; }
     if (text === '📊 Statistikam') { actStats(bot, chatId, userId); return; }
@@ -280,7 +307,14 @@ function register(bot) {
       }
       if (p[0] === 'dir') { await bot.answerCallbackQuery(query.id); showSubs(bot, chatId, messageId, p[1]); return; }
       if (p[0] === 'dirp') { await bot.answerCallbackQuery(query.id); showSubs(bot, chatId, messageId, p[1], parseInt(p[2], 10)); return; }
-      if (p[0] === 'sub') { await bot.answerCallbackQuery(query.id); showCounts(bot, chatId, messageId, p[1], p[2]); return; }
+      if (p[0] === 'cntx') {
+        await bot.answerCallbackQuery(query.id);
+        countWait[userId] = { dk: p[1], sk: p[2] };
+        editTo(bot, chatId, messageId, countPrompt(questions.getQuestions(p[1], p[2]).length),
+          [[{ text: '⬅️ Orqaga', callback_data: `sub:${p[1]}:${p[2]}` }]]);
+        return;
+      }
+      if (p[0] === 'sub') { await bot.answerCallbackQuery(query.id); delete countWait[userId]; showCounts(bot, chatId, messageId, p[1], p[2]); return; }
       if (p[0] === 'cnt') { await bot.answerCallbackQuery(query.id); showTimes(bot, chatId, messageId, p[1], p[2], parseInt(p[3], 10)); return; }
       if (p[0] === 'tm') {
         await bot.answerCallbackQuery(query.id, { text: '🚀 Boshlandi!' });
