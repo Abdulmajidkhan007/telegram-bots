@@ -1,0 +1,32 @@
+{
+  "direction": "mobile",
+  "directionLabel": "Mobile",
+  "directionEmoji": "📱",
+  "directionOrder": 3,
+  "key": "dart",
+  "label": "Dart",
+  "order": 2,
+  "questions": [
+    {"q": "Dart'da qiymati bir marta beriladigan o'zgaruvchi?", "options": ["final", "var", "dynamic", "let"], "correct": 0},
+    {"q": "Kompilyatsiya vaqtidagi konstanta?", "options": ["const", "final", "static", "readonly"], "correct": 0},
+    {"q": "Null bo'lishi mumkin bo'lgan tur?", "options": ["String?", "String!", "nullable String", "String*"], "correct": 0},
+    {"q": "Asinxron natija turi?", "options": ["Future", "Promise", "Task", "Deferred"], "correct": 0},
+    {"q": "Ketma-ket asinxron qiymatlar oqimi?", "options": ["Stream", "Future", "List", "Iterator"], "correct": 0},
+    {"q": "Dart dastur kirish nuqtasi?", "options": ["void main()", "start()", "run()", "init()"], "correct": 0},
+    {"q": "Satr ichida o'zgaruvchi qo'yish?", "options": ["'$ism'", "'{ism}'", "'%ism'", "'#ism'"], "correct": 0},
+    {"q": "Dart'da ro'yxat turi?", "options": ["List", "Array", "Vector", "Seq"], "correct": 0},
+    {"q": "Named (nomli) parametrlar qanday yoziladi?", "options": ["{} ichida", "[] ichida", "() ichida faqat", "<> ichida"], "correct": 0},
+    {"q": "Null bo'lsa standart qiymat operatori?", "options": ["??", "?:", "||", "!!"], "correct": 0},
+    {"q": "Klass kengaytmasi (mixin) kalit so'zi?", "options": ["with", "extends faqat", "implements faqat", "mix"], "correct": 0},
+    {"q": "Dart'da asinxron funksiya?", "options": ["Future<void> f() async {}", "async f() =>", "def async f", "void f() await"], "correct": 0},
+    {"q": "Dart'da xaritani (Map) yaratish?", "options": ["{'kalit': 'qiymat'}", "['kalit': 'qiymat']", "Map('kalit') majburiy", "('kalit', 'qiymat')"], "correct": 0},
+    {"q": "Dart'da klass konstruktori qisqa yozuvi?", "options": ["Odam(this.ism, this.yosh);", "constructor(ism, yosh)", "__init__(ism)", "new Odam(ism)"], "correct": 0},
+    {"q": "Dart'da istisnoni ushlash?", "options": ["try { } on Exception catch (e) { }", "try / except", "do / catch", "guard"], "correct": 0},
+    {"q": "Late kalit so'zi nima uchun?", "options": ["Keyinroq initsializatsiya qilinadigan nullsiz o'zgaruvchi", "Sekin ishlash", "Asinxron", "Ixtiyoriy argument"], "correct": 0},
+    {"q": "Dart'da kengaytma (extension) nima?", "options": ["Mavjud turga yangi metod qo'shish", "Meros", "Interfeys", "Modul"], "correct": 0},
+    {"q": "Dart paket ombori?", "options": ["pub.dev", "npmjs.com", "pypi.org", "maven.org"], "correct": 0},
+    {"q": "Spread operatori Dart'da?", "options": ["...", "**", "&&", "::"], "correct": 0},
+    {"q": "Dart'da kaskad notatsiya?", "options": ["..", "->", "=>", "::"], "correct": 0},
+    {"q": "Dart'da final va const farqi?", "options": ["const kompilyatsiya vaqtida, final ishga tushganda aniqlanadi", "Farqi yo'q", "final kompilyatsiya vaqtida", "const o'zgaradi"], "correct": 0}
+  ]
+}

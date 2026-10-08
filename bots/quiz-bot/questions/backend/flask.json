@@ -1,0 +1,31 @@
+{
+  "direction": "backend",
+  "directionLabel": "Backend",
+  "directionEmoji": "⚙️",
+  "directionOrder": 2,
+  "key": "flask",
+  "label": "Flask",
+  "order": 5,
+  "questions": [
+    {"q": "Flask qanday freymvork hisoblanadi?", "options": ["Mikro-freymvork", "To'liq stack monolit", "Frontend kutubxona", "Ma'lumotlar bazasi"], "correct": 0},
+    {"q": "Marshrut dekoratori?", "options": ["@app.route(\"/\")", "@app.get_route(\"/\")", "@route(\"/\") faqat", "app.path(\"/\")"], "correct": 0},
+    {"q": "Flask'da shablon dvigateli?", "options": ["Jinja2", "Handlebars", "EJS", "Pug"], "correct": 0},
+    {"q": "Shablonni render qiluvchi funksiya?", "options": ["render_template", "render_html", "template()", "show"], "correct": 0},
+    {"q": "JSON javob qaytarish?", "options": ["jsonify(...)", "json.render(...)", "return_json(...)", "send_json(...)"], "correct": 0},
+    {"q": "So'rov ma'lumotlari obyekti?", "options": ["request", "req", "ctx", "input"], "correct": 0},
+    {"q": "Blueprint nima uchun?", "options": ["Ilovani modullarga bo'lish uchun", "Ma'lumotlar bazasi uchun", "Test uchun", "Kesh uchun"], "correct": 0},
+    {"q": "Flask'da sessiya imzolash uchun nima kerak?", "options": ["SECRET_KEY", "API_KEY", "DB_URL", "PORT"], "correct": 0},
+    {"q": "Flask'da ORM uchun mashhur kengaytma?", "options": ["Flask-SQLAlchemy", "Flask-ORM", "Django ORM", "Prisma"], "correct": 0},
+    {"q": "Flask asosan qaysi interfeys bo'yicha ishlaydi?", "options": ["WSGI", "ASGI faqat", "CGI", "FTP"], "correct": 0},
+    {"q": "Flask dev serverini ishga tushirish?", "options": ["flask run", "flask start", "python flask", "flask serve"], "correct": 0},
+    {"q": "Flask'da URL yaratish funksiyasi?", "options": ["url_for()", "make_url()", "route_to()", "link()"], "correct": 0},
+    {"q": "Flask'da boshqa marshrutga yo'naltirish?", "options": ["redirect()", "forward()", "goto()", "send()"], "correct": 0},
+    {"q": "Flask'da xato sahifasi (404) uchun dekorator?", "options": ["@app.errorhandler(404)", "@app.error(404)", "@app.on404", "@handle(404)"], "correct": 0},
+    {"q": "Flask'da sessiyada ma'lumot saqlash obyekti?", "options": ["session", "cookie", "g faqat", "store"], "correct": 0},
+    {"q": "Flask'da so'rov davomida vaqtinchalik global obyekt?", "options": ["g", "session", "app", "config"], "correct": 0},
+    {"q": "Flask'da formadan ma'lumot olish?", "options": ["request.form", "request.body", "request.post", "form.data faqat"], "correct": 0},
+    {"q": "Flask'da migratsiyalar uchun kengaytma?", "options": ["Flask-Migrate", "Flask-Admin", "Flask-Login", "Flask-CORS"], "correct": 0},
+    {"q": "Flask'da foydalanuvchi sessiyalarini boshqaruvchi kengaytma?", "options": ["Flask-Login", "Flask-Session faqat", "Flask-User majburiy", "Flask-Auth"], "correct": 0},
+    {"q": "Production'da Flask ilovasini ishga tushirish uchun WSGI server?", "options": ["Gunicorn", "flask run", "Uvicorn faqat", "Nodemon"], "correct": 0}
+  ]
+}

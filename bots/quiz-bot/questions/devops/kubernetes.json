@@ -1,0 +1,31 @@
+{
+  "direction": "devops",
+  "directionLabel": "DevOps",
+  "directionEmoji": "🐳",
+  "directionOrder": 5,
+  "key": "kubernetes",
+  "label": "Kubernetes",
+  "order": 5,
+  "questions": [
+    {"q": "Kubernetes nima?", "options": ["Konteynerlarni orkestratsiya qilish tizimi", "Dasturlash tili", "Ma'lumotlar bazasi", "Brauzer"], "correct": 0},
+    {"q": "Kubernetes'dagi eng kichik joylashtiriladigan birlik?", "options": ["Pod", "Node", "Cluster", "Service"], "correct": 0},
+    {"q": "Kubernetes buyruq vositasi?", "options": ["kubectl", "kube", "k8s-cli", "docker"], "correct": 0},
+    {"q": "Pod'lar nusxasi va yangilanishini boshqaruvchi obyekt?", "options": ["Deployment", "Service", "Secret", "Volume"], "correct": 0},
+    {"q": "Pod'larga barqaror tarmoq manzili beruvchi obyekt?", "options": ["Service", "Deployment", "ConfigMap", "Job"], "correct": 0},
+    {"q": "Maxfiy ma'lumotlar (parol) obyekti?", "options": ["Secret", "ConfigMap", "Pod", "Ingress"], "correct": 0},
+    {"q": "Oddiy sozlamalar obyekti?", "options": ["ConfigMap", "Secret", "Service", "Node"], "correct": 0},
+    {"q": "Tashqi HTTP trafikni ichkariga yo'naltiruvchi?", "options": ["Ingress", "Pod", "ReplicaSet", "Volume"], "correct": 0},
+    {"q": "Kubernetes paket menejeri?", "options": ["Helm", "npm", "apt", "pip"], "correct": 0},
+    {"q": "Kubernetes qisqartmasi?", "options": ["K8s", "Kb8", "KBS", "Kube8"], "correct": 0},
+    {"q": "Pod'lar ro'yxatini ko'rish?", "options": ["kubectl get pods", "kubectl list pods", "kubectl pods", "kube show pods"], "correct": 0},
+    {"q": "YAML manifestni qo'llash?", "options": ["kubectl apply -f fayl.yaml", "kubectl run fayl.yaml", "kubectl load fayl", "kubectl start -f"], "correct": 0},
+    {"q": "Pod loglarini ko'rish?", "options": ["kubectl logs pod-nomi", "kubectl show logs", "kubectl get logs", "kubectl tail pod"], "correct": 0},
+    {"q": "Deployment nusxalar sonini oshirish?", "options": ["kubectl scale --replicas=3", "kubectl grow 3", "kubectl copy 3", "kubectl add 3"], "correct": 0},
+    {"q": "Yuklamaga qarab pod'lar sonini avtomatik o'zgartiruvchi?", "options": ["HorizontalPodAutoscaler", "ReplicaSet faqat", "CronJob", "DaemonSet"], "correct": 0},
+    {"q": "Har node'da bittadan pod ishlatuvchi obyekt?", "options": ["DaemonSet", "Deployment", "StatefulSet", "Job"], "correct": 0},
+    {"q": "Holatli ilovalar (baza) uchun obyekt?", "options": ["StatefulSet", "Deployment", "DaemonSet", "ReplicaSet"], "correct": 0},
+    {"q": "Rejalashtirilgan vazifalar obyekti?", "options": ["CronJob", "Job faqat", "Timer", "Schedule"], "correct": 0},
+    {"q": "Klasterni mantiqiy bo'lish?", "options": ["Namespace", "Node", "Label faqat", "Pod"], "correct": 0},
+    {"q": "Doimiy saqlash so'rovi obyekti?", "options": ["PersistentVolumeClaim", "ConfigMap", "Secret", "Ingress"], "correct": 0}
+  ]
+}

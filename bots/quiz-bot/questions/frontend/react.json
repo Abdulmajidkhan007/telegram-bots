@@ -3,6 +3,9 @@
   "directionLabel": "Frontend",
   "key": "react",
   "label": "React",
+  "directionEmoji": "🎨",
+  "directionOrder": 1,
+  "order": 5,
   "questions": [
     { "q": "React komponentlari odatda qaysi sintaksisda yoziladi?", "options": ["JSX", "XML", "YAML", "HTML5"], "correct": 0 },
     { "q": "Komponent ichida holatni (state) boshqarish uchun qaysi Hook?", "options": ["useState", "useEffect", "useRef", "useState yo'q"], "correct": 0 },

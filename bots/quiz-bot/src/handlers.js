@@ -10,6 +10,7 @@ const questions = require('./questions');
 const quiz = require('./quiz');
 const groupQuiz = require('./groupQuiz');
 const admin = require('./admin');
+const menus = require('./menus');
 
 const states = {}; // userId -> { step, phone }
 
@@ -75,8 +76,8 @@ function mainMenu(bot, chatId, name, userId) {
 }
 
 // ---------------- Kategoriya navigatsiyasi (yakka test) ----------------
-function directionsKeyboard() {
-  return questions.getDirections().map(d => [{ text: `${d.emoji} ${d.label}`, callback_data: `dir:${d.key}` }]);
+function directionsKeyboard(page = 0) {
+  return menus.directionsRows(questions.getDirections(), page, { pick: k => `dir:${k}`, nav: 'dirs' });
 }
 function showDirections(bot, chatId) {
   const rows = directionsKeyboard();
@@ -87,9 +88,10 @@ function editTo(bot, chatId, messageId, text, rows) {
   bot.editMessageText(text, { chat_id: chatId, message_id: messageId, reply_markup: { inline_keyboard: rows } })
     .catch(() => bot.sendMessage(chatId, text, { reply_markup: { inline_keyboard: rows } }));
 }
-function showSubs(bot, chatId, messageId, dk) {
-  const rows = questions.getSubs(dk).map(s => [{ text: `${s.label} (${s.count})`, callback_data: `sub:${dk}:${s.key}` }]);
-  rows.push([{ text: '⬅️ Orqaga', callback_data: 'back:dirs' }]);
+function showSubs(bot, chatId, messageId, dk, page = 0) {
+  const rows = menus.subsRows(questions.getSubs(dk), page, {
+    pick: k => `sub:${dk}:${k}`, nav: `dirp:${dk}`, mix: `sub:${dk}:${questions.MIX_KEY}`, back: 'back:dirs'
+  });
   editTo(bot, chatId, messageId, "📚 Bo'limni tanlang:", rows);
 }
 function showCounts(bot, chatId, messageId, dk, sk) {
@@ -263,6 +265,7 @@ function register(bot) {
         }
         return;
       }
+      if (data === 'noop') { await bot.answerCallbackQuery(query.id); return; }
       if (data === 'back:dirs') {
         await bot.answerCallbackQuery(query.id);
         editTo(bot, chatId, messageId, "🧭 Yo'nalishni tanlang:", directionsKeyboard());
@@ -270,7 +273,13 @@ function register(bot) {
       }
 
       const p = data.split(':');
+      if (p[0] === 'dirs') {
+        await bot.answerCallbackQuery(query.id);
+        editTo(bot, chatId, messageId, "🧭 Yo'nalishni tanlang:", directionsKeyboard(parseInt(p[1], 10)));
+        return;
+      }
       if (p[0] === 'dir') { await bot.answerCallbackQuery(query.id); showSubs(bot, chatId, messageId, p[1]); return; }
+      if (p[0] === 'dirp') { await bot.answerCallbackQuery(query.id); showSubs(bot, chatId, messageId, p[1], parseInt(p[2], 10)); return; }
       if (p[0] === 'sub') { await bot.answerCallbackQuery(query.id); showCounts(bot, chatId, messageId, p[1], p[2]); return; }
       if (p[0] === 'cnt') { await bot.answerCallbackQuery(query.id); showTimes(bot, chatId, messageId, p[1], p[2], parseInt(p[3], 10)); return; }
       if (p[0] === 'tm') {

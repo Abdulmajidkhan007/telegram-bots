@@ -1,0 +1,29 @@
+{
+  "direction": "frontend",
+  "directionLabel": "Frontend",
+  "directionEmoji": "🎨",
+  "directionOrder": 1,
+  "key": "sass",
+  "label": "Sass / SCSS",
+  "order": 13,
+  "questions": [
+    {"q": "Sass nima?", "options": ["CSS preprotsessori", "JavaScript kutubxonasi", "Ma'lumotlar bazasi", "Brauzer"], "correct": 0},
+    {"q": "SCSS'da o'zgaruvchi qanday e'lon qilinadi?", "options": ["$rang: red;", "--rang: red;", "@rang: red;", "var rang = red;"], "correct": 0},
+    {"q": "Qayta ishlatiladigan uslublar bloki?", "options": ["@mixin", "@function faqat", "@block", "@template"], "correct": 0},
+    {"q": "Mixin'ni chaqirish?", "options": ["@include nom;", "@use nom;", "@call nom;", "@mixin nom;"], "correct": 0},
+    {"q": "Boshqa selektor uslublarini meros olish?", "options": ["@extend", "@include", "@inherit", "@import faqat"], "correct": 0},
+    {"q": "Ichma-ich selektorlarda ota selektorga murojaat belgisi?", "options": ["&", "$", "@", "%"], "correct": 0},
+    {"q": "Faqat extend uchun ishlatiladigan placeholder selektor belgisi?", "options": ["%", "#", "&", "!"], "correct": 0},
+    {"q": "Modul tizimida fayl ulashning zamonaviy usuli?", "options": ["@use", "@import faqat", "@require", "@include"], "correct": 0},
+    {"q": "Partial fayl nomi qanday boshlanadi?", "options": ["_ (pastki chiziq)", "@", "$", "-"], "correct": 0},
+    {"q": "SCSS'da sikl direktivasi?", "options": ["@each yoki @for", "for()", "v-for", "loop"], "correct": 0},
+    {"q": "SCSS'da o'zgaruvchi bilan arifmetik amal (masalan, $oraliq * 2) mumkinmi?", "options": ["Ha", "Yo'q, umuman mumkin emas", "Faqat ranglarda", "Faqat media query ichida"], "correct": 0},
+    {"q": "Sass'da shart direktivasi?", "options": ["@if / @else", "if() faqat", "@when", "v-if"], "correct": 0},
+    {"q": "Sass'da funksiya e'lon qilish?", "options": ["@function", "@mixin faqat", "@def", "function()"], "correct": 0},
+    {"q": "Sass funksiyasidan qiymat qaytarish?", "options": ["@return", "return", "@output", "@yield"], "correct": 0},
+    {"q": "Rangni ochroq qilish (zamonaviy modul) uchun?", "options": ["color.adjust($rang, $lightness: 10%)", "lighter($rang)", "brighten()", "light()"], "correct": 0},
+    {"q": "SCSS izohi qaysi biri natijaviy CSS'ga tushmaydi?", "options": ["// izoh", "/* izoh */", "<!-- izoh -->", "# izoh"], "correct": 0},
+    {"q": "Sass faylni CSS'ga o'girish jarayoni nima deyiladi?", "options": ["Kompilyatsiya", "Minifikatsiya", "Transpilyatsiya faqat", "Bundling"], "correct": 0},
+    {"q": "Sass'ning ikki sintaksisi?", "options": ["SCSS va indentatsiyali Sass", "LESS va SCSS", "Stylus va Sass", "CSS va SCSS"], "correct": 0}
+  ]
+}

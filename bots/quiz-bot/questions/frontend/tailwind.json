@@ -1,0 +1,29 @@
+{
+  "direction": "frontend",
+  "directionLabel": "Frontend",
+  "directionEmoji": "🎨",
+  "directionOrder": 1,
+  "key": "tailwind",
+  "label": "Tailwind CSS",
+  "order": 12,
+  "questions": [
+    {"q": "Tailwind CSS qanday yondashuvga asoslangan?", "options": ["Utility-first (yordamchi klasslar)", "Komponent kutubxonasi", "CSS-in-JS", "BEM"], "correct": 0},
+    {"q": "Padding 4 birlik (1rem) beruvchi klass?", "options": ["p-4", "pad-4", "padding-4", "m-4"], "correct": 0},
+    {"q": "Margin top klassi?", "options": ["mt-4", "mt:4", "margin-t-4", "top-m-4"], "correct": 0},
+    {"q": "Flex konteyner klassi?", "options": ["flex", "d-flex", "display-flex", "flexbox"], "correct": 0},
+    {"q": "Elementlarni markazga (asosiy o'q) tekislash klassi?", "options": ["justify-center", "items-center", "text-center", "center"], "correct": 0},
+    {"q": "Elementlarni ko'ndalang o'q bo'ylab markazlash?", "options": ["items-center", "justify-center", "align-center", "content-center"], "correct": 0},
+    {"q": "Matnni qalin qilish klassi?", "options": ["font-bold", "text-bold", "bold", "fw-bold"], "correct": 0},
+    {"q": "Matn rangini ko'k qilish?", "options": ["text-blue-500", "color-blue-500", "blue-text", "font-blue"], "correct": 0},
+    {"q": "Fon rangi klassi?", "options": ["bg-red-500", "background-red", "red-bg", "fill-red"], "correct": 0},
+    {"q": "O'rta ekrandan boshlab qo'llanadigan prefiks?", "options": ["md:", "medium-", "@md", "screen-md"], "correct": 0},
+    {"q": "Tungi rejim uchun prefiks?", "options": ["dark:", "night:", "theme-dark", "mode-dark"], "correct": 0},
+    {"q": "Hover holati prefiksi?", "options": ["hover:", "on-hover-", ":hover", "mouse:"], "correct": 0},
+    {"q": "Burchaklarni yumaloqlash klassi?", "options": ["rounded", "radius", "round-corners", "border-round"], "correct": 0},
+    {"q": "To'liq kenglik klassi?", "options": ["w-full", "width-100", "w-100%", "full-width"], "correct": 0},
+    {"q": "Grid'da 3 ustun klassi?", "options": ["grid-cols-3", "grid-3", "cols-3", "columns-3"], "correct": 0},
+    {"q": "Elementlar orasidagi masofa (gap) klassi?", "options": ["gap-4", "space-4", "gutter-4", "between-4"], "correct": 0},
+    {"q": "Tasodifiy (arbitrary) qiymat yozish usuli?", "options": ["w-[350px]", "w-{350px}", "w(350px)", "w:350px"], "correct": 0},
+    {"q": "Ishlatilmagan klasslar production'da qanday kamayadi?", "options": ["Kontent fayllarini skanerlab faqat ishlatilganlarini yaratadi", "Qo'lda o'chiriladi", "Hech qachon", "CDN orqali"], "correct": 0}
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "direction": "general",
+  "directionLabel": "Umumiy IT",
+  "directionEmoji": "💡",
+  "directionOrder": 7,
+  "key": "algoritmlar",
+  "label": "Algoritmlar va ma'lumotlar tuzilmasi",
+  "order": 2,
+  "questions": [
+    {"q": "Big O nimani o'lchaydi?", "options": ["Algoritmning o'sish tezligini (murakkabligini)", "Fayl hajmini", "Ekran o'lchamini", "Kod qatorlarini"], "correct": 0},
+    {"q": "Massivdan indeks bo'yicha element olish murakkabligi?", "options": ["O(1)", "O(n)", "O(log n)", "O(n²)"], "correct": 0},
+    {"q": "Saralangan massivda ikkilik qidiruv murakkabligi?", "options": ["O(log n)", "O(n)", "O(1)", "O(n log n)"], "correct": 0},
+    {"q": "Chiziqli qidiruv murakkabligi?", "options": ["O(n)", "O(1)", "O(log n)", "O(n²)"], "correct": 0},
+    {"q": "Pufakcha (bubble) saralash eng yomon holatda?", "options": ["O(n²)", "O(n)", "O(log n)", "O(1)"], "correct": 0},
+    {"q": "Merge sort murakkabligi?", "options": ["O(n log n)", "O(n²)", "O(n)", "O(1)"], "correct": 0},
+    {"q": "LIFO tamoyilida ishlaydigan tuzilma?", "options": ["Stek (stack)", "Navbat (queue)", "Daraxt", "Graf"], "correct": 0},
+    {"q": "FIFO tamoyilida ishlaydigan tuzilma?", "options": ["Navbat (queue)", "Stek", "Xesh jadval", "Daraxt"], "correct": 0},
+    {"q": "Kalit bo'yicha o'rtacha O(1) da qidiruvchi tuzilma?", "options": ["Xesh jadval", "Bog'langan ro'yxat", "Stek", "Massiv qidiruvi"], "correct": 0},
+    {"q": "Har tugun keyingisiga ko'rsatkich saqlovchi tuzilma?", "options": ["Bog'langan ro'yxat (linked list)", "Massiv", "Stek", "Xesh"], "correct": 0},
+    {"q": "Ikkilik daraxtda har tugunda nechta farzand bo'lishi mumkin?", "options": ["Ko'pi bilan 2", "Faqat 1", "Cheksiz", "Aniq 3"], "correct": 0},
+    {"q": "Rekursiya nima?", "options": ["Funksiyaning o'zini o'zi chaqirishi", "Sikl", "Xato", "Massiv"], "correct": 0},
+    {"q": "Rekursiyada to'xtash sharti nima deyiladi?", "options": ["Bazaviy holat (base case)", "Sikl", "Indeks", "Ko'rsatkich"], "correct": 0},
+    {"q": "Grafda eng qisqa yo'lni topish algoritmi?", "options": ["Dijkstra", "Bubble sort", "Binary search", "Quick sort"], "correct": 0},
+    {"q": "Grafni qatlamma-qatlam aylanish?", "options": ["BFS (kenglik bo'yicha)", "DFS", "Binary search", "Merge"], "correct": 0},
+    {"q": "Grafni chuqurlik bo'yicha aylanish?", "options": ["DFS", "BFS", "Dijkstra", "Prim"], "correct": 0},
+    {"q": "Dinamik dasturlash g'oyasi?", "options": ["Qism masalalar natijasini saqlab qayta ishlatish", "Tasodifiy tanlash", "Faqat rekursiya", "Massivni saralash"], "correct": 0},
+    {"q": "Quick sort o'rtacha murakkabligi?", "options": ["O(n log n)", "O(n²) doim", "O(n)", "O(log n)"], "correct": 0},
+    {"q": "O'rnatilgan ikkita for sikli (n x n) murakkabligi?", "options": ["O(n²)", "O(n)", "O(2n)", "O(log n)"], "correct": 0},
+    {"q": "Greedy (ochko'z) algoritm nima?", "options": ["Har qadamda eng yaxshi ko'ringan tanlovni qiladi", "Hamma variantni sinaydi", "Tasodifiy", "Faqat saralaydi"], "correct": 0},
+    {"q": "Ustuvorlik navbati odatda qanday tuzilma bilan yasaladi?", "options": ["Heap (uyum)", "Stek", "Massiv faqat", "Bog'langan ro'yxat faqat"], "correct": 0},
+    {"q": "Fibonachchi ketma-ketligida 0, 1, 1, 2, 3, 5 dan keyingisi?", "options": ["8", "7", "6", "10"], "correct": 0}
+  ]
+}

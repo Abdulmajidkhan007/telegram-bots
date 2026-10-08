@@ -1,0 +1,33 @@
+{
+  "direction": "backend",
+  "directionLabel": "Backend",
+  "directionEmoji": "⚙️",
+  "directionOrder": 2,
+  "key": "laravel",
+  "label": "Laravel",
+  "order": 13,
+  "questions": [
+    {"q": "Laravel qaysi tilda?", "options": ["PHP", "Ruby", "Python", "JavaScript"], "correct": 0},
+    {"q": "Laravel CLI vositasi?", "options": ["artisan", "laravel-cli", "composer faqat", "php-cli"], "correct": 0},
+    {"q": "Laravel ORM nomi?", "options": ["Eloquent", "Doctrine", "Hibernate", "Sequelize"], "correct": 0},
+    {"q": "Laravel shablon dvigateli?", "options": ["Blade", "Twig", "Smarty", "Jinja"], "correct": 0},
+    {"q": "Model yaratish buyrug'i?", "options": ["php artisan make:model Nom", "php artisan model Nom", "laravel new model", "artisan create:model"], "correct": 0},
+    {"q": "Migratsiyalarni ishga tushirish?", "options": ["php artisan migrate", "php artisan db:run", "artisan migrate:make", "laravel migrate"], "correct": 0},
+    {"q": "Marshrutlar fayli (web)?", "options": ["routes/web.php", "routes.php", "app/routes.js", "config/routes.php"], "correct": 0},
+    {"q": "Blade'da o'zgaruvchi chiqarish?", "options": ["{{ $nom }}", "{% nom %}", "<?= nom ?> faqat", "${nom}"], "correct": 0},
+    {"q": "Muhit sozlamalari fayli?", "options": [".env", "config.ini", "settings.php", "app.json"], "correct": 0},
+    {"q": "Laravel'da navbat (queue) vazifasi nima uchun?", "options": ["Og'ir ishlarni fonda bajarish uchun", "CSS uchun", "Marshrut uchun", "Shablon uchun"], "correct": 0},
+    {"q": "Kirishni tekshiruvchi qatlam?", "options": ["Middleware", "Seeder", "Factory", "Migration"], "correct": 0},
+    {"q": "Test ma'lumot to'ldirish uchun klasslar?", "options": ["Seeder va Factory", "Controller", "Middleware", "Provider"], "correct": 0},
+    {"q": "Kontroller yaratish buyrug'i?", "options": ["php artisan make:controller Nom", "php artisan controller Nom", "laravel make controller", "artisan new:controller"], "correct": 0},
+    {"q": "Lokal serverni ishga tushirish?", "options": ["php artisan serve", "php artisan run", "laravel serve", "php -S majburiy"], "correct": 0},
+    {"q": "Eloquent'da bog'lanish \"bir-ko'p\"?", "options": ["hasMany", "belongsToMany", "hasOne", "morphTo"], "correct": 0},
+    {"q": "Eloquent'da teskari \"ko'p-bir\" bog'lanish?", "options": ["belongsTo", "hasMany", "hasOne", "morphMany"], "correct": 0},
+    {"q": "Blade'da shablondan meros olish?", "options": ["@extends", "@include faqat", "@inherit", "@parent"], "correct": 0},
+    {"q": "Blade'da bo'limni to'ldirish?", "options": ["@section ... @endsection", "@block", "@fill", "@part"], "correct": 0},
+    {"q": "Laravel'da validatsiya qisqa usuli (controller ichida)?", "options": ["$request->validate([...])", "validate($request)", "Validator::check()", "$request->rules()"], "correct": 0},
+    {"q": "Laravel autentifikatsiya starter kiti?", "options": ["Laravel Breeze (yoki Jetstream)", "Laravel Auth majburiy", "Passport faqat", "Sanctum UI"], "correct": 0},
+    {"q": "API token autentifikatsiyasi uchun yengil paket?", "options": ["Laravel Sanctum", "Laravel Horizon", "Laravel Echo", "Laravel Mix"], "correct": 0},
+    {"q": "Rejalashtirilgan vazifalar (cron) uchun?", "options": ["Task Scheduling (php artisan schedule:run)", "Queue faqat", "Seeder", "Events"], "correct": 0}
+  ]
+}

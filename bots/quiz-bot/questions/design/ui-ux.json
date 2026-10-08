@@ -1,0 +1,31 @@
+{
+  "direction": "design",
+  "directionLabel": "Dizayn (UI/UX)",
+  "directionEmoji": "🖌",
+  "directionOrder": 4,
+  "key": "ui-ux",
+  "label": "UI/UX asoslari",
+  "order": 1,
+  "questions": [
+    {"q": "UI nimani anglatadi?", "options": ["User Interface (foydalanuvchi interfeysi)", "User Internet", "Unique Idea", "Universal Input"], "correct": 0},
+    {"q": "UX nimani anglatadi?", "options": ["User Experience (foydalanuvchi tajribasi)", "User Extension", "Ultra Experience", "Unit X"], "correct": 0},
+    {"q": "Wireframe nima?", "options": ["Sahifa tuzilishining soddalashtirilgan sxemasi", "Yakuniy dizayn", "Kod", "Logotip"], "correct": 0},
+    {"q": "Prototip nima?", "options": ["Interaktiv namuna, sinash uchun", "Yakuniy kod", "Server", "Brend kitobi"], "correct": 0},
+    {"q": "Persona nima?", "options": ["Maqsadli foydalanuvchining umumlashgan obrazi", "Dizayner ismi", "Shrift", "Rang palitrasi"], "correct": 0},
+    {"q": "User flow nima?", "options": ["Foydalanuvchining maqsadga erishish yo'li", "Server oqimi", "Kod tarmog'i", "Animatsiya"], "correct": 0},
+    {"q": "A/B test nima?", "options": ["Ikki variantni solishtirib qaysi biri yaxshi ishlashini aniqlash", "Kod testi", "Server testi", "Shrift tanlash"], "correct": 0},
+    {"q": "Vizual ierarxiya nima uchun?", "options": ["Muhim elementni birinchi ko'rsatish uchun", "Kodni tartiblash", "Fayl nomlash", "Server tezligi"], "correct": 0},
+    {"q": "Bo'sh joy (whitespace) nima uchun foydali?", "options": ["O'qishni osonlashtiradi va elementlarni ajratadi", "Joyni isrof qiladi", "Faqat mobilda kerak", "Hech qanday foydasi yo'q"], "correct": 0},
+    {"q": "Responsive dizayn nima?", "options": ["Turli ekran o'lchamlariga moslashuvchi dizayn", "Faqat kompyuter uchun", "Tez yuklanadigan", "Animatsiyali"], "correct": 0},
+    {"q": "Mobile-first yondashuvi?", "options": ["Avval mobil ekran uchun loyihalash", "Avval kompyuter uchun", "Faqat mobil", "Faqat planshet"], "correct": 0},
+    {"q": "Accessibility (a11y) nima?", "options": ["Imkoniyati cheklanganlar uchun ham qulaylik", "Tezlik", "Xavfsizlik", "SEO faqat"], "correct": 0},
+    {"q": "Matn va fon kontrasti nega muhim?", "options": ["O'qilishi va accessibility uchun", "Faqat chiroy uchun", "Fayl hajmi uchun", "Ahamiyatsiz"], "correct": 0},
+    {"q": "Usability testi nima?", "options": ["Real foydalanuvchilar bilan qulaylikni sinash", "Kod testi", "Yuklama testi", "Rang testi"], "correct": 0},
+    {"q": "Dizayn tizimi (design system) nima?", "options": ["Qayta ishlatiladigan komponentlar va qoidalar to'plami", "Bitta logotip", "Kompyuter", "Kod muharriri"], "correct": 0},
+    {"q": "CTA nima?", "options": ["Harakatga chaqiruvchi element (Call To Action)", "Rang turi", "Shrift", "Animatsiya"], "correct": 0},
+    {"q": "Gestalt tamoyillaridan biri?", "options": ["Yaqinlik (proximity)", "Tezlik", "Narx", "Xavfsizlik"], "correct": 0},
+    {"q": "Fitts qonuni nima haqida?", "options": ["Nishon kattaligi va masofasi bosish tezligiga ta'sir qiladi", "Ranglar haqida", "Shriftlar haqida", "Matn uzunligi"], "correct": 0},
+    {"q": "Hick qonuni nima haqida?", "options": ["Tanlov qancha ko'p bo'lsa, qaror shuncha sekin", "Rang kontrasti", "Tugma kattaligi", "Animatsiya"], "correct": 0},
+    {"q": "Mikrointeraksiya misoli?", "options": ["Tugma bosilganda kichik animatsiya", "Butun sahifa", "Server javobi", "Logotip"], "correct": 0}
+  ]
+}

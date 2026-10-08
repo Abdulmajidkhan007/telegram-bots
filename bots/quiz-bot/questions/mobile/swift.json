@@ -1,0 +1,33 @@
+{
+  "direction": "mobile",
+  "directionLabel": "Mobile",
+  "directionEmoji": "📱",
+  "directionOrder": 3,
+  "key": "swift",
+  "label": "Swift / iOS",
+  "order": 4,
+  "questions": [
+    {"q": "Swift tilini qaysi kompaniya yaratgan?", "options": ["Apple", "Google", "Microsoft", "Meta"], "correct": 0},
+    {"q": "iOS ilovalarini yaratish IDE'si?", "options": ["Xcode", "Android Studio", "VS Code majburiy", "Eclipse"], "correct": 0},
+    {"q": "O'zgarmas qiymat kalit so'zi?", "options": ["let", "var", "val", "const"], "correct": 0},
+    {"q": "Ixtiyoriy (optional) tur qanday yoziladi?", "options": ["String?", "String! faqat", "Optional String", "?String"], "correct": 0},
+    {"q": "Optional'ni xavfsiz ochish?", "options": ["if let qiymat = optional", "optional!!", "optional.get()", "unwrap(optional) majburiy"], "correct": 0},
+    {"q": "Apple'ning deklarativ UI freymvorki?", "options": ["SwiftUI", "UIKit faqat", "Compose", "Flutter"], "correct": 0},
+    {"q": "SwiftUI'da holat o'zgaruvchisi?", "options": ["@State", "@Published faqat", "@Observable faqat", "@Var"], "correct": 0},
+    {"q": "Qiymat turi (copy) bo'lgan tuzilma?", "options": ["struct", "class", "protocol", "enum faqat"], "correct": 0},
+    {"q": "Interfeys analogi?", "options": ["protocol", "interface", "trait", "abstract"], "correct": 0},
+    {"q": "iOS bog'liqlik menejerlari?", "options": ["Swift Package Manager va CocoaPods", "npm", "pip", "Gradle"], "correct": 0},
+    {"q": "Ilova sozlamalari va ruxsat matnlari fayli?", "options": ["Info.plist", "AndroidManifest.xml", "app.json", "settings.xml"], "correct": 0},
+    {"q": "Swift'da xatoni tashlash?", "options": ["throw", "raise", "panic", "error()"], "correct": 0},
+    {"q": "Swift'da funksiya e'lon qilish?", "options": ["func nom() {}", "function nom() {}", "def nom()", "fun nom() {}"], "correct": 0},
+    {"q": "Swift'da o'zgaruvchan qiymat?", "options": ["var", "let", "val", "mut"], "correct": 0},
+    {"q": "Swift'da massiv turi?", "options": ["[Int]", "Array<int> faqat", "Int[]", "List<Int>"], "correct": 0},
+    {"q": "guard operatori nima uchun?", "options": ["Shart bajarilmasa erta chiqib ketish", "Sikl", "Meros", "Import"], "correct": 0},
+    {"q": "Swift'da xotirani boshqarish mexanizmi?", "options": ["ARC (avtomatik havola sanash)", "Garbage Collector", "Qo'lda free()", "Yo'q"], "correct": 0},
+    {"q": "Zaif havola kalit so'zi (retain cycle'ni oldini olish)?", "options": ["weak", "strong", "soft", "lazy"], "correct": 0},
+    {"q": "Swift'da asinxron funksiya?", "options": ["func f() async", "async func f()", "func f() await", "future func f()"], "correct": 0},
+    {"q": "SwiftUI'da ro'yxat komponenti?", "options": ["List", "ListView", "FlatList", "RecyclerView"], "correct": 0},
+    {"q": "SwiftUI'da vertikal joylashtirish?", "options": ["VStack", "HStack", "ZStack", "Column"], "correct": 0},
+    {"q": "SwiftUI'da ustma-ust joylashtirish?", "options": ["ZStack", "VStack", "Stack", "Overlay faqat"], "correct": 0}
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "direction": "devops",
+  "directionLabel": "DevOps",
+  "directionEmoji": "🐳",
+  "directionOrder": 5,
+  "key": "git",
+  "label": "Git",
+  "order": 1,
+  "questions": [
+    {"q": "Yangi repozitoriy yaratish buyrug'i?", "options": ["git init", "git new", "git create", "git start"], "correct": 0},
+    {"q": "Repozitoriyni nusxalash buyrug'i?", "options": ["git clone", "git copy", "git pull", "git fork"], "correct": 0},
+    {"q": "O'zgarishlarni staging'ga qo'shish?", "options": ["git add", "git commit", "git push", "git stage-all"], "correct": 0},
+    {"q": "Commit yaratish?", "options": ["git commit -m \"xabar\"", "git save", "git push -m", "git add -m"], "correct": 0},
+    {"q": "O'zgarishlarni serverga yuborish?", "options": ["git push", "git pull", "git fetch", "git upload"], "correct": 0},
+    {"q": "Serverdagi o'zgarishlarni olib birlashtirish?", "options": ["git pull", "git push", "git clone", "git log"], "correct": 0},
+    {"q": "Holatni ko'rish?", "options": ["git status", "git state", "git info", "git check"], "correct": 0},
+    {"q": "Yangi branch yaratib unga o'tish?", "options": ["git switch -c nom", "git branch -go nom", "git new nom", "git checkout nom faqat"], "correct": 0},
+    {"q": "Branch'larni birlashtirish?", "options": ["git merge", "git join", "git combine", "git add"], "correct": 0},
+    {"q": "Commitlar tarixini ko'rish?", "options": ["git log", "git history", "git commits", "git show-all"], "correct": 0},
+    {"q": "Saqlanmagan o'zgarishlarni vaqtincha yashirish?", "options": ["git stash", "git hide", "git save", "git temp"], "correct": 0},
+    {"q": "Git kuzatmasligi kerak bo'lgan fayllar ro'yxati?", "options": [".gitignore", ".gitkeep", ".gitconfig", ".ignore"], "correct": 0},
+    {"q": "Oxirgi commitni xabarini tuzatish?", "options": ["git commit --amend", "git fix", "git edit", "git rename"], "correct": 0},
+    {"q": "Commitlarni boshqa branch ustiga ko'chirib qo'yish?", "options": ["git rebase", "git merge", "git move", "git shift"], "correct": 0},
+    {"q": "Ikki holat farqini ko'rish?", "options": ["git diff", "git compare", "git delta", "git changes"], "correct": 0}
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "direction": "frontend",
+  "directionLabel": "Frontend",
+  "directionEmoji": "🎨",
+  "directionOrder": 1,
+  "key": "vite-webpack",
+  "label": "Vite va Webpack",
+  "order": 15,
+  "questions": [
+    {"q": "Vite'ning dev serveri nega tez?", "options": ["Native ES modullardan foydalanadi", "Hamma narsani oldindan bundle qiladi", "Kesh ishlatmaydi", "Faqat CSS yuklaydi"], "correct": 0},
+    {"q": "Vite production build uchun nimadan foydalanadi?", "options": ["Rollup (yangi versiyalarda Rolldown)", "Webpack", "Babel faqat", "Gulp"], "correct": 0},
+    {"q": "Webpack sozlamalar fayli?", "options": ["webpack.config.js", "webpack.json", "pack.config.js", "build.js"], "correct": 0},
+    {"q": "Webpack'da JS bo'lmagan fayllarni qayta ishlash uchun nima ishlatiladi?", "options": ["loader", "plugin faqat", "preset", "driver"], "correct": 0},
+    {"q": "Kodni bo'laklarga ajratib kerak paytda yuklash nima deyiladi?", "options": ["Code splitting", "Tree shaking", "Minify", "Polyfill"], "correct": 0},
+    {"q": "Ishlatilmagan kodni bundle'dan olib tashlash?", "options": ["Tree shaking", "Code splitting", "Hot reload", "Transpile"], "correct": 0},
+    {"q": "HMR nima?", "options": ["Sahifani yangilamasdan modulni almashtirish", "Server xatosi", "Kesh tozalash", "Rasm siqish"], "correct": 0},
+    {"q": "Vite'da brauzerga ochiq env o'zgaruvchi prefiksi?", "options": ["VITE_", "NEXT_PUBLIC_", "REACT_APP_", "PUBLIC_"], "correct": 0},
+    {"q": "Vite sozlamalar fayli?", "options": ["vite.config.ts (yoki .js)", "vite.json", "vitefile.js", "config.vite"], "correct": 0},
+    {"q": "Kodni minifikatsiya qilish nima?", "options": ["Bo'sh joylar va nomlarni qisqartirib hajmni kamaytirish", "Kodni shifrlash", "Kodni izohlash", "Testlash"], "correct": 0},
+    {"q": "Babel nima qiladi?", "options": ["Zamonaviy JS'ni eski brauzerlar uchun o'giradi", "CSS siqadi", "Rasm optimallaydi", "Server ishga tushiradi"], "correct": 0},
+    {"q": "Polyfill nima?", "options": ["Eski brauzerda yo'q funksiyani qo'shuvchi kod", "Rasm formati", "CSS freymvork", "Test turi"], "correct": 0},
+    {"q": "Source map nima uchun?", "options": ["Siqilgan koddagi xatoni asl kodda ko'rsatish uchun", "Kodni shifrlash", "Rasm xaritasi", "Marshrut"], "correct": 0},
+    {"q": "Webpack'da kirish nuqtasi sozlamasi?", "options": ["entry", "start", "main", "input"], "correct": 0},
+    {"q": "Webpack'da natija papkasi sozlamasi?", "options": ["output", "dist", "build", "target"], "correct": 0},
+    {"q": "Vite yangi loyiha yaratish?", "options": ["npm create vite@latest", "vite new", "npx vite-init", "npm vite create"], "correct": 0},
+    {"q": "Esbuild qaysi tilda yozilgan?", "options": ["Go", "Rust", "JavaScript", "C++"], "correct": 0},
+    {"q": "Turbopack qaysi freymvork bilan birga keladi?", "options": ["Next.js", "Nuxt", "Angular", "SvelteKit"], "correct": 0}
+  ]
+}

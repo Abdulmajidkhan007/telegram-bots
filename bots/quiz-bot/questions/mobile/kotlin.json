@@ -1,0 +1,33 @@
+{
+  "direction": "mobile",
+  "directionLabel": "Mobile",
+  "directionEmoji": "📱",
+  "directionOrder": 3,
+  "key": "kotlin",
+  "label": "Kotlin / Android",
+  "order": 3,
+  "questions": [
+    {"q": "Google Android uchun qaysi tilni asosiy deb e'lon qilgan?", "options": ["Kotlin", "Java faqat", "Dart", "Swift"], "correct": 0},
+    {"q": "O'zgarmas o'zgaruvchi kalit so'zi?", "options": ["val", "var", "let", "const faqat"], "correct": 0},
+    {"q": "O'zgaruvchan o'zgaruvchi?", "options": ["var", "val", "mut", "let"], "correct": 0},
+    {"q": "Null bo'lishi mumkin tur?", "options": ["String?", "String!", "Optional<String> majburiy", "String*"], "correct": 0},
+    {"q": "Xavfsiz chaqiruv operatori?", "options": ["?.", "!!", "::", "->"], "correct": 0},
+    {"q": "Elvis operatori?", "options": ["?:", "??", "||", "=>"], "correct": 0},
+    {"q": "Faqat ma'lumot saqlovchi klass?", "options": ["data class", "record", "struct", "model class"], "correct": 0},
+    {"q": "Kotlin'da asinxron ish uchun?", "options": ["Coroutines", "Threads faqat", "Promises", "Goroutines"], "correct": 0},
+    {"q": "Android'ning zamonaviy deklarativ UI vositasi?", "options": ["Jetpack Compose", "XML Layout faqat", "SwiftUI", "Flutter"], "correct": 0},
+    {"q": "Compose'da UI funksiyasini belgilovchi annotatsiya?", "options": ["@Composable", "@Widget", "@View", "@Component"], "correct": 0},
+    {"q": "Android ilova ekrani asosiy komponenti?", "options": ["Activity", "Widget", "ViewController", "Scene"], "correct": 0},
+    {"q": "Android loyihasini yig'ish vositasi?", "options": ["Gradle", "Maven faqat", "npm", "CocoaPods"], "correct": 0},
+    {"q": "Ilova ruxsatlari va komponentlari yoziladigan fayl?", "options": ["AndroidManifest.xml", "Info.plist", "build.json", "config.xml"], "correct": 0},
+    {"q": "Singleton e'lon qilish kalit so'zi?", "options": ["object", "singleton", "static class", "single"], "correct": 0},
+    {"q": "Kotlin'da funksiya kalit so'zi?", "options": ["fun", "func", "def", "function"], "correct": 0},
+    {"q": "Kotlin'da satr shabloni?", "options": ["\"Salom, $ism\"", "f\"Salom, {ism}\"", "\"Salom, #{ism}\"", "\"Salom, @ism\""], "correct": 0},
+    {"q": "Kotlin'da when nima?", "options": ["Kengaytirilgan switch ifodasi", "Sikl", "Klass", "Istisno"], "correct": 0},
+    {"q": "Ro'yxat yaratish (o'zgarmas)?", "options": ["listOf(1, 2, 3)", "arrayListOf faqat", "List(1,2,3)", "[1, 2, 3]"], "correct": 0},
+    {"q": "Kengaytma funksiya misoli?", "options": ["fun String.salom() = \"Salom $this\"", "extension String", "String.prototype", "impl String"], "correct": 0},
+    {"q": "Android'da ma'lumotlarni lokal saqlash kutubxonasi (SQLite ustida)?", "options": ["Room", "Realm faqat", "CoreData", "Hive"], "correct": 0},
+    {"q": "Android'da tarmoq so'rovlari uchun mashhur kutubxona?", "options": ["Retrofit", "Alamofire", "Axios", "Dio"], "correct": 0},
+    {"q": "Android'da DI kutubxonasi?", "options": ["Hilt (Dagger)", "Spring", "Koin majburiy", "Angular DI"], "correct": 0}
+  ]
+}

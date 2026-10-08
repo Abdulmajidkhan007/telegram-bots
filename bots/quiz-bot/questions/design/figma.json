@@ -1,0 +1,31 @@
+{
+  "direction": "design",
+  "directionLabel": "Dizayn (UI/UX)",
+  "directionEmoji": "🖌",
+  "directionOrder": 4,
+  "key": "figma",
+  "label": "Figma",
+  "order": 2,
+  "questions": [
+    {"q": "Figma qanday vosita?", "options": ["Brauzerda ishlaydigan hamkorlikdagi dizayn vositasi", "Kod muharriri", "Ma'lumotlar bazasi", "Video muharrir"], "correct": 0},
+    {"q": "Moslashuvchan joylashuv xususiyati?", "options": ["Auto Layout", "Smart Grid", "Flex Mode", "Free Layout"], "correct": 0},
+    {"q": "Qayta ishlatiladigan element?", "options": ["Component", "Frame", "Group", "Slice"], "correct": 0},
+    {"q": "Komponentning nusxasi nima deyiladi?", "options": ["Instance", "Copy", "Clone", "Shadow"], "correct": 0},
+    {"q": "Komponentning turli holatlari (masalan, hover)?", "options": ["Variants", "Layers", "Pages", "Styles"], "correct": 0},
+    {"q": "Ekranlarni bog'lab interaktiv namuna yaratish?", "options": ["Prototype rejimi", "Inspect", "Export", "Comment"], "correct": 0},
+    {"q": "Dasturchiga o'lcham va CSS ko'rsatuvchi rejim?", "options": ["Dev Mode (Inspect)", "Prototype", "Slides", "Draw"], "correct": 0},
+    {"q": "Takrorlanadigan rang va shriftlarni saqlash?", "options": ["Styles va Variables", "Frames", "Plugins", "Slices"], "correct": 0},
+    {"q": "Asosiy konteyner (artboard) nomi?", "options": ["Frame", "Box", "Panel", "Canvas"], "correct": 0},
+    {"q": "Qo'shimcha imkoniyatlar qo'shuvchi dasturlar?", "options": ["Plugins", "Widgets faqat", "Extensions majburiy", "Addons"], "correct": 0},
+    {"q": "Figma'da elementlarni guruhlash klavishi?", "options": ["Ctrl/Cmd + G", "Ctrl + P", "Ctrl + B", "Ctrl + E"], "correct": 0},
+    {"q": "Figma'da Frame bilan o'rash (auto layout qo'shish) klavishi?", "options": ["Shift + A", "Ctrl + L", "Alt + F", "Shift + F"], "correct": 0},
+    {"q": "Figma'da komponent yaratish klavishi?", "options": ["Ctrl/Cmd + Alt + K", "Ctrl + K faqat", "Shift + C", "Alt + C"], "correct": 0},
+    {"q": "Figma'da eksport qilish mumkin bo'lgan format?", "options": ["PNG, JPG, SVG, PDF", "Faqat PSD", "Faqat DOCX", "Faqat MP4"], "correct": 0},
+    {"q": "Bir nechta fayllarda ishlatiladigan komponentlar to'plami?", "options": ["Team Library", "Plugins", "Pages", "Frames"], "correct": 0},
+    {"q": "Figma'da qatlam (layer) ko'rinishini yashirish klavishi?", "options": ["Ctrl/Cmd + Shift + H", "Ctrl + H", "Alt + H", "Shift + V"], "correct": 0},
+    {"q": "Figma'da rasm bilan maskalash?", "options": ["Mask (Use as mask)", "Crop faqat", "Clip", "Cut"], "correct": 0},
+    {"q": "Constraints nima uchun?", "options": ["Frame o'lchami o'zgarganda element xatti-harakatini belgilash", "Rang", "Shrift", "Eksport"], "correct": 0},
+    {"q": "Figma'ning onlayn doska (brainstorm) mahsuloti?", "options": ["FigJam", "FigBoard", "FigNote", "Miro"], "correct": 0},
+    {"q": "Figma'da grid (layout grid) nima uchun?", "options": ["Elementlarni ustun va qatorlarga tekislash", "Fon rangi", "Animatsiya", "Eksport"], "correct": 0}
+  ]
+}

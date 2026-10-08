@@ -57,9 +57,25 @@ function loadAll() {
         const dk = data.direction || dir;
         const sk = data.key || file.replace('.json', '');
         if (!tree[dk]) {
-          tree[dk] = { label: data.directionLabel || dk, emoji: storage.getDirectionEmoji(dk), subs: {} };
+          // Emoji va tartib savol faylidan ham olinadi: directions.json faqat
+          // birinchi ishga tushganda yoziladi, keyin qo'shilgan yo'nalishlar
+          // u yerda bo'lmaydi va hammasi 📚 bo'lib qolardi.
+          const known = storage.getDirections().find(x => x.key === dk);
+          tree[dk] = {
+            label: data.directionLabel || dk,
+            emoji: (known && known.emoji) || data.directionEmoji || '📚',
+            order: Number.isFinite(data.directionOrder) ? data.directionOrder : 1000,
+            subs: {}
+          };
         }
-        tree[dk].subs[sk] = { label: data.label || sk, questions: Array.isArray(data.questions) ? data.questions : [] };
+        // Eski fayl (tartib/emojisiz) birinchi o'qilgan bo'lsa — keyingi fayldan to'ldiramiz.
+        if (tree[dk].order === 1000 && Number.isFinite(data.directionOrder)) tree[dk].order = data.directionOrder;
+        if (tree[dk].emoji === '📚' && data.directionEmoji) tree[dk].emoji = data.directionEmoji;
+        tree[dk].subs[sk] = {
+          label: data.label || sk,
+          order: Number.isFinite(data.order) ? data.order : 1000,
+          questions: Array.isArray(data.questions) ? data.questions : []
+        };
       } catch (e) {
         console.error('⚠️ Savol faylida xato:', file, '-', e.message);
       }
@@ -72,22 +88,35 @@ let TREE = loadAll();
 function reload() { TREE = loadAll(); return TREE; }
 
 // ---------- O'qish (read) ----------
+// "Aralash": yo'nalishdagi barcha bo'limlar savollari birga (fayl emas, virtual bo'lim).
+const MIX_KEY = '__mix';
+
+function byOrder(a, b) { return (a.order - b.order) || a.label.localeCompare(b.label); }
+
 function getDirections() {
-  return Object.entries(TREE).map(([key, v]) => ({ key, label: v.label, emoji: v.emoji }));
+  return Object.entries(TREE)
+    .map(([key, v]) => ({ key, label: v.label, emoji: v.emoji, order: v.order }))
+    .sort(byOrder);
 }
 function getSubs(directionKey) {
   const d = TREE[directionKey];
   if (!d) return [];
-  return Object.entries(d.subs).map(([key, v]) => ({ key, label: v.label, count: v.questions.length }));
+  return Object.entries(d.subs)
+    .map(([key, v]) => ({ key, label: v.label, count: v.questions.length, order: v.order }))
+    .sort(byOrder);
 }
 function getQuestions(directionKey, subKey) {
   const d = TREE[directionKey];
-  if (!d || !d.subs[subKey]) return [];
+  if (!d) return [];
+  if (subKey === MIX_KEY) return Object.values(d.subs).flatMap(s => s.questions);
+  if (!d.subs[subKey]) return [];
   return d.subs[subKey].questions;
 }
 function getSubLabel(directionKey, subKey) {
   const d = TREE[directionKey];
-  if (!d || !d.subs[subKey]) return subKey;
+  if (!d) return subKey;
+  if (subKey === MIX_KEY) return `${d.label} — 🔀 Aralash`;
+  if (!d.subs[subKey]) return subKey;
   return d.subs[subKey].label;
 }
 
@@ -140,6 +169,6 @@ function stats() {
 }
 
 module.exports = {
-  reload, getDirections, getSubs, getQuestions, getSubLabel,
+  MIX_KEY, reload, getDirections, getSubs, getQuestions, getSubLabel,
   addQuestion, editQuestion, deleteQuestion, createSub, stats
 };

@@ -3,6 +3,9 @@
   "directionLabel": "Frontend",
   "key": "javascript",
   "label": "JavaScript",
+  "directionEmoji": "🎨",
+  "directionOrder": 1,
+  "order": 3,
   "questions": [
     { "q": "JavaScript'da o'zgaruvchi e'lon qilish uchun qaysi kalit so'z ISHLATILMAYDI?", "options": ["int", "let", "const", "var"], "correct": 0 },
     { "q": "typeof [] (massiv) natijasi nima?", "options": ["object", "array", "list", "undefined"], "correct": 0 },
