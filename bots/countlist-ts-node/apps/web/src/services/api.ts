@@ -80,6 +80,8 @@ export const authApi = {
     api.post('/auth/telegram', widgetData),
   // Bot /login bergan havoladagi token.
   loginBotLink: (token: string) => api.post('/auth/bot-link', { token }),
+  // Mini App initData — xom satr holida; imzoni server tekshiradi.
+  loginWebApp: (initData: string) => api.post('/auth/webapp', { initData }),
   refresh: (refreshToken: string) => api.post('/auth/refresh', { refreshToken }),
   logout: () => api.post('/auth/logout'),
   me: () => api.get('/auth/me'),

@@ -8,7 +8,7 @@ import { Public } from '../../common/decorators/public.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { User } from '@prisma/client';
-import { verifyTelegramLogin } from './telegram-auth';
+import { verifyTelegramLogin, verifyTelegramWebApp } from './telegram-auth';
 import { verifyLoginLink } from '@expense-tracker/shared';
 import { configuration } from '../../config/configuration';
 
@@ -36,6 +36,31 @@ export class AuthController {
     // 'in' bilan toraytiramiz: bu paketda strict o'chiq, `!result.ok` turni toraytirmaydi.
     if ('reason' in result) {
       this.logger.warn(`Telegram kirish rad etildi: ${result.reason}`);
+      throw new UnauthorizedException(result.reason);
+    }
+
+    return this.authService.loginWithTelegram(
+      BigInt(result.user.id),
+      result.user.firstName,
+      result.user.username,
+    );
+  }
+
+  @Public()
+  @Post('webapp')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Telegram Mini App (menyu tugmasi) orqali avtomatik kirish (initData imzosi tekshiriladi)" })
+  async loginWebApp(@Body() body: { initData?: string }) {
+    const botToken = configuration().bot.token;
+    if (!botToken) {
+      this.logger.error("BOT_TOKEN API servisida o'rnatilmagan — Mini App kirishini tekshirib bo'lmaydi");
+      throw new ServiceUnavailableException("Kirish sozlanmagan: API servisiga BOT_TOKEN qo'shing");
+    }
+
+    const result = verifyTelegramWebApp(body?.initData, botToken);
+    // 'in' bilan toraytiramiz: bu paketda strict o'chiq.
+    if ('reason' in result) {
+      this.logger.warn(`Mini App kirish rad etildi: ${result.reason}`);
       throw new UnauthorizedException(result.reason);
     }
 
