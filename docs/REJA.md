@@ -41,9 +41,9 @@ Eng yaqinini birinchi — g'alaba tezroq keladi, kuch beradi.
 
 | # | Loyiha | Hozirgi holat | Shu 3 oyda nima bo'lishi kerak |
 |---|---|---|---|
-| 1 | `rn-r-e-commerce` (KidsWear) | «Phase 8a» — brend, legal, SEO, `netlify.toml` tayyor | **Netlify'ga deploy.** Faqat web. Mobil keyinroq |
-| 2 | `portfolio-3d` | Lighthouse 97, testlar bor, kontent — namuna | **Haqiqiy kontent + deploy.** Bu sizning CV'ingiz — birinchi navbatda kerak |
-| 3 | `telegram-bots` (shu repo) | 11 ta bot, monorepo tayyor | Public qilish, eski 9 repo o'chirish, 2–3 botni **doimiy** ishlatish |
+| 1 | `rn-r-e-commerce` (KidsWear) | Phase 10: veb + Android (bare RN 0.85), Payme/Click oqimi, testlar + CI; jonli sayt yo'q | **Veb'ni deploy qilish** (Firebase Hosting). Mobil keyinroq |
+| 2 | `portfolio-3d` | Firebase'ga ko'chirilgan (Hosting + Functions), rezyume PDF yangi; deploy qilinmagan | **`.firebaserc` + `firebase deploy`**, haqiqiy kontent. Bu sizning CV'ingiz |
+| 3 | `telegram-bots` (shu repo) | 13 ta bot, repo public, eski repolar o'chirilgan ✅ | 2–3 botni **doimiy** serverda ishlatish (Railway/VPS) |
 | 4 | `learning-datacenter-tc-project` | «Faza 0» — 46 jadval, RBAC, Docker | **Faza 1:** guruhlar, jadval, davomat. Bitta maktabga demo ko'rsatish |
 | 5 | `go-uz` (Vroom) | 9 paket qurilgan, ilovalar «in progress» | **Bitta** ilovani tanlang (web yoki mobil), MVP darajasida ishga tushiring |
 

@@ -131,7 +131,7 @@ npm run check     # testlar + kalit tekshiruvi
 │   │   ├── src/  package.json  .env.example  README.md
 │   ├── anonim-bot/
 │   ├── quiz-bot/
-│   └── ...                     # jami 11 ta
+│   └── ...                     # jami 13 ta
 ├── tools/
 │   ├── run.js                  # boshqaruvchi CLI (list/setup/install/start/doctor)
 │   ├── registry.js             # bots.json ustidagi toza mantiq
