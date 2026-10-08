@@ -8,11 +8,15 @@ Admin kinolarni, adminlarni, majburiy obuna kanallarini bot ichidan boshqaradi.
 ## ✨ Imkoniyatlar
 
 - 🔢 Kod bo'yicha kino (istalgan matn = kod, yoki `/kino`)
+- 🔒 Kino himoyalangan holda yuboriladi (`PROTECT_CONTENT=true`): forward, «Saqlash» va telefonda
+  skrinshot taqiqlanadi. Bu Telegram ilovasidagi cheklov — to'liq DRM emas (keshdan yoki boshqa
+  qurilma kamerasi bilan olish mumkin), lekin oddiy tarqatishni to'xtatadi
 - 📢 Majburiy kanal obunasi — «📡 Kanal boshqaruv» paneli: ro'yxat, har kanal
   yonida bot admin ekani (✅/⚠️), 🗑 o'chirish, ➕ qo'shish (`@kanal`, `t.me/kanal`
   yoki yopiq kanaldan **forward**). Bot admin bo'lmagan kanal qo'shilmaydi.
   Obunani tekshirib bo'lmasa (bot kanaldan chiqarilgan) foydalanuvchi bloklanmaydi — log'ga yoziladi
 - 🎬 Kino qo'shish / o'chirish — bosqichma-bosqich, video bilan
+- 📋 Kinolar ro'yxati — kod, nom, yil va yuklab olishlar soni (25 tadan sahifalab, ⬅️ ➡️)
 - 👑 Adminlar ro'yxati (bosh adminni o'chirib bo'lmaydi)
 - 📣 Reklama — foydalanuvchilarga yoki guruhlarga (istalgan format)
 - 📊 Statistika: foydalanuvchilar, yuklab olishlar, top kinolar

@@ -256,3 +256,35 @@ def test_buyruq_kino_kodi_deb_izlanmaydi(baza):
     texts = [c.text for c in calls if isinstance(c, SendMessage)]
     assert texts and "Bunday buyruq yo'q" in texts[0]
     assert not any(isinstance(c, GetChatMember) for c in calls)
+
+
+def test_kino_himoyalangan_holda_yuboriladi(baza):
+    # Foydalanuvchi kinoni forward qila olmasin, saqlay olmasin (protect_content).
+    import common
+    from aiogram.methods import SendVideo
+    db.add_movie("7", "Kino", "-", "-", "-", "-", "VID")
+    calls, _ = _run([{"message": _msg(ODDIY, "7")}])
+    [video] = [c for c in calls if isinstance(c, SendVideo)]
+    assert video.protect_content is True
+
+    common.PROTECT_CONTENT = False
+    try:
+        calls, _ = _run([{"message": _msg(ODDIY, "7")}])
+        [video] = [c for c in calls if isinstance(c, SendVideo)]
+        assert video.protect_content is False
+    finally:
+        common.PROTECT_CONTENT = True
+
+
+def test_kinolar_royxati_admin_uchun(baza):
+    db.add_movie("2", "Ikkinchi", "-", "2020", "-", "-", "f")
+    db.add_movie("1", "Birinchi", "-", "2019", "-", "-", "f")
+    calls, _ = _run([{"message": _msg(SUPER, "📋 Kinolar ro'yxati")}])
+    [t] = [c.text for c in calls if isinstance(c, SendMessage)]
+    assert t.index("Birinchi") < t.index("Ikkinchi")
+
+
+def test_oddiy_foydalanuvchi_kinolar_royxatini_kormaydi(baza):
+    db.add_movie("1", "Maxfiy nom", "-", "-", "-", "-", "f")
+    calls, _ = _run([{"message": _msg(ODDIY, "📋 Kinolar ro'yxati")}])
+    assert not any(isinstance(c, SendMessage) and "Maxfiy nom" in c.text for c in calls)

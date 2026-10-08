@@ -8,6 +8,7 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
+import common
 import database as db
 import handlers_admin
 import handlers_backup
@@ -41,10 +42,12 @@ async def main():
     import config
 
     db.configure(config.DB_FILE, config.SUPER_ADMIN_ID)
+    common.PROTECT_CONTENT = config.PROTECT_CONTENT
     # Bazani darhol o'qib ko'ramiz: buzilgan bo'lsa bot birinchi foydalanuvchida
     # emas, shu yerda aniq xabar bilan to'xtaydi.
     data = db.load_db()
     logger.info("Baza: %s — %d kino, %d foydalanuvchi", config.DB_FILE, len(data["movies"]), len(data["users"]))
+    logger.info("Kontent himoyasi (forward/saqlash taqiqi): %s", "yoqilgan" if config.PROTECT_CONTENT else "o'chirilgan")
 
     bot = Bot(token=config.BOT_TOKEN)
     dp = build_dispatcher()
