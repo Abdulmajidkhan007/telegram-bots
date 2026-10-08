@@ -14,6 +14,9 @@ from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
 
 import buttons as kb
 import database as db
+import time
+
+import common
 from common import MovieSearch, check_subscription, h, send_movie
 
 logger = logging.getLogger(__name__)
@@ -22,8 +25,24 @@ router = Router(name="user")
 
 
 async def _not_found(message: Message, code: str) -> None:
-    await message.answer(f"❌ <b>{h(code)}</b> kodli kino topilmadi.\n/help — admin bilan bog'lanish",
+    await message.answer(f"❌ <b>{h(code)}</b> kodli kino topilmadi.\n/help — adminga xabar yozish",
                          parse_mode="HTML")
+
+
+async def _give_movie(message: Message, bot: Bot, code: str) -> None:
+    user_id = message.from_user.id
+    limited = not db.is_admin(user_id)
+    if limited:
+        wait = common.MOVIE_LIMIT.wait_seconds(user_id, time.monotonic())
+        if wait:
+            await message.answer(f"⏳ Soatiga {common.MOVIE_LIMIT.limit} tadan ortiq kino olib bo'lmaydi. "
+                                 f"Keyingisini {max(1, round(wait / 60))} daqiqadan keyin oling.")
+            return
+    if not await send_movie(bot, message.chat.id, code):
+        await _not_found(message, code)
+        return
+    if limited:
+        common.MOVIE_LIMIT.record(user_id, time.monotonic())
 
 
 @router.message(CommandStart())
@@ -59,22 +78,6 @@ async def cmd_kino(message: Message, state: FSMContext, bot: Bot):
     await message.answer("🔢 Kino kodini kiriting:", reply_markup=ReplyKeyboardRemove())
 
 
-@router.message(Command("help"))
-async def cmd_help(message: Message, bot: Bot):
-    admins = db.get_all_admins()
-    main_admin = admins[0]["id"] if admins else db.super_admin_id()
-    try:
-        chat = await bot.get_chat(main_admin)
-        username = getattr(chat, "username", None)
-    except Exception as e:
-        logger.warning("Admin profilini olib bo'lmadi [%s]: %s", main_admin, e)
-        username = None
-    url = f"https://t.me/{username}" if username else f"tg://user?id={main_admin}"
-    label = f"👑 @{username}" if username else "👑 Admin"
-    await message.answer("ℹ️ <b>Yordam kerakmi?</b>\nAdmin bilan bog'lanish uchun tugmani bosing:",
-                         parse_mode="HTML", reply_markup=kb.admin_contact_keyboard(url, label))
-
-
 @router.callback_query(F.data == "check_sub")
 async def check_sub_callback(callback: CallbackQuery, bot: Bot):
     subscribed, not_subbed = await check_subscription(bot, callback.from_user.id)
@@ -108,9 +111,7 @@ async def movie_search_handler(message: Message, state: FSMContext, bot: Bot):
         await message.answer("🔢 Kino kodini matn qilib yuboring:")
         return
     await state.clear()
-    code = message.text.strip()
-    if not await send_movie(bot, message.chat.id, code):
-        await _not_found(message, code)
+    await _give_movie(message, bot, message.text.strip())
 
 
 @router.message(F.text == "🔙 Ortga")
@@ -139,6 +140,4 @@ async def handle_any_text(message: Message, bot: Bot):
         await message.answer("⚠️ <b>Avval kanallarga obuna bo'ling:</b>", parse_mode="HTML",
                              reply_markup=kb.subscription_keyboard(not_subbed))
         return
-    code = message.text.strip()
-    if not await send_movie(bot, message.chat.id, code):
-        await _not_found(message, code)
+    await _give_movie(message, bot, message.text.strip())

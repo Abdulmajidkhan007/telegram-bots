@@ -183,12 +183,18 @@ def movies_pager_keyboard(page: int, pages: int) -> InlineKeyboardMarkup | None:
 
 
 # ─────────────────────────────────────────────
-#  /help — Admin linki
+#  YORDAM (murojaat)
 # ─────────────────────────────────────────────
 
-def admin_contact_keyboard(url: str, label: str = "👑 Admin bilan bog'lanish") -> InlineKeyboardMarkup:
+def support_cancel_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[[
-        InlineKeyboardButton(text=label, url=url)
+        InlineKeyboardButton(text="❌ Bekor qilish", callback_data="sp:cancel"),
+    ]])
+
+
+def support_reply_keyboard(user_id: int) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[[
+        InlineKeyboardButton(text="✍️ Javob berish", callback_data=f"sp:r:{user_id}"),
     ]])
 
 

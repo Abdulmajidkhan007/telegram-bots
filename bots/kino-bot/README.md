@@ -16,11 +16,21 @@ Admin kinolarni, adminlarni, majburiy obuna kanallarini bot ichidan boshqaradi.
   yoki yopiq kanaldan **forward**). Bot admin bo'lmagan kanal qo'shilmaydi.
   Obunani tekshirib bo'lmasa (bot kanaldan chiqarilgan) foydalanuvchi bloklanmaydi — log'ga yoziladi
 - 🎬 Kino qo'shish / o'chirish — bosqichma-bosqich, video bilan
+- ⏳ Soatlik chegara: bir foydalanuvchiga soatiga `MOVIES_PER_HOUR` (standart 20) ta kino —
+  hamma kodlarni skript bilan yig'ishni sekinlashtiradi; adminlarga qo'llanmaydi, 0 — o'chiq
 - 📋 Kinolar ro'yxati — kod, nom, yil va yuklab olishlar soni (25 tadan sahifalab, ⬅️ ➡️)
 - 👑 Adminlar ro'yxati (bosh adminni o'chirib bo'lmaydi)
 - 📣 Reklama — foydalanuvchilarga yoki guruhlarga (istalgan format)
 - 📊 Statistika: foydalanuvchilar, yuklab olishlar, top kinolar
+- 📩 `/help` — foydalanuvchi adminga bot ichida xabar qoldiradi (matn/rasm/ovoz); xabar barcha
+  adminlarga bot orqali keladi, «✍️ Javob berish» bilan bot orqali javob qaytadi. Admin
+  username'i hech kimga ko'rinmaydi. Bir foydalanuvchidan minutiga 1 ta murojaat
+- 🚨 Xato loglari (`ERROR`) bosh adminga Telegram'da keladi: bir xil xato 10 daqiqada bir marta,
+  soatiga 20 tadan ko'p emas, token yashiriladi (`alerts.py`)
 - 💾 `/backup` va `/restore` — faqat bosh admin
+- 🪪 Bot tavsifi, qisqa tavsif va buyruqlar menyusi ishga tushganda o'zi o'rnatiladi
+  (`bot_profile.py`) — BotFather'da qo'lda yozish shart emas; `/backup`, `/restore` faqat
+  bosh admin menyusida ko'rinadi
 
 ## 🗂 Tuzilma
 
@@ -32,7 +42,10 @@ common.py          holatlar, IsAdmin filtri, yordamchilar
 handlers_admin.py  admin paneli — butun router IsAdmin bilan o'ralgan
 handlers_channels.py majburiy obuna kanallari paneli
 handlers_backup.py /backup, /restore (faqat bosh admin)
+handlers_support.py /help murojaatlari va admin javobi
+alerts.py          ERROR loglarini bosh adminga yuborish
 handlers_user.py   foydalanuvchi qismi
+bot_profile.py     bot tavsifi va buyruqlar menyusi (ishga tushganda o'rnatiladi)
 buttons.py         klaviaturalar
 tests/             pytest (Telegram mock, internetsiz)
 ```
@@ -83,3 +96,4 @@ python -m pytest -q
 | Yuklab olish xato bo'lsa ham sanalardi | Statistika noto'g'ri | Faqat yetib borgani |
 | Obunani tekshirib bo'lmasa foydalanuvchi bloklanardi | Yangi token bilan bot eski kanalda admin bo'lmagani uchun **hamma** «obuna bo'ling» da qoldi | Boshqa botlardagi kabi bloklanmaydi, log + panelda ⚠️ |
 | `/restore` kabi buyruq kino kodi deb izlanardi | Oddiy foydalanuvchiga «obuna bo'ling» chiqardi | «Bunday buyruq yo'q» |
+| `/help` admin `@username` ini tugma qilib ko'rsatardi | Admin shaxsiy akkaunti hammaga ochiq edi | Murojaat bot orqali, javob bot orqali |

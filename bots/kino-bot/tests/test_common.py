@@ -51,3 +51,31 @@ def test_bosh_royxat():
     from common import movies_page
     text, page, pages = movies_page([], {}, 0)
     assert "Hali kino yo'q" in text and (page, pages) == (0, 1)
+
+
+def test_soatlik_chegara_sirpanuvchi_oyna():
+    from common import HourlyLimit
+    lim = HourlyLimit(3)
+    for t in (0, 10, 20):
+        assert lim.wait_seconds(1, t) == 0
+        lim.record(1, t)
+    assert lim.wait_seconds(1, 30) == 3600 - 30          # eng eskisi (t=0) chiqquncha
+    assert lim.wait_seconds(2, 30) == 0                  # boshqa foydalanuvchiga ta'sir yo'q
+    assert lim.wait_seconds(1, 3600) == 0                # t=0 oynadan chiqdi
+    assert lim.wait_seconds(1, 3600) == 0
+
+
+def test_chegara_nol_ochirilgan():
+    from common import HourlyLimit
+    lim = HourlyLimit(0)
+    for t in range(100):
+        lim.record(1, t)
+    assert lim.wait_seconds(1, 100) == 0
+
+
+def test_eski_yozuvlar_xotiradan_tozalanadi():
+    from common import HourlyLimit
+    lim = HourlyLimit(5)
+    lim.record(1, 0)
+    lim.wait_seconds(1, 4000)
+    assert 1 not in lim._hits

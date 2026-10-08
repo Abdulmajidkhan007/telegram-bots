@@ -48,6 +48,10 @@ class AddChannel(StatesGroup):
 class RestoreDb(StatesGroup):
     waiting_file = State()
 
+class Support(StatesGroup):
+    waiting_message = State()   # foydalanuvchi murojaat yozmoqda
+    waiting_reply   = State()   # admin javob yozmoqda
+
 
 class IsAdmin(BaseFilter):
     """Admin router'iga butunlay qo'yiladi.
@@ -92,6 +96,45 @@ def movie_caption(movie: dict, count: int) -> str:
         f"⬇️ Yuklab olishlar: <b>{count}</b>"
     )
 
+
+class HourlyLimit:
+    """Bir foydalanuvchiga oxirgi 60 daqiqada N tadan ortiq kino berilmaydi (sirpanuvchi oyna).
+
+    Hamma kodlarni ketma-ket yig'ib oladigan skript/akkauntlarni sekinlashtiradi.
+    Xotirada saqlanadi: bot qayta ishga tushsa hisob nolga tushadi — bu ataylab,
+    chegara jazo emas, tormoz. Faqat yetib borgan kino sanaladi.
+    """
+
+    WINDOW = 3600
+
+    def __init__(self, limit: int):
+        self.limit = limit
+        self._hits: dict[int, list[float]] = {}
+
+    def _fresh(self, user_id: int, now: float) -> list[float]:
+        hits = [t for t in self._hits.get(user_id, []) if now - t < self.WINDOW]
+        if hits:
+            self._hits[user_id] = hits
+        else:
+            self._hits.pop(user_id, None)   # xotira o'smasin
+        return hits
+
+    def wait_seconds(self, user_id: int, now: float) -> int:
+        """0 — ruxsat; aks holda keyingi kinogacha necha soniya qolgan."""
+        if self.limit <= 0:
+            return 0   # 0 — chegara o'chirilgan
+        hits = self._fresh(user_id, now)
+        if len(hits) < self.limit:
+            return 0
+        return max(1, int(hits[-self.limit] + self.WINDOW - now + 0.999))
+
+    def record(self, user_id: int, now: float) -> None:
+        self._fresh(user_id, now)
+        self._hits.setdefault(user_id, []).append(now)
+
+
+# main.py .env dagi MOVIES_PER_HOUR dan qayta o'rnatadi.
+MOVIE_LIMIT = HourlyLimit(20)
 
 MOVIES_PER_PAGE = 25
 
