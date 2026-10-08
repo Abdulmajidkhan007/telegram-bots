@@ -33,3 +33,21 @@ def test_is_unreachable():
     assert is_unreachable(TelegramBadRequest(m, "Bad Request: chat not found"))
     assert not is_unreachable(TelegramBadRequest(m, "Bad Request: message is too long"))
     assert not is_unreachable(RuntimeError("tarmoq"))
+
+
+def test_kinolar_sahifasi_tartib_va_chegara():
+    from common import MOVIES_PER_PAGE, movies_page
+    movies = [(str(i), {"name": "N" * 200 + "<x>", "year": "2024"}) for i in range(1, 60)]
+    text, page, pages = movies_page(movies, {"1": 5}, 0)
+    assert pages == -(-59 // MOVIES_PER_PAGE) and page == 0
+    assert "<code>1</code>" in text and "⬇️ 5" in text
+    assert "<x>" not in text                      # nom HTML-escape va kesilgan
+    assert len(text) < 4096                        # Telegram xabar chegarasi
+    last, page, _ = movies_page(movies, {}, 999)   # chegaradan tashqari sahifa → oxirgisi
+    assert page == pages - 1 and "<code>59</code>" in last
+
+
+def test_bosh_royxat():
+    from common import movies_page
+    text, page, pages = movies_page([], {}, 0)
+    assert "Hali kino yo'q" in text and (page, pages) == (0, 1)

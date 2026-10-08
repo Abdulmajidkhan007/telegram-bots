@@ -16,7 +16,7 @@ import buttons as kb
 import database as db
 from common import (
     AddAdmin, AddMovie, Broadcast, DeleteMovie, IsAdmin,
-    callback_int, h, is_unreachable,
+    callback_int, h, is_unreachable, movies_page,
 )
 
 logger = logging.getLogger(__name__)
@@ -371,3 +371,23 @@ async def add_admin_start(message: Message, state: FSMContext):
 async def remove_admin_list(message: Message):
     await message.answer("❌ O'chirmoqchi bo'lgan adminni tanlang:",
                          reply_markup=kb.admins_list_keyboard(db.get_all_admins(), db.super_admin_id()))
+
+
+async def _movies_view(page: int):
+    text, page, pages = movies_page(db.list_movies(), db.get_download_stats()["by_movie"], page)
+    return text, kb.movies_pager_keyboard(page, pages)
+
+
+@router.message(F.text == "📋 Kinolar ro'yxati")
+async def movies_list(message: Message):
+    text, markup = await _movies_view(0)
+    await message.answer(text, parse_mode="HTML", reply_markup=markup)
+
+
+@router.callback_query(F.data.startswith("mv:p:"))
+async def movies_list_page(callback: CallbackQuery):
+    page = callback_int(callback.data, "mv:p:")
+    text, markup = await _movies_view(page or 0)
+    await callback.message.edit_text(text, parse_mode="HTML", reply_markup=markup)
+    await callback.answer()
+

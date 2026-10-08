@@ -40,6 +40,7 @@ def admin_main_menu() -> ReplyKeyboardMarkup:
         keyboard=[
             [KeyboardButton(text="📢 Reklama yuborish"), KeyboardButton(text="📊 Statistika")],
             [KeyboardButton(text="🎬 Kino qo'shish"),    KeyboardButton(text="🗑 Kinoni o'chirish")],
+            [KeyboardButton(text="📋 Kinolar ro'yxati")],
             [KeyboardButton(text="👑 Admin boshqaruv"),  KeyboardButton(text="📡 Kanal boshqaruv")],
         ],
         resize_keyboard=True,
@@ -169,6 +170,18 @@ def channel_add_cancel_keyboard() -> InlineKeyboardMarkup:
     ]])
 
 
+def movies_pager_keyboard(page: int, pages: int) -> InlineKeyboardMarkup | None:
+    if pages <= 1:
+        return None
+    row = []
+    if page > 0:
+        row.append(InlineKeyboardButton(text="⬅️", callback_data=f"mv:p:{page - 1}"))
+    row.append(InlineKeyboardButton(text=f"{page + 1}/{pages}", callback_data="noop"))
+    if page < pages - 1:
+        row.append(InlineKeyboardButton(text="➡️", callback_data=f"mv:p:{page + 1}"))
+    return InlineKeyboardMarkup(inline_keyboard=[row])
+
+
 # ─────────────────────────────────────────────
 #  /help — Admin linki
 # ─────────────────────────────────────────────
@@ -184,7 +197,7 @@ def admin_contact_keyboard(url: str, label: str = "👑 Admin bilan bog'lanish")
 # "🎬 Kino qo'shish", janri "🗑 Kinoni o'chirish" bo'lgan kino aynan shundan paydo bo'lgan.
 MENU_TEXTS = frozenset({
     "📢 Reklama yuborish", "📊 Statistika",
-    "🎬 Kino qo'shish", "🗑 Kinoni o'chirish",
+    "🎬 Kino qo'shish", "🗑 Kinoni o'chirish", "📋 Kinolar ro'yxati",
     "👑 Admin boshqaruv", "📡 Kanal boshqaruv",
     "👥 Foydalanuvchilarga", "📢 Guruhlarga",
     "➕ Admin qo'shish", "➖ Admin o'chirish",

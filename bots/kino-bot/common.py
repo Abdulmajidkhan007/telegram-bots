@@ -93,6 +93,30 @@ def movie_caption(movie: dict, count: int) -> str:
     )
 
 
+MOVIES_PER_PAGE = 25
+
+
+def movies_page(movies: list[tuple[str, dict]], downloads: dict, page: int) -> tuple[str, int, int]:
+    """Kinolar ro'yxatining bitta sahifasi. Qaytaradi: (matn, to'g'rilangan sahifa, sahifalar soni).
+
+    Sahifalanadi: Telegram xabari 4096 belgidan oshmasin — 25 qator x ~100 belgi yetadi.
+    """
+    pages = max(1, -(-len(movies) // MOVIES_PER_PAGE))
+    page = min(max(page, 0), pages - 1)
+    if not movies:
+        return "📋 <b>Kinolar ro'yxati</b>\n\n<i>Hali kino yo'q — «🎬 Kino qo'shish».</i>", 0, 1
+    chunk = movies[page * MOVIES_PER_PAGE:(page + 1) * MOVIES_PER_PAGE]
+    lines = [
+        f"<code>{h(code)}</code> — {h(str(m.get('name', ''))[:60])}"
+        f"{' · ' + h(str(m.get('year'))) if m.get('year') else ''} · ⬇️ {downloads.get(code, 0)}"
+        for code, m in chunk
+    ]
+    head = f"📋 <b>Kinolar ro'yxati</b> ({len(movies)} ta)"
+    if pages > 1:
+        head += f" — {page + 1}/{pages}-sahifa"
+    return head + "\n\n" + "\n".join(lines), page, pages
+
+
 async def check_subscription(bot: Bot, user_id: int) -> tuple[bool, list]:
     channels = db.get_channels()
     not_subbed = []

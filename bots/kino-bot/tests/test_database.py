@@ -101,3 +101,9 @@ def test_restore_notogri_kodni_tashlaydi_qolganini_saqlaydi(baza):
 def test_restore_tuzilmasi_notogri_bolsa_rad(bad):
     with pytest.raises(ValueError):
         db.validate_db(bad)
+
+
+def test_kinolar_kod_boyicha_tartiblanadi(baza):
+    for code in ["10", "2", "avatar", "1", "Batman"]:
+        db.add_movie(code, code, "-", "-", "-", "-", "f")
+    assert [c for c, _ in db.list_movies()] == ["1", "2", "10", "avatar", "Batman"]

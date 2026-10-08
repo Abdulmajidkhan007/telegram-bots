@@ -227,6 +227,14 @@ def delete_movie(code: str) -> dict | None:
     return movie
 
 
+def list_movies() -> list[tuple[str, dict]]:
+    """Kod bo'yicha tartiblangan kinolar: raqamli kodlar son bo'yicha (2 < 10), keyin qolganlari."""
+    def key(item):
+        code = item[0]
+        return (0, int(code), "") if code.isdigit() else (1, 0, code.lower())
+    return sorted(load_db()["movies"].items(), key=key)
+
+
 def get_movie_count() -> int:
     return len(load_db()["movies"])
 
