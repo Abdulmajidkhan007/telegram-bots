@@ -1,0 +1,31 @@
+{
+  "direction": "frontend",
+  "directionLabel": "Frontend",
+  "directionEmoji": "🎨",
+  "directionOrder": 1,
+  "key": "nuxt",
+  "label": "Nuxt",
+  "order": 10,
+  "questions": [
+    {"q": "Nuxt qaysi freymvork ustiga qurilgan?", "options": ["Vue", "React", "Angular", "Svelte"], "correct": 0},
+    {"q": "Nuxt'da sahifalar qaysi papkada?", "options": ["pages/", "routes/", "views/", "app/screens"], "correct": 0},
+    {"q": "Nuxt'da avtomatik import qilinadigan komponentlar papkasi?", "options": ["components/", "widgets/", "parts/", "ui/"], "correct": 0},
+    {"q": "Nuxt'da composable'lar papkasi?", "options": ["composables/", "hooks/", "utils faqat", "services/"], "correct": 0},
+    {"q": "Nuxt sozlamalar fayli?", "options": ["nuxt.config.ts", "next.config.js", "vue.config.js", "nuxt.json"], "correct": 0},
+    {"q": "Nuxt'da server API marshrutlari papkasi?", "options": ["server/api/", "api/", "backend/", "routes/api"], "correct": 0},
+    {"q": "Nuxt'da ma'lumot olish uchun tavsiya etilgan composable?", "options": ["useFetch", "useEffect", "getServerSideProps", "useQuery majburiy"], "correct": 0},
+    {"q": "Nuxt'ning server dvigateli nomi?", "options": ["Nitro", "Turbo", "Vite faqat", "Express"], "correct": 0},
+    {"q": "Nuxt'da umumiy qoliplar papkasi?", "options": ["layouts/", "templates/", "shells/", "frames/"], "correct": 0},
+    {"q": "Nuxt'da marshrut middleware'lari papkasi?", "options": ["middleware/", "guards/", "filters/", "interceptors/"], "correct": 0},
+    {"q": "Dinamik marshrut fayl nomi misoli?", "options": ["[id].vue", ":id.vue", "_id faqat", "{id}.vue"], "correct": 0},
+    {"q": "Nuxt'da global holat uchun oddiy composable?", "options": ["useState", "useStore majburiy", "createStore", "ref global"], "correct": 0},
+    {"q": "Nuxt'da ilova bo'ylab ishlaydigan plaginlar papkasi?", "options": ["plugins/", "extensions/", "addons/", "libs/"], "correct": 0},
+    {"q": "Nuxt'da statik fayllar (favicon, robots.txt) papkasi?", "options": ["public/", "static/ majburiy", "assets/ faqat", "files/"], "correct": 0},
+    {"q": "Nuxt'da sahifa sarlavhasini o'rnatish composable'i?", "options": ["useHead", "useTitle majburiy", "setTitle", "useMeta faqat"], "correct": 0},
+    {"q": "Nuxt'da marshrut ma'lumotini olish?", "options": ["useRoute()", "useParams() majburiy", "this.$params", "getRoute()"], "correct": 0},
+    {"q": "Nuxt'da boshqa sahifaga dasturiy o'tish?", "options": ["navigateTo()", "goTo()", "redirect() majburiy", "router.open()"], "correct": 0},
+    {"q": "Nuxt'da ichki havola komponenti?", "options": ["<NuxtLink>", "<RouterLink> majburiy", "<a href> faqat", "<Link>"], "correct": 0},
+    {"q": "Nuxt'ni statik sayt sifatida yig'ish buyrug'i?", "options": ["nuxt generate", "nuxt static", "nuxt export", "nuxt pack"], "correct": 0},
+    {"q": "Nuxt'da faqat brauzerda render qilinadigan komponent o'rami?", "options": ["<ClientOnly>", "<NoSSR> majburiy", "<Browser>", "<Lazy>"], "correct": 0}
+  ]
+}

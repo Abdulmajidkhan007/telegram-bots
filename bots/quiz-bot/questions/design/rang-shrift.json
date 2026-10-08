@@ -1,0 +1,31 @@
+{
+  "direction": "design",
+  "directionLabel": "Dizayn (UI/UX)",
+  "directionEmoji": "🖌",
+  "directionOrder": 4,
+  "key": "rang-shrift",
+  "label": "Rang va tipografika",
+  "order": 3,
+  "questions": [
+    {"q": "Asosiy (primary) ranglar (RYB modeli)?", "options": ["Qizil, sariq, ko'k", "Qizil, yashil, ko'k", "Oq, qora, kulrang", "Pushti, binafsha, jigarrang"], "correct": 0},
+    {"q": "Ekranlar uchun rang modeli?", "options": ["RGB", "CMYK", "RYB", "Pantone faqat"], "correct": 0},
+    {"q": "Bosma (poligrafiya) uchun rang modeli?", "options": ["CMYK", "RGB", "HEX", "HSL"], "correct": 0},
+    {"q": "#FFFFFF qaysi rang?", "options": ["Oq", "Qora", "Qizil", "Ko'k"], "correct": 0},
+    {"q": "#000000 qaysi rang?", "options": ["Qora", "Oq", "Kulrang", "Yashil"], "correct": 0},
+    {"q": "Rang doirasida qarama-qarshi turgan ranglar?", "options": ["Komplementar (to'ldiruvchi)", "Analog", "Monoxrom", "Neytral"], "correct": 0},
+    {"q": "Doirada yonma-yon turgan ranglar?", "options": ["Analog", "Komplementar", "Triada", "Kontrast"], "correct": 0},
+    {"q": "60-30-10 qoidasi nima haqida?", "options": ["Ranglarni dizaynda taqsimlash nisbati", "Shrift o'lchami", "Ekran kengligi", "Animatsiya tezligi"], "correct": 0},
+    {"q": "Serif shrift nima?", "options": ["Harf uchlarida kichik \"oyoqchalar\"i bor shrift", "Oyoqchasiz shrift", "Qo'lyozma shrift", "Faqat katta harflar"], "correct": 0},
+    {"q": "Sans-serif shrift misoli?", "options": ["Arial", "Times New Roman", "Georgia", "Garamond"], "correct": 0},
+    {"q": "Qatorlar orasidagi masofa?", "options": ["Line-height (interlinyaj)", "Kerning", "Tracking", "Baseline"], "correct": 0},
+    {"q": "Ikki harf orasidagi masofani sozlash?", "options": ["Kerning", "Leading", "Padding", "Margin"], "correct": 0},
+    {"q": "Iliq ranglar qaysilar?", "options": ["Qizil, to'q sariq, sariq", "Ko'k, yashil, binafsha", "Oq, qora", "Kulrang, kumush"], "correct": 0},
+    {"q": "Monoxrom rang sxemasi?", "options": ["Bitta rangning turli tus va ochiqlikdagi variantlari", "Barcha ranglar", "Qora va oq faqat", "Komplementar juftlik"], "correct": 0},
+    {"q": "Sovuq ranglar?", "options": ["Ko'k, yashil, binafsha", "Qizil, sariq", "To'q sariq, qizil", "Jigarrang faqat"], "correct": 0},
+    {"q": "Rang to'yinganligi (saturation) nima?", "options": ["Rangning yorqinligi/sofligi darajasi", "Ochiqligi", "Rang turi", "Shaffofligi"], "correct": 0},
+    {"q": "HSL'dagi H nimani bildiradi?", "options": ["Hue (rang turi)", "Height", "Hex", "Highlight"], "correct": 0},
+    {"q": "Matn uchun tavsiya etiladigan minimal kontrast nisbati (WCAG AA, oddiy matn)?", "options": ["4,5:1", "2:1", "1:1", "10:1"], "correct": 0},
+    {"q": "Sarlavha va asosiy matn uchun shriftlar soni (tavsiya)?", "options": ["1–2 ta shrift oilasi", "5–6 ta", "Har qatorga boshqa", "Hech qanday"], "correct": 0},
+    {"q": "Font weight 700 odatda?", "options": ["Bold (qalin)", "Light", "Regular", "Thin"], "correct": 0}
+  ]
+}

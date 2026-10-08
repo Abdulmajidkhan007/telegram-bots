@@ -1,0 +1,29 @@
+{
+  "direction": "frontend",
+  "directionLabel": "Frontend",
+  "directionEmoji": "🎨",
+  "directionOrder": 1,
+  "key": "svelte",
+  "label": "Svelte",
+  "order": 11,
+  "questions": [
+    {"q": "Svelte'ning boshqa freymvorklardan asosiy farqi?", "options": ["Kompilyatsiya vaqtida ishlaydi, virtual DOM'siz", "Virtual DOM ishlatadi", "Faqat serverda ishlaydi", "TypeScript majburiy"], "correct": 0},
+    {"q": "Svelte'ni kim yaratgan?", "options": ["Rich Harris", "Evan You", "Dan Abramov", "Ryan Dahl"], "correct": 0},
+    {"q": "Svelte komponent kengaytmasi?", "options": [".svelte", ".sv", ".jsx", ".vue"], "correct": 0},
+    {"q": "Svelte asosidagi to'liq freymvork?", "options": ["SvelteKit", "SvelteNext", "Sapper 2", "Svelte Native faqat"], "correct": 0},
+    {"q": "Svelte 5'da reaktiv holat e'lon qilish runesi?", "options": ["$state", "$reactive", "useState", "ref"], "correct": 0},
+    {"q": "Svelte 5'da hisoblanadigan qiymat runesi?", "options": ["$derived", "$computed", "$memo", "$watch"], "correct": 0},
+    {"q": "Svelte 5'da yon ta'sir runesi?", "options": ["$effect", "$watch", "$onChange", "useEffect"], "correct": 0},
+    {"q": "Svelte'da shartli blok sintaksisi?", "options": ["{#if shart}...{/if}", "v-if", "*ngIf", "@if faqat"], "correct": 0},
+    {"q": "Svelte'da ro'yxat blok sintaksisi?", "options": ["{#each items as item}...{/each}", "v-for", "map() majburiy", "@for"], "correct": 0},
+    {"q": "Svelte'da input ikki tomonlama bog'lanishi?", "options": ["bind:value", "v-model", "[(ngModel)]", ":value faqat"], "correct": 0},
+    {"q": "Svelte'da komponentga props qabul qilish (Svelte 5)?", "options": ["let { nom } = $props()", "export props nom", "defineProps()", "@Input nom"], "correct": 0},
+    {"q": "SvelteKit'da sahifa fayli nomi?", "options": ["+page.svelte", "index.svelte", "page.tsx", "_page.svelte"], "correct": 0},
+    {"q": "SvelteKit'da sahifa uchun ma'lumot yuklovchi fayl?", "options": ["+page.js (yoki +page.server.js)", "loader.js", "data.svelte", "fetch.js"], "correct": 0},
+    {"q": "SvelteKit'da umumiy qolip fayli?", "options": ["+layout.svelte", "_layout.svelte", "layout.vue", "App.svelte faqat"], "correct": 0},
+    {"q": "Svelte'da global holat uchun mexanizm (store)?", "options": ["writable()", "useStore()", "createStore() majburiy", "ref()"], "correct": 0},
+    {"q": "Svelte'da hodisaga javob berish (Svelte 5)?", "options": ["onclick={handler}", "@click=\"handler\"", "(click)=\"handler\"", "v-on:click"], "correct": 0},
+    {"q": "Svelte'da komponentga xos uslublar qayerda yoziladi?", "options": ["Komponent ichidagi <style> tegida, avtomatik doiralangan", "Faqat global CSS faylda", "CSS-in-JS majburiy", "Inline faqat"], "correct": 0},
+    {"q": "Svelte'da asinxron qiymatni kutish bloki?", "options": ["{#await promise}...{/await}", "{#async}", "v-await", "@await"], "correct": 0}
+  ]
+}

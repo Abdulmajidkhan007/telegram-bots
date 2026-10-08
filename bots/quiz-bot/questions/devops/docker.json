@@ -1,0 +1,28 @@
+{
+  "direction": "devops",
+  "directionLabel": "DevOps",
+  "directionEmoji": "🐳",
+  "directionOrder": 5,
+  "key": "docker",
+  "label": "Docker",
+  "order": 2,
+  "questions": [
+    {"q": "Docker nima?", "options": ["Ilovalarni konteynerlarda ishga tushirish platformasi", "Dasturlash tili", "Ma'lumotlar bazasi", "Brauzer"], "correct": 0},
+    {"q": "Image va container farqi?", "options": ["Image shablon, container uning ishlayotgan nusxasi", "Farqi yo'q", "Container shablon", "Image ishlayotgan jarayon"], "correct": 0},
+    {"q": "Image yaratish uchun yo'riqnoma fayli?", "options": ["Dockerfile", "docker.json", "compose.ini", "Makefile"], "correct": 0},
+    {"q": "Image yig'ish buyrug'i?", "options": ["docker build", "docker make", "docker create-image", "docker compile"], "correct": 0},
+    {"q": "Konteyner ishga tushirish?", "options": ["docker run", "docker start-image", "docker exec faqat", "docker up"], "correct": 0},
+    {"q": "Ishlayotgan konteynerlar ro'yxati?", "options": ["docker ps", "docker list", "docker show", "docker containers"], "correct": 0},
+    {"q": "Dockerfile'da asos image?", "options": ["FROM", "BASE", "IMAGE", "USE"], "correct": 0},
+    {"q": "Dockerfile'da buyruq bajarish (build paytida)?", "options": ["RUN", "CMD", "EXEC", "DO"], "correct": 0},
+    {"q": "Konteyner ishga tushganda bajariladigan standart buyruq?", "options": ["CMD", "RUN", "START", "INIT"], "correct": 0},
+    {"q": "Fayllarni image'ga nusxalash?", "options": ["COPY", "MOVE", "PUT", "LOAD"], "correct": 0},
+    {"q": "Portni tashqariga ochish (run paytida)?", "options": ["-p 8080:80", "--port 8080", "-o 80", "--expose-all"], "correct": 0},
+    {"q": "Ma'lumotni konteyner o'chganda ham saqlash?", "options": ["Volume", "Layer", "Cache", "Tag"], "correct": 0},
+    {"q": "Bir nechta konteynerni birga boshqarish vositasi?", "options": ["Docker Compose", "Docker Swarm faqat", "Dockerfile", "Docker Hub"], "correct": 0},
+    {"q": "Image'larni saqlovchi ommaviy registry?", "options": ["Docker Hub", "GitHub Pages", "npm", "PyPI"], "correct": 0},
+    {"q": "Ishlayotgan konteyner ichida buyruq bajarish?", "options": ["docker exec -it nom sh", "docker run nom sh", "docker enter", "docker ssh"], "correct": 0},
+    {"q": "Image hajmini kichraytirish usuli?", "options": ["Multi-stage build", "Ko'proq RUN", "Root user", "Cache o'chirish"], "correct": 0},
+    {"q": ".dockerignore nima uchun?", "options": ["Build kontekstidan keraksiz fayllarni chiqarish", "Konteynerni yashirish", "Portni yopish", "Log o'chirish"], "correct": 0}
+  ]
+}

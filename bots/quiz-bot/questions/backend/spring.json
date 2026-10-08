@@ -1,0 +1,33 @@
+{
+  "direction": "backend",
+  "directionLabel": "Backend",
+  "directionEmoji": "⚙️",
+  "directionOrder": 2,
+  "key": "spring",
+  "label": "Spring Boot",
+  "order": 10,
+  "questions": [
+    {"q": "Spring Boot nima uchun?", "options": ["Java'da tez sozlanadigan ilovalar yaratish uchun", "Frontend uchun", "Mobil o'yinlar uchun", "Ma'lumotlar bazasi"], "correct": 0},
+    {"q": "REST kontroller annotatsiyasi?", "options": ["@RestController", "@Controller faqat", "@Rest", "@Api"], "correct": 0},
+    {"q": "GET so'rovni bog'lovchi annotatsiya?", "options": ["@GetMapping", "@Get", "@RequestGet", "@HttpGet"], "correct": 0},
+    {"q": "Bog'liqlik kiritish (DI) annotatsiyasi?", "options": ["@Autowired", "@Inject majburiy", "@Provide", "@Import"], "correct": 0},
+    {"q": "Servis qatlami annotatsiyasi?", "options": ["@Service", "@Component faqat", "@Injectable", "@Logic"], "correct": 0},
+    {"q": "Ma'lumotlar bazasi bilan ishlash interfeysi (Spring Data)?", "options": ["JpaRepository", "DbContext", "Model", "Mongoose"], "correct": 0},
+    {"q": "Sozlamalar fayli?", "options": ["application.properties (yoki .yml)", "settings.py", "config.json", "web.xml majburiy"], "correct": 0},
+    {"q": "Entity klass annotatsiyasi?", "options": ["@Entity", "@Table faqat", "@Model", "@Data"], "correct": 0},
+    {"q": "URL'dan o'zgaruvchi olish annotatsiyasi?", "options": ["@PathVariable", "@RequestParam", "@RequestBody", "@Param"], "correct": 0},
+    {"q": "So'rov tanasini obyektga o'girish annotatsiyasi?", "options": ["@RequestBody", "@PathVariable", "@Body", "@Json"], "correct": 0},
+    {"q": "Xavfsizlik (autentifikatsiya) moduli?", "options": ["Spring Security", "Spring Guard", "Spring Auth", "JWT Boot"], "correct": 0},
+    {"q": "Spring Boot ichki web serveri (standart)?", "options": ["Tomcat", "Nginx", "Apache HTTPD", "IIS"], "correct": 0},
+    {"q": "POST so'rovni bog'lovchi annotatsiya?", "options": ["@PostMapping", "@Post", "@RequestPost", "@HttpPost"], "correct": 0},
+    {"q": "Marshrut prefiksi uchun annotatsiya?", "options": ["@RequestMapping", "@Route", "@Path", "@Prefix"], "correct": 0},
+    {"q": "Konfiguratsiya klassi annotatsiyasi?", "options": ["@Configuration", "@Config", "@Setup", "@Settings"], "correct": 0},
+    {"q": "Bean yaratuvchi metod annotatsiyasi?", "options": ["@Bean", "@Component faqat", "@Factory", "@Provide"], "correct": 0},
+    {"q": "Ilovaning asosiy klassi annotatsiyasi?", "options": ["@SpringBootApplication", "@SpringApp", "@Main", "@BootApplication"], "correct": 0},
+    {"q": "Validatsiya annotatsiyasi (bo'sh bo'lmasin)?", "options": ["@NotBlank", "@Required", "@NonEmpty", "@Must"], "correct": 0},
+    {"q": "Tranzaksiya annotatsiyasi?", "options": ["@Transactional", "@Transaction", "@Commit", "@Atomic"], "correct": 0},
+    {"q": "Global xatolarni ushlash annotatsiyasi?", "options": ["@ControllerAdvice", "@ErrorHandler faqat", "@GlobalCatch", "@Advice"], "correct": 0},
+    {"q": "Spring Boot loyihasini tez yaratish sayti?", "options": ["Spring Initializr (start.spring.io)", "spring.new", "bootstrap.io", "javagen.com"], "correct": 0},
+    {"q": "Monitoring va health endpointlari moduli?", "options": ["Spring Boot Actuator", "Spring Monitor", "Spring Health", "Spring Admin faqat"], "correct": 0}
+  ]
+}

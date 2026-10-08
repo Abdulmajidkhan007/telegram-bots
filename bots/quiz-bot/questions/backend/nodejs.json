@@ -1,0 +1,31 @@
+{
+  "direction": "backend",
+  "directionLabel": "Backend",
+  "directionEmoji": "⚙️",
+  "directionOrder": 2,
+  "key": "nodejs",
+  "label": "Node.js",
+  "order": 6,
+  "questions": [
+    {"q": "Node.js nima?", "options": ["Brauzerdan tashqarida JavaScript ishlatuvchi muhit", "Brauzer", "Ma'lumotlar bazasi", "CSS freymvork"], "correct": 0},
+    {"q": "Node.js qaysi JavaScript dvigateliga asoslangan?", "options": ["V8", "SpiderMonkey", "Chakra", "JavaScriptCore"], "correct": 0},
+    {"q": "Node.js paket menejeri?", "options": ["npm", "pip", "gem", "composer"], "correct": 0},
+    {"q": "Loyiha bog'liqliklari yoziladigan fayl?", "options": ["package.json", "node.json", "modules.txt", "requirements.txt"], "correct": 0},
+    {"q": "CommonJS'da modul ulash?", "options": ["require('modul')", "import modul faqat", "include('modul')", "using modul"], "correct": 0},
+    {"q": "Fayl tizimi bilan ishlovchi ichki modul?", "options": ["fs", "file", "os faqat", "path faqat"], "correct": 0},
+    {"q": "Fayl yo'llari bilan ishlovchi modul?", "options": ["path", "fs", "url", "dir"], "correct": 0},
+    {"q": "Node.js qanday modelda ishlaydi?", "options": ["Bitta thread, bloklanmaydigan asinxron I/O", "Har so'rovga yangi thread", "Faqat sinxron", "Ko'p jarayonli doim"], "correct": 0},
+    {"q": "Environment o'zgaruvchilarini o'qish?", "options": ["process.env", "env.get()", "system.env", "os.environ"], "correct": 0},
+    {"q": "Muhim hodisalar bilan ishlash uchun ichki klass?", "options": ["EventEmitter", "EventLoop", "Listener", "Dispatcher"], "correct": 0},
+    {"q": "Katta fayllarni qismlab o'qish uchun?", "options": ["Stream", "Buffer faqat", "Promise", "Cluster"], "correct": 0},
+    {"q": "Ko'p yadroli protsessordan foydalanish moduli?", "options": ["cluster", "thread faqat", "multi", "cores"], "correct": 0},
+    {"q": "Bog'liqliklarni o'rnatish buyrug'i?", "options": ["npm install", "npm get", "npm add-all", "node install"], "correct": 0},
+    {"q": "package-lock.json nima uchun?", "options": ["Bog'liqliklarning aniq versiyalarini qotiradi", "Kodni shifrlaydi", "Sozlamalar", "Testlar ro'yxati"], "correct": 0},
+    {"q": "npx nima?", "options": ["Paketni o'rnatmasdan ishga tushiruvchi vosita", "Yangi paket menejeri", "Node versiyasi", "Test runner"], "correct": 0},
+    {"q": "Node.js'da global obyekt?", "options": ["globalThis (global)", "window", "document", "self"], "correct": 0},
+    {"q": "__dirname nimani beradi?", "options": ["Joriy fayl joylashgan papka yo'li", "Loyiha nomi", "Foydalanuvchi papkasi", "Fayl nomi"], "correct": 0},
+    {"q": "Uzoq CPU hisobi nega Node.js'ni sekinlashtiradi?", "options": ["Event loop'ni bloklaydi", "Xotira yetmaydi", "Tarmoq uziladi", "Hech qachon sekinlashtirmaydi"], "correct": 0},
+    {"q": "Og'ir hisob-kitobni alohida thread'da bajarish?", "options": ["worker_threads", "setTimeout", "Promise.all", "process.nextTick"], "correct": 0},
+    {"q": "semver'da \"^1.2.3\" nimani bildiradi?", "options": ["1.x.x doirasidagi mos yangilanishlar", "Faqat 1.2.3", "2.0.0 dan yuqori", "Eng so'nggi versiya"], "correct": 0}
+  ]
+}

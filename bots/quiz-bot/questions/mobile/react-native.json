@@ -1,0 +1,30 @@
+{
+  "direction": "mobile",
+  "directionLabel": "Mobile",
+  "directionEmoji": "📱",
+  "directionOrder": 3,
+  "key": "react-native",
+  "label": "React Native",
+  "order": 5,
+  "questions": [
+    {"q": "React Native nima?", "options": ["React bilan native mobil ilovalar yaratish freymvorki", "Brauzer", "Ma'lumotlar bazasi", "Web-sayt yaratuvchi"], "correct": 0},
+    {"q": "React Native'da <div> o'rniga?", "options": ["<View>", "<Div>", "<Box> faqat", "<Container>"], "correct": 0},
+    {"q": "Matn chiqarish komponenti?", "options": ["<Text>", "<p>", "<Label>", "<Span>"], "correct": 0},
+    {"q": "Uslublar qanday yoziladi?", "options": ["StyleSheet.create({...})", "CSS fayl", "SCSS", "style.css"], "correct": 0},
+    {"q": "React Native'da tez boshlash uchun mashhur platforma?", "options": ["Expo", "Vite", "Next.js", "Gatsby"], "correct": 0},
+    {"q": "Katta ro'yxatni samarali chiqarish komponenti?", "options": ["FlatList", "ScrollView faqat", "ListView eskirgan", "Map"], "correct": 0},
+    {"q": "Bosiladigan element komponenti?", "options": ["Pressable (yoki TouchableOpacity)", "<button>", "Click", "Tap"], "correct": 0},
+    {"q": "Navigatsiya uchun mashhur kutubxona?", "options": ["React Navigation", "React Router DOM", "Vue Router", "Next Router"], "correct": 0},
+    {"q": "Platformani aniqlash?", "options": ["Platform.OS", "navigator.platform", "window.os", "Device.type"], "correct": 0},
+    {"q": "React Native'da matn kiritish komponenti?", "options": ["TextInput", "Input", "EditText", "TextField"], "correct": 0},
+    {"q": "Rasm ko'rsatish komponenti?", "options": ["Image", "img", "Picture", "Photo"], "correct": 0},
+    {"q": "Skroll qilinadigan konteyner?", "options": ["ScrollView", "Scroll", "ListView faqat", "Div"], "correct": 0},
+    {"q": "Ekran o'lchamlarini olish?", "options": ["Dimensions (yoki useWindowDimensions)", "window.screen", "Screen.size", "Device.width"], "correct": 0},
+    {"q": "Mahalliy ma'lumot saqlash uchun mashhur paket?", "options": ["AsyncStorage", "localStorage", "SharedPrefs faqat", "Cookies"], "correct": 0},
+    {"q": "React Native'da uslublar qaysi joylashuv tizimiga asoslangan?", "options": ["Flexbox", "Grid faqat", "Float", "Table"], "correct": 0},
+    {"q": "Expo'da ilovani telefonda sinash ilovasi?", "options": ["Expo Go", "Expo Test", "RN Viewer", "Metro App"], "correct": 0},
+    {"q": "React Native JS bundler?", "options": ["Metro", "Webpack majburiy", "Vite", "Parcel"], "correct": 0},
+    {"q": "Modal oyna komponenti?", "options": ["Modal", "Dialog", "Popup", "Alert faqat"], "correct": 0},
+    {"q": "Platformaga xos fayl kengaytmasi misoli?", "options": ["komponent.ios.js", "komponent.apple.js", "komponent.mobile.js", "komponent.native.ios"], "correct": 0}
+  ]
+}

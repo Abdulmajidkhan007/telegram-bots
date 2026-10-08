@@ -1,0 +1,31 @@
+{
+  "direction": "devops",
+  "directionLabel": "DevOps",
+  "directionEmoji": "🐳",
+  "directionOrder": 5,
+  "key": "ci-cd",
+  "label": "CI/CD",
+  "order": 4,
+  "questions": [
+    {"q": "CI nimani anglatadi?", "options": ["Continuous Integration", "Code Inspection", "Cloud Infrastructure", "Central Interface"], "correct": 0},
+    {"q": "CD nimani anglatadi?", "options": ["Continuous Delivery/Deployment", "Code Debug", "Cloud Data", "Central Database"], "correct": 0},
+    {"q": "CI'ning asosiy maqsadi?", "options": ["Har o'zgarishni avtomatik yig'ish va testlash", "Qo'lda deploy", "Dizayn", "Hujjatlash"], "correct": 0},
+    {"q": "GitHub'ning CI/CD xizmati?", "options": ["GitHub Actions", "GitHub Pages", "GitHub Copilot", "Gists"], "correct": 0},
+    {"q": "GitHub Actions workflow fayllari qayerda?", "options": [".github/workflows/", ".ci/", "actions/", ".github/ci.json"], "correct": 0},
+    {"q": "GitLab CI sozlama fayli?", "options": [".gitlab-ci.yml", "gitlab.json", ".ci.yaml", "pipeline.xml"], "correct": 0},
+    {"q": "Pipeline nima?", "options": ["Ketma-ket avtomatik bosqichlar (build, test, deploy)", "Ma'lumotlar bazasi", "Server", "Konteyner"], "correct": 0},
+    {"q": "Blue-green deployment nima?", "options": ["Ikki muhit orasida trafikni almashtirib yangilash", "Rang sxemasi", "Test turi", "Monitoring"], "correct": 0},
+    {"q": "Canary deployment nima?", "options": ["Yangi versiyani avval kichik qism foydalanuvchiga chiqarish", "Hammaga birdan chiqarish", "Orqaga qaytarish", "Zaxira"], "correct": 0},
+    {"q": "Rollback nima?", "options": ["Oldingi ishlaydigan versiyaga qaytish", "Yangi feature", "Test", "Kesh"], "correct": 0},
+    {"q": "GitHub Actions'da ish qaysi kalit ichida yoziladi?", "options": ["jobs", "tasks", "steps faqat", "pipelines"], "correct": 0},
+    {"q": "GitHub Actions'da tayyor amalni chaqirish?", "options": ["uses: actions/checkout@v4", "run: checkout", "import checkout", "call: checkout"], "correct": 0},
+    {"q": "Workflow qachon ishga tushishini belgilovchi kalit?", "options": ["on", "when", "trigger", "start"], "correct": 0},
+    {"q": "Maxfiy kalitlar GitHub Actions'da qayerda saqlanadi?", "options": ["Repository secrets", "Kod ichida", "README'da", "Commit xabarida"], "correct": 0},
+    {"q": "Jenkins nima?", "options": ["Ochiq kodli CI/CD server", "Ma'lumotlar bazasi", "Brauzer", "Konteyner"], "correct": 0},
+    {"q": "Infrastructure as Code (IaC) vositasi?", "options": ["Terraform", "Photoshop", "Excel", "Figma"], "correct": 0},
+    {"q": "Artefakt nima (CI'da)?", "options": ["Build natijasida hosil bo'lgan fayl (paket, image)", "Xato", "Test nomi", "Branch"], "correct": 0},
+    {"q": "Feature flag nima?", "options": ["Funksiyani kodni o'zgartirmasdan yoqish/o'chirish", "Bayroq rasmi", "Git tegi", "Test turi"], "correct": 0},
+    {"q": "Semantik versiyalashda MAJOR raqami qachon oshadi?", "options": ["Orqaga mos kelmaydigan o'zgarishda", "Har kuni", "Xato tuzatishda", "Hujjat o'zgarishida"], "correct": 0},
+    {"q": "Monitoring uchun mashhur vosita?", "options": ["Prometheus va Grafana", "Photoshop", "Word", "Postman faqat"], "correct": 0}
+  ]
+}

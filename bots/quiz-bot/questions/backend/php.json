@@ -1,0 +1,33 @@
+{
+  "direction": "backend",
+  "directionLabel": "Backend",
+  "directionEmoji": "⚙️",
+  "directionOrder": 2,
+  "key": "php",
+  "label": "PHP",
+  "order": 12,
+  "questions": [
+    {"q": "PHP'da o'zgaruvchi qaysi belgi bilan boshlanadi?", "options": ["$", "@", "#", "&"], "correct": 0},
+    {"q": "PHP kodi qanday teg bilan boshlanadi?", "options": ["<?php", "<php>", "<?= faqat", "<script php>"], "correct": 0},
+    {"q": "Satrlarni birlashtirish operatori?", "options": [". (nuqta)", "+", "&", "++"], "correct": 0},
+    {"q": "Ekranga chiqarish?", "options": ["echo", "print_line", "console.log", "puts"], "correct": 0},
+    {"q": "Massiv uzunligi funksiyasi?", "options": ["count()", "length()", "size()", "len()"], "correct": 0},
+    {"q": "Assotsiativ massiv misoli?", "options": ["[\"ism\" => \"Ali\"]", "{\"ism\": \"Ali\"}", "(\"ism\", \"Ali\")", "[ism: \"Ali\"]"], "correct": 0},
+    {"q": "Formadan POST ma'lumotini olish?", "options": ["$_POST", "$POST", "$_REQUEST faqat", "post()"], "correct": 0},
+    {"q": "PHP paket menejeri?", "options": ["Composer", "npm", "pip", "gem"], "correct": 0},
+    {"q": "Sessiyani boshlash funksiyasi?", "options": ["session_start()", "start_session()", "session()", "$_SESSION faqat"], "correct": 0},
+    {"q": "SQL in'ektsiyasidan himoya usuli?", "options": ["Tayyorlangan so'rovlar (prepared statements)", "mysql_query", "Hech narsa qilmaslik", "eval()"], "correct": 0},
+    {"q": "Ma'lumotlar bazasi bilan ishlash uchun universal kengaytma?", "options": ["PDO", "MySQLiOnly", "SQLX", "DBAL faqat"], "correct": 0},
+    {"q": "Qat'iy tenglik operatori?", "options": ["===", "==", "=", "eq"], "correct": 0},
+    {"q": "PHP'da funksiya e'lon qilish?", "options": ["function nom() {}", "def nom():", "func nom() {}", "fn nom =>"], "correct": 0},
+    {"q": "Massivga element qo'shish?", "options": ["$arr[] = $qiymat;", "$arr.push($qiymat);", "push($arr)", "$arr += $qiymat"], "correct": 0},
+    {"q": "Massiv elementlari bo'ylab sikl?", "options": ["foreach ($arr as $el)", "for ($el in $arr)", "each $arr", "loop($arr)"], "correct": 0},
+    {"q": "Klass konstruktori nomi?", "options": ["__construct", "__init__", "constructor", "init"], "correct": 0},
+    {"q": "Obyekt metodini chaqirish operatori?", "options": ["->", ".", ":: faqat", "=>"], "correct": 0},
+    {"q": "Statik metodni chaqirish operatori?", "options": ["::", "->", ".", "#"], "correct": 0},
+    {"q": "Faylni ulash (bir marta)?", "options": ["require_once", "import", "include_all", "use_file"], "correct": 0},
+    {"q": "Null bo'lsa standart qiymat operatori?", "options": ["??", "?: faqat", "||", "!!"], "correct": 0},
+    {"q": "PHP'ning mashhur test freymvorki?", "options": ["PHPUnit", "Jest", "PyTest", "JUnit faqat"], "correct": 0},
+    {"q": "JSON satrni massivga o'girish?", "options": ["json_decode($s, true)", "json_parse($s)", "JSON.parse($s)", "decode_json($s)"], "correct": 0}
+  ]
+}

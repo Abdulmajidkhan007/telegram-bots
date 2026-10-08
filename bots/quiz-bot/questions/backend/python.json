@@ -3,6 +3,9 @@
   "directionLabel": "Backend",
   "key": "python",
   "label": "Python",
+  "directionEmoji": "⚙️",
+  "directionOrder": 2,
+  "order": 1,
   "questions": [
     { "q": "Python'da ro'yxat (list) qaysi qavslar bilan belgilanadi?", "options": ["[ ]", "{ }", "( )", "< >"], "correct": 0 },
     { "q": "Funksiya e'lon qilish uchun qaysi kalit so'z?", "options": ["def", "function", "func", "fn"], "correct": 0 },

@@ -12,6 +12,7 @@
 // ============================================================
 const storage = require('./storage');
 const questions = require('./questions');
+const menus = require('./menus');
 const { COUNT_OPTIONS, TIME_OPTIONS } = require('../config');
 
 let BOT_ID = null;
@@ -90,14 +91,15 @@ function renderGroupList(bot, chatId, messageId) {
   const rows = list.map(g => [{ text: '👥 ' + g.title, callback_data: 'ggrp:' + g.id }]);
   editTo(bot, chatId, messageId, "👥 Qaysi guruhda test o'tkazamiz?", rows);
 }
-function renderDirections(bot, chatId, messageId) {
-  const rows = questions.getDirections().map(d => [{ text: d.emoji + ' ' + d.label, callback_data: 'gdir:' + d.key }]);
+function renderDirections(bot, chatId, messageId, page = 0) {
+  const rows = menus.directionsRows(questions.getDirections(), page, { pick: k => 'gdir:' + k, nav: 'gdirs' });
   rows.push([{ text: '⬅️ Orqaga', callback_data: 'gb:grp' }]);
   editTo(bot, chatId, messageId, "🧭 Yo'nalishni tanlang:", rows);
 }
-function renderSubs(bot, chatId, messageId, s) {
-  const rows = questions.getSubs(s.dir).map(x => [{ text: x.label + ' (' + x.count + ')', callback_data: 'gsub:' + x.key }]);
-  rows.push([{ text: '⬅️ Orqaga', callback_data: 'gb:dir' }]);
+function renderSubs(bot, chatId, messageId, s, page = 0) {
+  const rows = menus.subsRows(questions.getSubs(s.dir), page, {
+    pick: k => 'gsub:' + k, nav: 'gdirp', mix: 'gsub:' + questions.MIX_KEY, back: 'gb:dir'
+  });
   editTo(bot, chatId, messageId, "📚 Bo'limni tanlang:", rows);
 }
 function renderCount(bot, chatId, messageId) {
@@ -123,7 +125,7 @@ async function handleCallback(bot, query) {
   const p = data.split(':');
 
   if (p[0] === 'gjoin') return handleJoin(bot, query, p[1]);
-  if (!['ggrp', 'gdir', 'gsub', 'gcnt', 'gtm', 'gsch', 'gb'].includes(p[0])) return false;
+  if (!['ggrp', 'gdir', 'gdirs', 'gdirp', 'gsub', 'gcnt', 'gtm', 'gsch', 'gb'].includes(p[0])) return false;
 
   const chatId = query.message.chat.id;
   const messageId = query.message.message_id;
@@ -161,7 +163,9 @@ async function handleCallback(bot, query) {
   const s = setups[hostId];
   if (!s) { bot.sendMessage(chatId, "Sozlash bekor bo'ldi. \"\uD83D\uDC65 Guruhda test\" ni qayta bosing."); return true; }
 
+  if (p[0] === 'gdirs') { renderDirections(bot, chatId, messageId, parseInt(p[1], 10)); return true; }
   if (p[0] === 'gdir') { s.dir = p[1]; renderSubs(bot, chatId, messageId, s); return true; }
+  if (p[0] === 'gdirp') { renderSubs(bot, chatId, messageId, s, parseInt(p[1], 10)); return true; }
   if (p[0] === 'gsub') { s.sub = p[1]; s.label = questions.getSubLabel(s.dir, s.sub); renderCount(bot, chatId, messageId); return true; }
   if (p[0] === 'gcnt') { s.count = parseInt(p[1], 10); renderTime(bot, chatId, messageId); return true; }
   if (p[0] === 'gtm') { s.seconds = parseInt(p[1], 10); renderSchedule(bot, chatId, messageId); return true; }

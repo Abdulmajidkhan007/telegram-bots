@@ -1,0 +1,30 @@
+{
+  "direction": "mobile",
+  "directionLabel": "Mobile",
+  "directionEmoji": "📱",
+  "directionOrder": 3,
+  "key": "flutter",
+  "label": "Flutter",
+  "order": 1,
+  "questions": [
+    {"q": "Flutter'ni qaysi kompaniya yaratgan?", "options": ["Google", "Meta", "Apple", "Microsoft"], "correct": 0},
+    {"q": "Flutter ilovalari qaysi tilda yoziladi?", "options": ["Dart", "Kotlin", "Swift", "JavaScript"], "correct": 0},
+    {"q": "Flutter'da UI nimalardan quriladi?", "options": ["Widget'lar", "Activity'lar", "Fragment'lar", "View Controller'lar"], "correct": 0},
+    {"q": "Holati o'zgarmaydigan widget?", "options": ["StatelessWidget", "StatefulWidget", "InheritedWidget", "ChangeWidget"], "correct": 0},
+    {"q": "Holati o'zgaradigan widget?", "options": ["StatefulWidget", "StatelessWidget", "Container", "Text"], "correct": 0},
+    {"q": "StatefulWidget'da holatni yangilab qayta chizish?", "options": ["setState()", "update()", "refresh()", "notify()"], "correct": 0},
+    {"q": "Elementlarni vertikal joylashtirish widget'i?", "options": ["Column", "Row", "Stack", "Wrap"], "correct": 0},
+    {"q": "Elementlarni gorizontal joylashtirish widget'i?", "options": ["Row", "Column", "ListView", "Center"], "correct": 0},
+    {"q": "Elementlarni ustma-ust joylashtirish?", "options": ["Stack", "Column", "Row", "Expanded"], "correct": 0},
+    {"q": "Skroll qilinadigan ro'yxat widget'i?", "options": ["ListView", "Column", "Table", "Row"], "correct": 0},
+    {"q": "Ilova asosiy materiali (Material Design) ildizi?", "options": ["MaterialApp", "CupertinoApp faqat", "FlutterApp", "RootApp"], "correct": 0},
+    {"q": "Ekran tuzilishi (AppBar, body) widget'i?", "options": ["Scaffold", "Frame", "Page", "Layout"], "correct": 0},
+    {"q": "Hot reload nima?", "options": ["Holatni yo'qotmasdan kod o'zgarishini darhol ko'rsatish", "Ilovani o'chirish", "Kesh tozalash", "Build qilish"], "correct": 0},
+    {"q": "Flutter paketlari ro'yxati fayli?", "options": ["pubspec.yaml", "package.json", "build.gradle", "Podfile"], "correct": 0},
+    {"q": "Paket o'rnatish buyrug'i?", "options": ["flutter pub get", "flutter install", "npm install", "pub add-all"], "correct": 0},
+    {"q": "Ekranlar orasida o'tish?", "options": ["Navigator.push()", "Router.go() faqat", "window.open()", "Intent()"], "correct": 0},
+    {"q": "Flutter'da mashhur holat boshqaruv yechimlari?", "options": ["Provider, Riverpod, Bloc", "Redux faqat", "Vuex", "NgRx"], "correct": 0},
+    {"q": "Bo'sh joyni egallovchi moslashuvchan widget?", "options": ["Expanded", "Padding", "SizedBox faqat", "Align"], "correct": 0},
+    {"q": "Flutter qaysi grafik dvigatelda chizadi?", "options": ["O'z dvigateli (Skia/Impeller)", "Native UI komponentlari", "WebView", "OpenGL to'g'ridan-to'g'ri faqat"], "correct": 0}
+  ]
+}

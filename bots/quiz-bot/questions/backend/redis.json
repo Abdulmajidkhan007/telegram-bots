@@ -1,0 +1,31 @@
+{
+  "direction": "backend",
+  "directionLabel": "Backend",
+  "directionEmoji": "⚙️",
+  "directionOrder": 2,
+  "key": "redis",
+  "label": "Redis",
+  "order": 18,
+  "questions": [
+    {"q": "Redis asosan qanday saqlaydi?", "options": ["Xotirada (in-memory) kalit-qiymat", "Faqat diskda jadval", "Fayl tizimida", "Brauzerda"], "correct": 0},
+    {"q": "Redis standart porti?", "options": ["6379", "5432", "27017", "3000"], "correct": 0},
+    {"q": "Qiymat yozish buyrug'i?", "options": ["SET kalit qiymat", "PUT kalit qiymat", "WRITE kalit", "ADD kalit"], "correct": 0},
+    {"q": "Qiymat o'qish buyrug'i?", "options": ["GET kalit", "READ kalit", "FETCH kalit", "SELECT kalit"], "correct": 0},
+    {"q": "Kalitga yashash muddati berish?", "options": ["EXPIRE kalit soniya", "TTL kalit soniya", "TIMEOUT kalit", "DELETE AFTER"], "correct": 0},
+    {"q": "Kalitning qolgan umrini ko'rish?", "options": ["TTL kalit", "EXPIRE kalit", "AGE kalit", "LIFE kalit"], "correct": 0},
+    {"q": "Sonni bittaga oshirish?", "options": ["INCR kalit", "ADD kalit 1", "PLUS kalit", "UP kalit"], "correct": 0},
+    {"q": "Redis'ning keng tarqalgan qo'llanishi?", "options": ["Kesh, sessiya va navbatlar", "Rasm tahrirlash", "Frontend render", "Video kodlash"], "correct": 0},
+    {"q": "Xabar almashish modeli?", "options": ["Pub/Sub", "REST", "SOAP", "FTP"], "correct": 0},
+    {"q": "Tartiblangan to'plam turi?", "options": ["Sorted Set (ZSET)", "List", "Hash", "String"], "correct": 0},
+    {"q": "Kalitni o'chirish buyrug'i?", "options": ["DEL kalit", "REMOVE kalit", "DROP kalit", "ERASE kalit"], "correct": 0},
+    {"q": "Kalit borligini tekshirish?", "options": ["EXISTS kalit", "HAS kalit", "CHECK kalit", "FIND kalit"], "correct": 0},
+    {"q": "Ro'yxat boshiga element qo'shish?", "options": ["LPUSH", "RPUSH", "PUSH", "ADD"], "correct": 0},
+    {"q": "Ro'yxat oxiriga element qo'shish?", "options": ["RPUSH", "LPUSH", "APPEND faqat", "POP"], "correct": 0},
+    {"q": "Hash'ga maydon yozish?", "options": ["HSET", "SET faqat", "HPUT", "MSET"], "correct": 0},
+    {"q": "Redis ma'lumotni diskka saqlash usullari?", "options": ["RDB snapshot va AOF", "Faqat CSV", "SQL dump", "Saqlamaydi umuman"], "correct": 0},
+    {"q": "Redis bitta jarayonda buyruqlarni qanday bajaradi?", "options": ["Asosan bitta thread'da ketma-ket", "Har buyruqqa yangi thread", "Faqat parallel", "Tasodifiy"], "correct": 0},
+    {"q": "Redis'ga ulanish konsol mijozi?", "options": ["redis-cli", "redis-shell", "rcli", "redis-console"], "correct": 0},
+    {"q": "Kesh \"yashash muddati\" tushunchasi?", "options": ["TTL", "LRU faqat", "SLA", "RTT"], "correct": 0},
+    {"q": "Xotira to'lganda eng kam ishlatilganini chiqarish siyosati?", "options": ["LRU", "FIFO majburiy", "LIFO", "Random faqat"], "correct": 0}
+  ]
+}

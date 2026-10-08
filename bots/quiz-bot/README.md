@@ -1,11 +1,14 @@
 # Quiz Bot
 
-IT yo'nalishlari bo'yicha Telegram test boti (Node.js, `node-telegram-bot-api`).
+IT yo'nalishlari va maktab fanlari bo'yicha Telegram test boti (Node.js, `node-telegram-bot-api`).
+**2007 ta savol, 13 yo'nalish, 72 bo'lim.**
 
 **Asosiy imkoniyatlar:**
 
 - Yakka test: yo'nalish → bo'lim → savol soni → har savolga vaqt → taymerli quiz poll'lar → natija va statistika
 - Guruh testi: bot guruhga e'lon tashlaydi, ishtirokchilar qatnashadi, reyting chiqadi
+- Yo'nalish va bo'limlar 6 tadan (2 qator x 3) sahifalab ko'rsatiladi, ⬅️ 1/3 ➡️ bilan varaqlanadi
+- 🔀 **Aralash** — tanlangan yo'nalishning barcha bo'limlaridan tasodifiy savollar
 - Majburiy kanal obunasi (admin paneldan boshqariladi)
 - Welcome rasm + tanishtiruv matni (yangi foydalanuvchi `/start` bosganda)
 - 3 tilli emoji-menyu, slash buyruqlar, har bosqichda orqaga qaytish
@@ -41,9 +44,9 @@ quiz-bot/
 │   ├── admin.js          # admin panel + savol qo'shish (hamma uchun ochiq)
 │   └── handlers.js       # ro'yxat, obuna, menyu, slash buyruqlar
 ├── questions/            # boshlang'ich savollar (seed; runtime'da o'qilmaydi)
-│   ├── general/it.json
-│   ├── frontend/javascript.json, react.json
-│   └── backend/python.json
+│   ├── frontend/  backend/  mobile/  design/  devops/  security/  general/
+│   └── til-adabiyot/  aniq-fanlar/  tabiiy-fanlar/  ijtimoiy-fanlar/  xorijiy-tillar/  mantiq/
+├── test/                 # npm test — menyu sahifalash va savollar validatori
 ├── assets/
 │   └── welcome.png       # 640×360 banner (xush kelibsiz ekranida)
 ├── data/                 # RUNTIME (.gitignore'da): users, results, groups, channels, questions
@@ -54,6 +57,39 @@ quiz-bot/
 ```
 
 ---
+
+## Savollar bazasi
+
+| Yo'nalish | Bo'limlar |
+| --- | --- |
+| 🎨 Frontend | HTML, CSS, JavaScript, TypeScript, React, Vue, Angular, Next.js, Nuxt, Svelte, Tailwind, Sass, Redux, Vite/Webpack |
+| ⚙️ Backend | Python, Django, FastAPI, Flask, Node.js, Express, NestJS, Java, Spring Boot, Go, PHP, Laravel, C#/.NET, SQL, PostgreSQL, MongoDB, Redis, REST API |
+| 📱 Mobile | Flutter, Dart, Kotlin/Android, Swift/iOS, React Native |
+| 🖌 Dizayn | UI/UX, Figma, Rang va tipografika |
+| 🐳 DevOps | Git, Docker, Linux, CI/CD, Kubernetes |
+| 🔐 Kiberxavfsizlik · 💡 Umumiy IT | Xavfsizlik asoslari · Algoritmlar, Tarmoqlar, Umumiy IT |
+| 📝 Ona tili va adabiyot | Ona tili, Adabiyot |
+| 📐 Aniq fanlar | Matematika, Algebra, Geometriya, Fizika, Informatika |
+| 🧪 Tabiiy fanlar | Kimyo, Biologiya, Geografiya, Astronomiya, Ekologiya |
+| 🏛 Ijtimoiy fanlar | O'zbekiston tarixi, Jahon tarixi, Huquq, Iqtisodiyot |
+| 🌍 Xorijiy tillar · 🧩 Mantiq | Ingliz tili, Rus tili · Mantiqiy savollar, Umumiy bilim |
+
+Fayl formati — `questions/<yo'nalish>/<bo'lim>.json`:
+
+```json
+{ "direction": "frontend", "directionLabel": "Frontend", "directionEmoji": "🎨", "directionOrder": 1,
+  "key": "html", "label": "HTML", "order": 1,
+  "questions": [ { "q": "Savol?", "options": ["To'g'ri", "Xato", "Xato", "Xato"], "correct": 0 } ] }
+```
+
+Variantlar test paytida aralashtiriladi. `npm test` har faylni Telegram chegaralariga
+(savol ≤ 284, variant ≤ 100 belgi, 2–10 variant, `callback_data` ≤ 64 bayt) va takrorlarga tekshiradi.
+
+> Savollar AI yordamida tuzilgan va qayta ko'rib chiqilgan. Xato topsangiz —
+> admin paneldan tahrirlang yoki xabar bering.
+
+> **Railway'da:** seed faqat volume'da **yo'q** fayllarni ko'chiradi — yangi bo'limlar
+> avtomatik qo'shiladi, mavjud fayllar (siz qo'shgan savollar bilan) tegilmaydi.
 
 ## Lokal'da o'rnatish
 

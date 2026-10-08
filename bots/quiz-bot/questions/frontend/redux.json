@@ -1,0 +1,30 @@
+{
+  "direction": "frontend",
+  "directionLabel": "Frontend",
+  "directionEmoji": "🎨",
+  "directionOrder": 1,
+  "key": "redux",
+  "label": "Redux / holat boshqaruvi",
+  "order": 14,
+  "questions": [
+    {"q": "Redux'da holat qayerda saqlanadi?", "options": ["Yagona store'da", "Har komponentda", "localStorage'da", "Serverda"], "correct": 0},
+    {"q": "Holatni o'zgartirish uchun nima yuboriladi?", "options": ["action", "event", "props", "query"], "correct": 0},
+    {"q": "Holat qanday o'zgaradi?", "options": ["reducer yangi holat qaytaradi", "To'g'ridan-to'g'ri mutatsiya", "setState", "SQL so'rov"], "correct": 0},
+    {"q": "Reducer qanday funksiya bo'lishi kerak?", "options": ["Sof (pure)", "Asinxron", "Global o'zgaruvchini o'zgartiradigan", "Random qaytaradigan"], "correct": 0},
+    {"q": "Redux'ning rasmiy zamonaviy vositalar to'plami?", "options": ["Redux Toolkit", "Redux Saga faqat", "Flux", "MobX"], "correct": 0},
+    {"q": "Redux Toolkit'da slice yaratish funksiyasi?", "options": ["createSlice", "createReducer faqat", "makeSlice", "newSlice"], "correct": 0},
+    {"q": "React'da action yuborish hook'i?", "options": ["useDispatch", "useSelector", "useAction", "useStore"], "correct": 0},
+    {"q": "Store'dan qiymat o'qish hook'i?", "options": ["useSelector", "useDispatch", "useState", "useGet"], "correct": 0},
+    {"q": "API so'rovlarini keshlash uchun Redux Toolkit qismi?", "options": ["RTK Query", "Redux Thunk faqat", "Reselect", "Immer"], "correct": 0},
+    {"q": "Redux Toolkit ichida \"mutatsiya\" ko'rinishidagi kodni xavfsiz qiluvchi kutubxona?", "options": ["Immer", "Lodash", "Axios", "Zod"], "correct": 0},
+    {"q": "Yengil holat boshqaruv kutubxonasi (hook asosida)?", "options": ["Zustand", "Redux Saga", "RxJS", "jQuery"], "correct": 0},
+    {"q": "Redux uch tamoyilidan biri?", "options": ["Yagona haqiqat manbai (single source of truth)", "Ko'p store", "Holatni to'g'ridan-to'g'ri o'zgartirish", "Asinxron reducer"], "correct": 0},
+    {"q": "Asinxron mantiq uchun Redux Toolkit funksiyasi?", "options": ["createAsyncThunk", "createAsyncReducer", "asyncAction", "thunkify"], "correct": 0},
+    {"q": "Redux DevTools nima beradi?", "options": ["Holat o'zgarishlarini kuzatish va \"vaqt bo'ylab sayohat\"", "Kodni kompilyatsiya", "Test yozish", "CSS tahrirlash"], "correct": 0},
+    {"q": "Store'ni React ilovasiga ulovchi komponent?", "options": ["<Provider store={store}>", "<Store>", "<ReduxRoot>", "<Context.Store>"], "correct": 0},
+    {"q": "Bir nechta reducer'ni birlashtirish (klassik)?", "options": ["combineReducers", "mergeReducers", "joinReducers", "reduceAll"], "correct": 0},
+    {"q": "Action obyektida majburiy maydon?", "options": ["type", "payload", "id", "name"], "correct": 0},
+    {"q": "Server holatini keshlash uchun mashhur kutubxona (Redux'dan tashqari)?", "options": ["TanStack Query (React Query)", "jQuery", "Moment.js", "Lodash"], "correct": 0},
+    {"q": "Memoizatsiyalangan selektor kutubxonasi?", "options": ["Reselect", "Recompose", "Rematch", "Remix"], "correct": 0}
+  ]
+}

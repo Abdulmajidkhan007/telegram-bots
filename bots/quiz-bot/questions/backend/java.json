@@ -1,0 +1,30 @@
+{
+  "direction": "backend",
+  "directionLabel": "Backend",
+  "directionEmoji": "⚙️",
+  "directionOrder": 2,
+  "key": "java",
+  "label": "Java",
+  "order": 9,
+  "questions": [
+    {"q": "Java kodi nimaga kompilyatsiya qilinadi?", "options": ["Bytecode (JVM uchun)", "Mashina kodi to'g'ridan-to'g'ri", "JavaScript", "Python"], "correct": 0},
+    {"q": "Dastur kirish nuqtasi metodi?", "options": ["public static void main(String[] args)", "void start()", "main() faqat", "static run()"], "correct": 0},
+    {"q": "Java'da butun son turi?", "options": ["int", "integer", "num", "whole"], "correct": 0},
+    {"q": "O'zgarmas o'zgaruvchi kalit so'zi?", "options": ["final", "const", "static", "let"], "correct": 0},
+    {"q": "Meros olish kalit so'zi?", "options": ["extends", "implements", "inherits", ":"], "correct": 0},
+    {"q": "Interfeysni amalga oshirish kalit so'zi?", "options": ["implements", "extends", "uses", "realizes"], "correct": 0},
+    {"q": "Java'da ko'p merosga qanday erishiladi?", "options": ["Bir nechta interfeys orqali", "Bir nechta class'dan extends", "Mumkin emas umuman", "friend class"], "correct": 0},
+    {"q": "Xotirani avtomatik tozalovchi mexanizm?", "options": ["Garbage Collector", "Destructor", "free()", "delete"], "correct": 0},
+    {"q": "Satrlarni solishtirishning to'g'ri usuli?", "options": ["s1.equals(s2)", "s1 == s2", "s1 = s2", "compare(s1, s2) faqat"], "correct": 0},
+    {"q": "O'lchami o'zgaruvchan ro'yxat klassi?", "options": ["ArrayList", "Array", "int[]", "Vector majburiy"], "correct": 0},
+    {"q": "Kalit-qiymat to'plami interfeysi?", "options": ["Map (masalan, HashMap)", "List", "Set", "Queue"], "correct": 0},
+    {"q": "Tekshiriladigan (checked) istisno qayerda e'lon qilinadi?", "options": ["Metod imzosida throws bilan", "Hech qayerda", "Faqat main'da", "Izohda"], "correct": 0},
+    {"q": "Java'da obyekt yaratish?", "options": ["new Klass()", "Klass.new()", "create Klass()", "Klass()"], "correct": 0},
+    {"q": "Ota klass konstruktorini chaqirish?", "options": ["super()", "parent()", "this()", "base()"], "correct": 0},
+    {"q": "Stream API'da elementlarni o'zgartirish metodi?", "options": ["map()", "filter()", "collect()", "forEach()"], "correct": 0},
+    {"q": "Java'ning loyiha/bog'liqlik boshqaruv vositalari?", "options": ["Maven va Gradle", "npm", "pip", "Composer"], "correct": 0},
+    {"q": "Statik metodni chaqirish uchun obyekt kerakmi?", "options": ["Yo'q, klass nomi orqali chaqiriladi", "Ha, doim", "Faqat main'da", "Faqat interfeysda"], "correct": 0},
+    {"q": "Java'da record nima uchun (Java 16+)?", "options": ["O'zgarmas ma'lumot klasslarini qisqa yozish uchun", "Fayl yozish", "Audio yozish", "Log uchun"], "correct": 0},
+    {"q": "Primitiv tur emas qaysi biri?", "options": ["String", "int", "boolean", "double"], "correct": 0}
+  ]
+}

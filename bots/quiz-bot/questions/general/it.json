@@ -3,6 +3,9 @@
   "directionLabel": "Umumiy IT",
   "key": "it",
   "label": "Umumiy IT",
+  "directionEmoji": "💡",
+  "directionOrder": 7,
+  "order": 1,
   "questions": [
     {
       "q": "HTML nimani anglatadi?",
