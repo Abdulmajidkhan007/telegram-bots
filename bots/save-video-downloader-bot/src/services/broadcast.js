@@ -24,6 +24,13 @@ function isBlockedError(err) {
   );
 }
 
+// Adminlar ro'yxatdan chiqariladi: post ularning o'z kanalidan yoki o'zlari
+// yuborgan xabardan keladi — botdan yana olish ortiqcha (egasi shikoyat qilgan).
+function withoutAdmins(userIds, adminIds) {
+  const admins = new Set((adminIds || []).map(String));
+  return userIds.filter((id) => !admins.has(String(id)));
+}
+
 // Ommaviy xabar yuborish.
 // mode: 'copy' | 'forward'; target: 'users' | 'groups' | 'all'.
 // Foydalanuvchilar: faqat 'private' va bloklanmaganlar.
@@ -36,7 +43,10 @@ async function runBroadcast(bot, { mode, target = 'users', source, onProgress })
       ? bot.forwardMessage(chatId, source.chatId, source.messageId)
       : bot.copyMessage(chatId, source.chatId, source.messageId);
 
-  const userIds = target === 'users' || target === 'all' ? storage.getPrivateUserIds() : [];
+  const userIds =
+    target === 'users' || target === 'all'
+      ? withoutAdmins(storage.getPrivateUserIds(), config.ADMIN_IDS)
+      : [];
   const groupIds =
     target === 'groups' || target === 'all' ? storage.getBroadcastGroupIds() : [];
 
@@ -124,4 +134,4 @@ async function runBroadcast(bot, { mode, target = 'users', source, onProgress })
   return res;
 }
 
-module.exports = { runBroadcast };
+module.exports = { runBroadcast, withoutAdmins };
