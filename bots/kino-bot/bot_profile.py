@@ -22,7 +22,7 @@ DESCRIPTION = (
     "\n"
     "✅ Bepul · ⚡ Tez · 📱 To'g'ridan-to'g'ri Telegram'da\n"
     "\n"
-    "Savol bo'lsa: /help"
+    "Savol yoki taklif: /help — adminga xabar qoldiring"
 )
 
 # Bot profilida va havola ulashilganda ko'rinadi. ≤ 120 belgi.
@@ -31,7 +31,7 @@ SHORT_DESCRIPTION = "🎬 Kino kodini yuboring — film darhol keladi. Bepul va 
 USER_COMMANDS = [
     ("start", "🏠 Bosh sahifa"),
     ("kino", "🔢 Kino kodini kiritish"),
-    ("help", "ℹ️ Admin bilan bog'lanish"),
+    ("help", "📩 Adminga xabar yozish"),
 ]
 
 # Faqat bosh adminning chatida ko'rinadi — oddiy foydalanuvchi menyusida yo'q.

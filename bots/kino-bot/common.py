@@ -48,6 +48,10 @@ class AddChannel(StatesGroup):
 class RestoreDb(StatesGroup):
     waiting_file = State()
 
+class Support(StatesGroup):
+    waiting_message = State()   # foydalanuvchi murojaat yozmoqda
+    waiting_reply   = State()   # admin javob yozmoqda
+
 
 class IsAdmin(BaseFilter):
     """Admin router'iga butunlay qo'yiladi.

@@ -13,7 +13,9 @@ import database as db
 import handlers_admin
 import handlers_backup
 import handlers_channels
+import handlers_support
 import handlers_user
+import alerts
 import bot_profile
 
 logging.basicConfig(
@@ -31,8 +33,13 @@ def build_dispatcher() -> Dispatcher:
     # Kanallar paneli eng oldin: kanal kutish holatida menyu tugmasi bosilsa ham
     # o'sha holat handleri ushlaydi, holat "osilib" qolmaydi.
     dp.include_router(handlers_channels.router)
+    # Admin javob kutish holati admin menyusidan oldin — javob matni menyu
+    # tugmasi bilan adashtirilmasin.
+    dp.include_router(handlers_support.admin_router)
     dp.include_router(handlers_admin.router)
     dp.include_router(handlers_backup.router)
+    # Murojaat holati "istalgan matn = kino kodi" dan oldin.
+    dp.include_router(handlers_support.user_router)
     dp.include_router(handlers_user.router)
     return dp
 
@@ -51,6 +58,8 @@ async def main():
     logger.info("Kontent himoyasi (forward/saqlash taqiqi): %s", "yoqilgan" if config.PROTECT_CONTENT else "o'chirilgan")
 
     bot = Bot(token=config.BOT_TOKEN)
+    # Shu nuqtadan keyingi har ERROR log bosh adminga ham boradi (cheklangan, token yashirilgan).
+    alerts.install(bot, config.SUPER_ADMIN_ID, secrets=[config.BOT_TOKEN])
     dp = build_dispatcher()
     await bot.delete_webhook(drop_pending_updates=True)
     await bot_profile.apply(bot, config.SUPER_ADMIN_ID)

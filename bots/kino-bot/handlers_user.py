@@ -22,7 +22,7 @@ router = Router(name="user")
 
 
 async def _not_found(message: Message, code: str) -> None:
-    await message.answer(f"❌ <b>{h(code)}</b> kodli kino topilmadi.\n/help — admin bilan bog'lanish",
+    await message.answer(f"❌ <b>{h(code)}</b> kodli kino topilmadi.\n/help — adminga xabar yozish",
                          parse_mode="HTML")
 
 
@@ -57,22 +57,6 @@ async def cmd_kino(message: Message, state: FSMContext, bot: Bot):
         return
     await state.set_state(MovieSearch.waiting_code)
     await message.answer("🔢 Kino kodini kiriting:", reply_markup=ReplyKeyboardRemove())
-
-
-@router.message(Command("help"))
-async def cmd_help(message: Message, bot: Bot):
-    admins = db.get_all_admins()
-    main_admin = admins[0]["id"] if admins else db.super_admin_id()
-    try:
-        chat = await bot.get_chat(main_admin)
-        username = getattr(chat, "username", None)
-    except Exception as e:
-        logger.warning("Admin profilini olib bo'lmadi [%s]: %s", main_admin, e)
-        username = None
-    url = f"https://t.me/{username}" if username else f"tg://user?id={main_admin}"
-    label = f"👑 @{username}" if username else "👑 Admin"
-    await message.answer("ℹ️ <b>Yordam kerakmi?</b>\nAdmin bilan bog'lanish uchun tugmani bosing:",
-                         parse_mode="HTML", reply_markup=kb.admin_contact_keyboard(url, label))
 
 
 @router.callback_query(F.data == "check_sub")

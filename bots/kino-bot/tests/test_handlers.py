@@ -145,7 +145,7 @@ def test_restore_eski_bazani_tiklaydi(baza):
 
 # --- Majburiy obuna kanallari ---
 
-from aiogram.methods import CreateChatInviteLink, GetChat, GetChatMember  # noqa: E402
+from aiogram.methods import CreateChatInviteLink, GetChat, GetChatMember  # noqa: E402,F811
 from aiogram.types import ChatFullInfo, ChatInviteLink, ChatMemberAdministrator, ChatMemberMember  # noqa: E402
 
 KANAL = -1001234567890
@@ -288,3 +288,61 @@ def test_oddiy_foydalanuvchi_kinolar_royxatini_kormaydi(baza):
     db.add_movie("1", "Maxfiy nom", "-", "-", "-", "-", "f")
     calls, _ = _run([{"message": _msg(ODDIY, "📋 Kinolar ro'yxati")}])
     assert not any(isinstance(c, SendMessage) and "Maxfiy nom" in c.text for c in calls)
+
+
+# --- /help: murojaat → admin → javob ---
+
+from aiogram.methods import CopyMessage  # noqa: E402
+
+
+def _support_reset():
+    import handlers_support
+    handlers_support.COOLDOWN._last.clear()
+
+
+def test_help_admin_username_korsatmaydi(baza):
+    # Regressiya: avval /help admin profilini (get_chat) olib, @username tugmasini ko'rsatardi.
+    _support_reset()
+    calls, state = _run([{"message": _msg(ODDIY, "/help")}], uid=ODDIY)
+    assert not any(isinstance(c, GetChat) for c in calls)
+    texts = [c.text for c in calls if isinstance(c, SendMessage)]
+    assert texts and "Adminga xabar" in texts[0] and "t.me/" not in texts[0]
+    from common import Support
+    assert state == Support.waiting_message.state
+
+
+def test_murojaat_adminga_bot_orqali_yetadi(baza):
+    from common import Support
+    _support_reset()
+    db.add_admin(555, "Ikkinchi admin")
+    calls, state = _run([{"message": _msg(ODDIY, "Kino 5 ishlamayapti <b>")}],
+                        state=Support.waiting_message, uid=ODDIY)
+    headers = [c for c in calls if isinstance(c, SendMessage) and "Yangi murojaat" in c.text]
+    assert {c.chat_id for c in headers} == {SUPER, 555}
+    assert all(str(ODDIY) in c.text for c in headers)
+    copies = [c for c in calls if isinstance(c, CopyMessage)]
+    assert {c.chat_id for c in copies} == {SUPER, 555} and all(c.from_chat_id == ODDIY for c in copies)
+    assert any(isinstance(c, SendMessage) and c.chat_id == ODDIY and "yuborildi" in c.text for c in calls)
+    assert state is None
+
+
+def test_murojaat_tez_tez_yuborilmaydi(baza):
+    from common import Support
+    _support_reset()
+    _run([{"message": _msg(ODDIY, "birinchi")}], state=Support.waiting_message, uid=ODDIY)
+    calls, _ = _run([{"message": _msg(ODDIY, "ikkinchi")}], state=Support.waiting_message, uid=ODDIY)
+    assert not any(isinstance(c, CopyMessage) for c in calls)
+    assert any(isinstance(c, SendMessage) and "⏳" in c.text for c in calls)
+
+
+def test_admin_bot_orqali_javob_beradi(baza):
+    _support_reset()
+    calls, _ = _run([_callback(SUPER, f"sp:r:{ODDIY}"), {"message": _msg(SUPER, "Tuzatdik, qayta urinib ko'ring")}])
+    assert any(isinstance(c, SendMessage) and c.chat_id == ODDIY and "Admin javobi" in c.text for c in calls)
+    assert any(isinstance(c, CopyMessage) and c.chat_id == ODDIY and c.from_chat_id == SUPER for c in calls)
+
+
+def test_oddiy_foydalanuvchi_javob_tugmasini_ishlata_olmaydi(baza):
+    _support_reset()
+    calls, _ = _run([_callback(ODDIY, "sp:r:999"), {"message": _msg(ODDIY, "salom")}])
+    assert not any(isinstance(c, (SendMessage, CopyMessage)) and getattr(c, "chat_id", None) == 999 for c in calls)
