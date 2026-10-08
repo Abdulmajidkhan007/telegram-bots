@@ -8,7 +8,10 @@ Admin kinolarni, adminlarni, majburiy obuna kanallarini bot ichidan boshqaradi.
 ## ✨ Imkoniyatlar
 
 - 🔢 Kod bo'yicha kino (istalgan matn = kod, yoki `/kino`)
-- 📢 Majburiy kanal obunasi (bot kanalda admin bo'lishi shart)
+- 📢 Majburiy kanal obunasi — «📡 Kanal boshqaruv» paneli: ro'yxat, har kanal
+  yonida bot admin ekani (✅/⚠️), 🗑 o'chirish, ➕ qo'shish (`@kanal`, `t.me/kanal`
+  yoki yopiq kanaldan **forward**). Bot admin bo'lmagan kanal qo'shilmaydi.
+  Obunani tekshirib bo'lmasa (bot kanaldan chiqarilgan) foydalanuvchi bloklanmaydi — log'ga yoziladi
 - 🎬 Kino qo'shish / o'chirish — bosqichma-bosqich, video bilan
 - 👑 Adminlar ro'yxati (bosh adminni o'chirib bo'lmaydi)
 - 📣 Reklama — foydalanuvchilarga yoki guruhlarga (istalgan format)
@@ -23,6 +26,8 @@ config.py          .env dan sozlamalar
 database.py        JSON baza (atomik yozuv)
 common.py          holatlar, IsAdmin filtri, yordamchilar
 handlers_admin.py  admin paneli — butun router IsAdmin bilan o'ralgan
+handlers_channels.py majburiy obuna kanallari paneli
+handlers_backup.py /backup, /restore (faqat bosh admin)
 handlers_user.py   foydalanuvchi qismi
 buttons.py         klaviaturalar
 tests/             pytest (Telegram mock, internetsiz)
@@ -72,3 +77,5 @@ python -m pytest -q
 | "Tark etganlar" har reklamada qayta sanalardi | Statistika oshib ketardi | Faqat birinchi marta |
 | Stiker/rasm kelsa `message.text` None | Handler yiqilardi | Matn so'raladi |
 | Yuklab olish xato bo'lsa ham sanalardi | Statistika noto'g'ri | Faqat yetib borgani |
+| Obunani tekshirib bo'lmasa foydalanuvchi bloklanardi | Yangi token bilan bot eski kanalda admin bo'lmagani uchun **hamma** «obuna bo'ling» da qoldi | Boshqa botlardagi kabi bloklanmaydi, log + panelda ⚠️ |
+| `/restore` kabi buyruq kino kodi deb izlanardi | Oddiy foydalanuvchiga «obuna bo'ling» chiqardi | «Bunday buyruq yo'q» |

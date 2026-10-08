@@ -11,6 +11,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 import database as db
 import handlers_admin
 import handlers_backup
+import handlers_channels
 import handlers_user
 
 logging.basicConfig(
@@ -25,6 +26,9 @@ def build_dispatcher() -> Dispatcher:
     # Tartib muhim: admin router avval. U IsAdmin bilan o'ralgan, shuning uchun
     # oddiy foydalanuvchi xabari undan o'tib, user router'ga (oxirida — "istalgan
     # matn = kino kodi") tushadi.
+    # Kanallar paneli eng oldin: kanal kutish holatida menyu tugmasi bosilsa ham
+    # o'sha holat handleri ushlaydi, holat "osilib" qolmaydi.
+    dp.include_router(handlers_channels.router)
     dp.include_router(handlers_admin.router)
     dp.include_router(handlers_backup.router)
     dp.include_router(handlers_user.router)
