@@ -20,9 +20,8 @@ export function registerHelpCommand(bot: Telegraf<BotContext>): void {
       `📤 Export:\n` +
       `/export — CSV yoki Excel yuklab olish\n\n` +
       `⚙️ Boshqaruv:\n` +
-      `/settings — Bot sozlamalari\n` +
       `/login    — Dashboard'ga kirish havolasi (shaxsiy chatda)\n` +
-      `/limit    — Oylik limit\n\n` +
+      `⚙️ Sozlamalar, 💰 limitlar, 🔄 takroriy — /start menyusidagi tugmalar\n\n` +
       `🔐 Admin (faqat ADMIN_TELEGRAM_ID uchun):\n` +
       `/admin    — Admin panel va statistika\n` +
       `/allusers — Barcha foydalanuvchilar\n` +

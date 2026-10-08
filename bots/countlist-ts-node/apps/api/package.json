@@ -6,7 +6,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/main.ts",
     "build": "tsc",
     "start": "node dist/main.js",
-    "test": "tsc && node --test test/telegram-auth.test.js test/group-access.test.js"
+    "test": "tsc && node --test test/telegram-auth.test.js test/telegram-webapp.test.js test/group-access.test.js"
   },
   "dependencies": {
     "@nestjs/common": "^10.3.2",

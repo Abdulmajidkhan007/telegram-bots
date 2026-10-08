@@ -12,6 +12,7 @@ const BOT_USERNAME = import.meta.env.VITE_TELEGRAM_BOT_USERNAME;
 declare global {
   interface Window {
     onTelegramAuth?: (user: Record<string, unknown>) => void;
+    Telegram?: { WebApp?: { initData?: string; ready?: () => void; expand?: () => void } };
   }
 }
 
@@ -41,6 +42,18 @@ export function LoginPage() {
     }
   }, [dispatch, navigate]);
 
+  // Bot menyusidagi tugma (Mini App) orqali ochilgan bo'lsa — Telegram initData'ni
+  // imzolab beradi, server tekshiradi: widget ham, /setdomain ham kerak emas.
+  // Oddiy brauzerda initData bo'sh — pastdagi widget/havola ishlaydi.
+  const inMiniApp = !!window.Telegram?.WebApp?.initData;
+  useEffect(() => {
+    const webApp = window.Telegram?.WebApp;
+    if (!webApp?.initData) return;
+    webApp.ready?.();
+    webApp.expand?.();
+    void finishLogin(authApi.loginWebApp(webApp.initData));
+  }, [finishLogin]);
+
   // Bot /login bergan havola: /login#token=... . Token # dan keyin keladi —
   // serverga ham, loglarga ham tushmaydi. O'qigach manzil satridan darhol
   // o'chiramiz: tarixda va "ulashish"da qolib ketmasin.
@@ -52,7 +65,7 @@ export function LoginPage() {
   }, [finishLogin]);
 
   useEffect(() => {
-    if (!BOT_USERNAME || !widgetRef.current) return;
+    if (inMiniApp || !BOT_USERNAME || !widgetRef.current) return;
 
     // Widget faqat BotFather'da /setdomain qilingan domenda ishlaydi.
     // Kirish ma'lumotini Telegram imzolaydi — ID ni qo'lda yozib kirish
@@ -75,7 +88,7 @@ export function LoginPage() {
       container.innerHTML = '';
       delete window.onTelegramAuth;
     };
-  }, [finishLogin]);
+  }, [finishLogin, inMiniApp]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-brand-900 flex items-center justify-center p-4">
