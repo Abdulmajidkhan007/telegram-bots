@@ -14,6 +14,7 @@ import handlers_admin
 import handlers_backup
 import handlers_channels
 import handlers_user
+import bot_profile
 
 logging.basicConfig(
     level=logging.INFO,
@@ -52,6 +53,7 @@ async def main():
     bot = Bot(token=config.BOT_TOKEN)
     dp = build_dispatcher()
     await bot.delete_webhook(drop_pending_updates=True)
+    await bot_profile.apply(bot, config.SUPER_ADMIN_ID)
     logger.info("✅ Bot ishga tushdi!")
     await dp.start_polling(bot)
 

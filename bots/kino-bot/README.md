@@ -21,6 +21,9 @@ Admin kinolarni, adminlarni, majburiy obuna kanallarini bot ichidan boshqaradi.
 - 📣 Reklama — foydalanuvchilarga yoki guruhlarga (istalgan format)
 - 📊 Statistika: foydalanuvchilar, yuklab olishlar, top kinolar
 - 💾 `/backup` va `/restore` — faqat bosh admin
+- 🪪 Bot tavsifi, qisqa tavsif va buyruqlar menyusi ishga tushganda o'zi o'rnatiladi
+  (`bot_profile.py`) — BotFather'da qo'lda yozish shart emas; `/backup`, `/restore` faqat
+  bosh admin menyusida ko'rinadi
 
 ## 🗂 Tuzilma
 
@@ -33,6 +36,7 @@ handlers_admin.py  admin paneli — butun router IsAdmin bilan o'ralgan
 handlers_channels.py majburiy obuna kanallari paneli
 handlers_backup.py /backup, /restore (faqat bosh admin)
 handlers_user.py   foydalanuvchi qismi
+bot_profile.py     bot tavsifi va buyruqlar menyusi (ishga tushganda o'rnatiladi)
 buttons.py         klaviaturalar
 tests/             pytest (Telegram mock, internetsiz)
 ```
