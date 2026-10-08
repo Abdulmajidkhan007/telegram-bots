@@ -32,3 +32,6 @@ except ValueError:
 # kerak (DATA_DIR=/data). Lokal'da standart: bot papkasining o'zi.
 DATA_DIR = Path(os.getenv("DATA_DIR", "").strip() or BASE_DIR)
 DB_FILE: Path = DATA_DIR / "database.json"
+
+# Kinoni forward/saqlash/skrinshotdan himoyalash. Standart: yoqilgan.
+PROTECT_CONTENT: bool = os.getenv("PROTECT_CONTENT", "true").strip().lower() not in ("0", "false", "no", "yoq", "yo'q")

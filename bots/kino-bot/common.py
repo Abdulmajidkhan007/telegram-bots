@@ -15,6 +15,10 @@ import database as db
 
 logger = logging.getLogger(__name__)
 
+# Kinoni forward, "Saqlash" va (mobil ilovalarda) skrinshotdan himoyalash —
+# Telegram'ning protect_content bayrog'i. main.py .env dagi PROTECT_CONTENT dan o'rnatadi.
+PROTECT_CONTENT = True
+
 
 class MovieSearch(StatesGroup):
     waiting_code = State()
@@ -118,6 +122,7 @@ async def send_movie(bot: Bot, chat_id: int, code: str) -> bool:
             video=movie["video_file_id"],
             caption=movie_caption(movie, downloads + 1),
             parse_mode="HTML",
+            protect_content=PROTECT_CONTENT,
         )
     except Exception as e:
         logger.error("Kino yuborishda xatolik [%s]: %s", code, e)
