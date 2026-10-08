@@ -15,7 +15,7 @@ from aiogram.types import CallbackQuery, Message
 import buttons as kb
 import database as db
 from common import (
-    AddAdmin, AddChannel, AddMovie, Broadcast, DeleteMovie, IsAdmin,
+    AddAdmin, AddMovie, Broadcast, DeleteMovie, IsAdmin,
     callback_int, h, is_unreachable,
 )
 
@@ -145,39 +145,6 @@ async def remove_admin_confirm(callback: CallbackQuery):
 
 @router.callback_query(F.data == "admin_remove_no")
 async def remove_admin_cancel(callback: CallbackQuery):
-    await callback.message.edit_reply_markup(reply_markup=None)
-    await callback.message.answer("❌ Bekor qilindi.", reply_markup=kb.admin_main_menu())
-
-
-@router.callback_query(F.data.startswith("pick_channel_"))
-async def pick_channel_to_delete(callback: CallbackQuery):
-    chat_id = callback_int(callback.data, "pick_channel_")
-    channel = next((c for c in db.get_channels() if c["chat_id"] == chat_id), None)
-    if not channel:
-        await callback.answer("❌ Kanal topilmadi!", show_alert=True)
-        return
-    await callback.message.edit_reply_markup(reply_markup=None)
-    await callback.message.answer(
-        f"⚠️ <b>{h(channel['title'])}</b> kanalini o'chirishni tasdiqlaysizmi?",
-        parse_mode="HTML",
-        reply_markup=kb.delete_channel_confirm_keyboard(chat_id),
-    )
-
-
-@router.callback_query(F.data.startswith("del_channel_yes_"))
-async def delete_channel_confirm(callback: CallbackQuery):
-    chat_id = callback_int(callback.data, "del_channel_yes_")
-    channel = db.remove_channel(chat_id) if chat_id is not None else None
-    await callback.message.edit_reply_markup(reply_markup=None)
-    if channel:
-        await callback.message.answer(f"✅ <b>{h(channel['title'])}</b> kanali o'chirildi!",
-                                      parse_mode="HTML", reply_markup=kb.admin_main_menu())
-    else:
-        await callback.message.answer("❌ Kanal topilmadi.", reply_markup=kb.admin_main_menu())
-
-
-@router.callback_query(F.data == "del_channel_no")
-async def delete_channel_cancel(callback: CallbackQuery):
     await callback.message.edit_reply_markup(reply_markup=None)
     await callback.message.answer("❌ Bekor qilindi.", reply_markup=kb.admin_main_menu())
 
@@ -329,33 +296,6 @@ async def add_admin_get_name(message: Message, state: FSMContext):
                          parse_mode="HTML", reply_markup=kb.admin_main_menu())
 
 
-@router.message(AddChannel.waiting_username)
-async def add_channel_process(message: Message, state: FSMContext, bot: Bot):
-    username = await _matn_kerak(message, state, kb.channel_manage_menu())
-    if username is None:
-        return
-    if not username.startswith("@"):
-        username = "@" + username
-    try:
-        chat = await bot.get_chat(username)
-    except Exception as e:
-        await message.answer(f"❌ Kanal topilmadi yoki bot admin emas!\n<i>{h(e)}</i>", parse_mode="HTML")
-        return
-    if db.channel_exists(chat.id):
-        await state.clear()
-        await message.answer("⚠️ Bu kanal allaqachon qo'shilgan!", reply_markup=kb.admin_main_menu())
-        return
-    try:
-        link = (await bot.create_chat_invite_link(chat.id)).invite_link
-    except Exception as e:
-        logger.warning("Taklif havolasi yaratilmadi [%s]: %s — oddiy havola ishlatiladi", username, e)
-        link = f"https://t.me/{username.lstrip('@')}"
-    db.add_channel(chat_id=chat.id, username=username, title=chat.title or username, invite_link=link)
-    await state.clear()
-    await message.answer(f"✅ <b>{h(chat.title or username)}</b> kanali qo'shildi!",
-                         parse_mode="HTML", reply_markup=kb.admin_main_menu())
-
-
 # ═══════════════════════════════════════════════
 #  REPLY KEYBOARD TUGMALARI (FSM handlerlardan KEYIN)
 # ═══════════════════════════════════════════════
@@ -431,25 +371,3 @@ async def add_admin_start(message: Message, state: FSMContext):
 async def remove_admin_list(message: Message):
     await message.answer("❌ O'chirmoqchi bo'lgan adminni tanlang:",
                          reply_markup=kb.admins_list_keyboard(db.get_all_admins(), db.super_admin_id()))
-
-
-@router.message(F.text == "📡 Kanal boshqaruv")
-async def channel_manage_menu(message: Message):
-    await message.answer("📡 <b>Kanal boshqaruvi</b>", parse_mode="HTML", reply_markup=kb.channel_manage_menu())
-
-
-@router.message(F.text == "➕ Kanal qo'shish")
-async def add_channel_start(message: Message, state: FSMContext):
-    await state.set_state(AddChannel.waiting_username)
-    await message.answer("📡 Kanal username ini kiriting <i>(masalan: @mykino)</i>\n"
-                         "<b>⚠️ Botni kanalga admin qilib qo'shing!</b>",
-                         parse_mode="HTML", reply_markup=kb.back_button())
-
-
-@router.message(F.text == "➖ Kanalni o'chirish")
-async def remove_channel_list(message: Message):
-    channels = db.get_channels()
-    if not channels:
-        await message.answer("ℹ️ Hech qanday kanal yo'q.", reply_markup=kb.admin_main_menu())
-        return
-    await message.answer("📡 O'chirmoqchi bo'lgan kanalni tanlang:", reply_markup=kb.channels_list_inline(channels))

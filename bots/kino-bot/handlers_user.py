@@ -130,6 +130,10 @@ async def handle_any_text(message: Message, bot: Bot):
         return   # adminlar uchun /kino bor
     if message.chat.type != "private":
         return
+    if message.text.startswith("/"):
+        # /restore kabi buyruq kino kodi sifatida izlanmasin.
+        await message.answer("❓ Bunday buyruq yo'q. Kino kodini yuboring yoki /help.")
+        return
     subscribed, not_subbed = await check_subscription(bot, message.from_user.id)
     if not subscribed:
         await message.answer("⚠️ <b>Avval kanallarga obuna bo'ling:</b>", parse_mode="HTML",

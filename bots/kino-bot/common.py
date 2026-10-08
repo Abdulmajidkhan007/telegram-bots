@@ -98,11 +98,12 @@ async def check_subscription(bot: Bot, user_id: int) -> tuple[bool, list]:
             if member.status in ("left", "kicked", "banned"):
                 not_subbed.append(ch)
         except Exception as e:
-            # Odatda: bot kanaldan chiqarilgan yoki admin emas. Avval bu jim
-            # yutilardi — hamma foydalanuvchi "obuna bo'ling" da qolib ketar,
-            # sababi esa hech qayerda ko'rinmasdi.
-            logger.error("Obunani tekshirib bo'lmadi [%s]: %s — bot kanalda adminmi?", ch.get("username"), e)
-            not_subbed.append(ch)
+            # Odatda: bot kanalda admin emas yoki chiqarilgan. Bunda foydalanuvchini
+            # BLOKLAMAYMIZ (anonim-bot'dagi kabi): avval bloklanardi — yangi token
+            # bilan bot eski kanalda admin bo'lmagani uchun HAMMA foydalanuvchi
+            # "obuna bo'ling" da qolib ketdi. Sabab log'da va kanallar panelida ko'rinadi.
+            logger.error("Obunani tekshirib bo'lmadi [%s]: %s — bot kanalda adminmi?",
+                         ch.get("username") or ch.get("chat_id"), e)
     return len(not_subbed) == 0, not_subbed
 
 

@@ -142,37 +142,30 @@ def remove_admin_confirm_keyboard(admin_id: int) -> InlineKeyboardMarkup:
 
 
 # ─────────────────────────────────────────────
-#  KANAL BOSHQARUV
+#  MAJBURIY OBUNA KANALLARI (inline panel)
 # ─────────────────────────────────────────────
 
-def channel_manage_menu() -> ReplyKeyboardMarkup:
-    return ReplyKeyboardMarkup(
-        keyboard=[
-            [KeyboardButton(text="➕ Kanal qo'shish"), KeyboardButton(text="➖ Kanalni o'chirish")],
-            [KeyboardButton(text="🔙 Ortga")],
-        ],
-        resize_keyboard=True,
-    )
-
-
-def channels_list_inline(channels: list[dict]) -> InlineKeyboardMarkup:
-    """O'chirish uchun kanal tanlash."""
-    buttons = [
-        [InlineKeyboardButton(
-            text=f"🗑 {ch['title']}",
-            callback_data=f"pick_channel_{ch['chat_id']}"
-        )]
+def channels_panel_keyboard(channels: list[dict]) -> InlineKeyboardMarkup:
+    rows = [
+        [InlineKeyboardButton(text=f"🗑 {ch.get('title') or ch.get('username') or ch['chat_id']}"[:64],
+                              callback_data=f"ch:rm:{ch['chat_id']}")]
         for ch in channels
     ]
-    if not buttons:
-        buttons = [[InlineKeyboardButton(text="— Kanallar yo'q —", callback_data="noop")]]
-    return InlineKeyboardMarkup(inline_keyboard=buttons)
+    rows.append([InlineKeyboardButton(text="➕ Yangi kanal", callback_data="ch:add")])
+    rows.append([InlineKeyboardButton(text="🔄 Yangilash", callback_data="ch:panel")])
+    return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
-def delete_channel_confirm_keyboard(chat_id: int) -> InlineKeyboardMarkup:
+def channel_rm_confirm_keyboard(chat_id: int) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[[
-        InlineKeyboardButton(text="✅ O'chirish",    callback_data=f"del_channel_yes_{chat_id}"),
-        InlineKeyboardButton(text="❌ Bekor qilish", callback_data="del_channel_no"),
+        InlineKeyboardButton(text="✅ O'chirish",    callback_data=f"ch:rmy:{chat_id}"),
+        InlineKeyboardButton(text="❌ Bekor qilish", callback_data="ch:panel"),
+    ]])
+
+
+def channel_add_cancel_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[[
+        InlineKeyboardButton(text="« Bekor", callback_data="ch:panel"),
     ]])
 
 
@@ -195,6 +188,5 @@ MENU_TEXTS = frozenset({
     "👑 Admin boshqaruv", "📡 Kanal boshqaruv",
     "👥 Foydalanuvchilarga", "📢 Guruhlarga",
     "➕ Admin qo'shish", "➖ Admin o'chirish",
-    "➕ Kanal qo'shish", "➖ Kanalni o'chirish",
     "🔙 Ortga",
 })

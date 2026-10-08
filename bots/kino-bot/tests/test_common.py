@@ -22,7 +22,7 @@ def test_callback_int():
 
 def test_menu_texts_hamma_menyu_tugmalarini_qamraydi():
     menus = [kb.admin_main_menu(), kb.back_button(), kb.broadcast_target_menu(),
-             kb.admin_manage_menu(), kb.channel_manage_menu()]
+             kb.admin_manage_menu()]
     labels = {b.text for m in menus for row in m.keyboard for b in row if isinstance(b, KeyboardButton)}
     assert labels == set(kb.MENU_TEXTS)
 

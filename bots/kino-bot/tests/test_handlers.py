@@ -33,7 +33,7 @@ def _msg(uid, text):
 DP = build_dispatcher()
 
 
-def _run(updates, state=None, uid=None):
+def _run(updates, state=None, uid=None, api=None):
     """Update'larni ketma-ket beradi; Bot chaqiruvlari ro'yxatini qaytaradi."""
     async def go():
         dp = DP
@@ -41,7 +41,7 @@ def _run(updates, state=None, uid=None):
         for u in (SUPER, ODDIY):
             await dp.storage.set_state(StorageKey(bot.id, u, u), state if u == uid else None)
             await dp.storage.set_data(StorageKey(bot.id, u, u), {})
-        with patch.object(Bot, "__call__", new=AsyncMock()) as call:
+        with patch.object(Bot, "__call__", new=AsyncMock(side_effect=api)) as call:
             for u in updates:
                 await dp.feed_update(bot, Update.model_validate({"update_id": next(_uid), **u}, context={"bot": bot}))
             calls = [c.args[0] for c in call.call_args_list]
@@ -141,3 +141,118 @@ def test_restore_eski_bazani_tiklaydi(baza):
     assert db.get_movie("7")["name"] == "Eski kino"
     assert db.get_movie_count() == 1
     assert any(isinstance(c, SendMessage) and "tashlab yuborildi" in c.text for c in calls)
+
+
+# --- Majburiy obuna kanallari ---
+
+from aiogram.methods import CreateChatInviteLink, GetChat, GetChatMember  # noqa: E402
+from aiogram.types import ChatFullInfo, ChatInviteLink, ChatMemberAdministrator, ChatMemberMember  # noqa: E402
+
+KANAL = -1001234567890
+
+
+def _fake_api(bot_admin: bool):
+    """Telegram'ni metod turiga qarab javob beradigan mock."""
+    async def api(method, *a, **k):
+        if isinstance(method, GetChat):
+            # model_construct: ChatFullInfo'ning majburiy maydonlari aiogram versiyasiga
+            # qarab o'zgaradi — testga faqat id/type/title/username kerak.
+            return ChatFullInfo.model_construct(id=KANAL, type="channel", title="Mening kanalim", username="mykino")
+        if isinstance(method, GetChatMember):
+            u = {"id": method.user_id, "is_bot": True, "first_name": "b"}
+            if bot_admin:
+                return ChatMemberAdministrator.model_construct(user=u, status="administrator")
+            return ChatMemberMember(user=u)
+        if isinstance(method, CreateChatInviteLink):
+            return ChatInviteLink(invite_link="https://t.me/+abc", creator={"id": 1, "is_bot": True, "first_name": "b"},
+                                  creates_join_request=False, is_primary=False, is_revoked=False)
+        return True
+    return api
+
+
+def test_parse_channel_ref():
+    from handlers_channels import parse_channel_ref
+    assert parse_channel_ref("@mykino") == "@mykino"
+    assert parse_channel_ref("mykino") == "@mykino"
+    assert parse_channel_ref("https://t.me/mykino") == "@mykino"
+    assert parse_channel_ref("-1001234567890") == -1001234567890
+    assert parse_channel_ref("t.me/+AbCdEf") is None       # taklif havolasi — forward kerak
+    assert parse_channel_ref("@a b") is None
+    assert parse_channel_ref("") is None
+
+
+def test_bot_admin_bolmagan_kanal_qoshilmaydi(baza):
+    from common import AddChannel
+    calls, state = _run([{"message": _msg(SUPER, "@mykino")}], state=AddChannel.waiting_username,
+                        uid=SUPER, api=_fake_api(bot_admin=False))
+    assert db.get_channels() == []
+    assert state == AddChannel.waiting_username.state
+    assert any(isinstance(c, SendMessage) and "admin emas" in c.text for c in calls)
+
+
+def test_bot_admin_bolgan_kanal_qoshiladi(baza):
+    from common import AddChannel
+    _run([{"message": _msg(SUPER, "t.me/mykino")}], state=AddChannel.waiting_username,
+         uid=SUPER, api=_fake_api(bot_admin=True))
+    [ch] = db.get_channels()
+    assert ch["chat_id"] == KANAL and ch["username"] == "@mykino" and ch["invite_link"] == "https://t.me/+abc"
+
+
+def test_forward_orqali_kanal_qoshiladi(baza):
+    from common import AddChannel
+    fwd = _msg(SUPER, "kanal posti")
+    fwd["forward_origin"] = {"type": "channel", "date": fwd["date"], "message_id": 5,
+                             "chat": {"id": KANAL, "type": "channel", "title": "Mening kanalim"}}
+    _run([{"message": fwd}], state=AddChannel.waiting_username, uid=SUPER, api=_fake_api(bot_admin=True))
+    assert db.channel_exists(KANAL)
+
+
+def test_oddiy_foydalanuvchi_kanalni_ochira_olmaydi(baza):
+    db.add_channel(KANAL, "@mykino", "Mening kanalim", "https://t.me/mykino")
+    _run([_callback(ODDIY, f"ch:rmy:{KANAL}")])
+    assert db.channel_exists(KANAL)
+
+
+def test_admin_paneldan_kanalni_ochiradi(baza):
+    db.add_channel(KANAL, "@mykino", "Mening kanalim", "https://t.me/mykino")
+    _run([_callback(SUPER, f"ch:rmy:{KANAL}")], api=_fake_api(bot_admin=True))
+    assert not db.channel_exists(KANAL)
+
+
+def test_obunani_tekshira_olmasa_foydalanuvchi_bloklanmaydi(baza):
+    # Regressiya: yangi token bilan bot eski kanalda admin emas edi — get_chat_member
+    # xato berdi va HAMMA foydalanuvchi "Avval kanallarga obuna bo'ling" da qoldi.
+    from aiogram.exceptions import TelegramBadRequest
+    db.add_channel(KANAL, "@eski", "duck", "https://t.me/eski")
+    db.add_movie("7", "Kino", "-", "-", "-", "-", "VID")
+
+    async def api(method, *a, **k):
+        if isinstance(method, GetChatMember):
+            raise TelegramBadRequest(method, "Bad Request: member list is inaccessible")
+        return True
+    calls, _ = _run([{"message": _msg(ODDIY, "7")}], api=api)
+    from aiogram.methods import SendVideo
+    assert any(isinstance(c, SendVideo) for c in calls)
+    assert not any(isinstance(c, SendMessage) and "obuna" in c.text for c in calls)
+
+
+def test_obuna_bolmagan_foydalanuvchiga_kanal_korsatiladi(baza):
+    db.add_channel(KANAL, "@mykino", "Mening kanalim", "https://t.me/mykino")
+    db.add_movie("7", "Kino", "-", "-", "-", "-", "VID")
+
+    async def api(method, *a, **k):
+        if isinstance(method, GetChatMember):
+            from aiogram.types import ChatMemberLeft
+            return ChatMemberLeft(user={"id": method.user_id, "is_bot": False, "first_name": "u"})
+        return True
+    calls, _ = _run([{"message": _msg(ODDIY, "7")}], api=api)
+    assert any(isinstance(c, SendMessage) and "obuna" in c.text for c in calls)
+
+
+def test_buyruq_kino_kodi_deb_izlanmaydi(baza):
+    # Skrinshotda: boshqa akkaunt /restore yozganda bot uni kino kodi deb obuna so'radi.
+    db.add_channel(KANAL, "@mykino", "Mening kanalim", "https://t.me/mykino")
+    calls, _ = _run([{"message": _msg(ODDIY, "/restore")}])
+    texts = [c.text for c in calls if isinstance(c, SendMessage)]
+    assert texts and "Bunday buyruq yo'q" in texts[0]
+    assert not any(isinstance(c, GetChatMember) for c in calls)
