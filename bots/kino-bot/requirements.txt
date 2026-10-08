@@ -1,0 +1,5 @@
+# Versiyalar qattiq qadalmagan: aiogram 3.15.0 ga qadalganda Python 3.14 da
+# eski pydantic tortilib, o'rnatish yiqilardi (killspam-bot tajribasi).
+aiogram>=3.15,<4
+pydantic>=2.12
+python-dotenv>=1.0.1

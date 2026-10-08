@@ -2,7 +2,7 @@
   "name": "telegram-bots-monorepo",
   "version": "1.0.0",
   "private": true,
-  "description": "12 ta mustaqil Telegram bot bitta repoda. Har biri bots/<id>/ papkasida.",
+  "description": "13 ta mustaqil Telegram bot bitta repoda. Har biri bots/<id>/ papkasida.",
   "author": "@Abdulloh_77700 (https://t.me/Abdulloh_77700)",
   "license": "MIT",
   "engines": {
