@@ -20,6 +20,10 @@ STRING_SESSION = os.getenv("STRING_SESSION", "")
 
 # Gemini AI API Kaliti (Google AI Studio)
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+# Model nomi .env dan: Google eski modellarni o'chiradi (gemini-1.5-flash
+# 2025-09 da o'chirilgan — bot shu sabab har xulosada xato berardi).
+# Repodagi boshqa botlar bilan bir xil standart.
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "").strip() or "gemini-2.5-flash"
 
 # Bot Egasi va Boshqaruv sozlamalari
 ADMIN_ID = os.getenv("ADMIN_ID")

@@ -106,7 +106,7 @@ def summarize_with_ai(messages_text, prompt_type="general"):
 
     try:
         res = ai_client.models.generate_content(
-            model="gemini-1.5-flash",  # gemini-3.7-flash hali stabil SDK da yo'q bo'lishi mumkin, shuning uchun stabil versiyadan foydalandik
+            model=config.GEMINI_MODEL,
             contents=prompt
         )
         return res.text
@@ -121,7 +121,7 @@ async def transcribe_media_with_ai(file_path):
         uploaded_file = ai_client.files.upload(file=file_path)
         prompt = "Ushbu audio/video xabarda aytilgan gaplarni to'liq o'zbek tilida matn (transkripsiya) ko'rinishida yozib ber."
         res = ai_client.models.generate_content(
-            model="gemini-1.5-flash",
+            model=config.GEMINI_MODEL,
             contents=[uploaded_file, prompt]
         )
         return res.text.strip()
