@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { logger } from '../utils/logger';
 import { ExpenseService } from './expense.service';
 import {
-  DEFAULT_HOUR, ReminderRow, isDue, isGoneError, lastSentOnEnable, plainStats, tashkentNow,
+  DEFAULT_HOUR, ReminderRow, isDue, isValidHour, isGoneError, lastSentOnEnable, plainStats, tashkentNow,
 } from './reminder.logic';
 
 // Jadval schema.prisma'ga qo'shilmadi: deploy'da migratsiya ishlamaydi va
@@ -35,28 +35,56 @@ function toLogic(r: Row): ReminderRow {
 export class ReminderService {
   private timer: NodeJS.Timeout | null = null;
   private running = false;
+  private ready = false;
 
   constructor(private prisma: PrismaClient, private expenseService: ExpenseService) {}
 
+  // Har murojaatdan oldin: ishga tushishda jadval yaratilmagan bo'lsa (Railway'da
+  // shunday bo'ldi: 42P01 "relation does not exist") qayta urinadi va yiqilsa —
+  // ASL sababni foydalanuvchiga ko'rsatadigan xato bilan chiqadi.
   async init(): Promise<void> {
-    await this.prisma.$executeRawUnsafe(CREATE_SQL);
+    if (this.ready) return;
+    try {
+      await this.prisma.$executeRawUnsafe(CREATE_SQL);
+    } catch (err) {
+      throw new Error(`bot_reminders jadvali yaratilmadi: ${(err as Error).message}`);
+    }
+    this.ready = true;
   }
 
   async get(chatId: bigint): Promise<ReminderRow | null> {
+    await this.init();
     const rows = await this.prisma.$queryRaw<Row[]>`
       SELECT chat_id, enabled, hour, last_sent FROM bot_reminders WHERE chat_id = ${chatId}`;
     return rows[0] ? toLogic(rows[0]) : null;
   }
 
   async setEnabled(chatId: bigint, enabled: boolean): Promise<void> {
+    await this.init();
     const now = tashkentNow();
-    const last = enabled ? lastSentOnEnable(DEFAULT_HOUR, now) : null;
+    const existing = enabled ? await this.get(chatId) : null;
+    const hour = existing?.hour ?? DEFAULT_HOUR;
+    const last = enabled ? lastSentOnEnable(hour, now) : null;
     await this.prisma.$executeRaw`
       INSERT INTO bot_reminders (chat_id, enabled, hour, last_sent)
-      VALUES (${chatId}, ${enabled}, ${DEFAULT_HOUR}, ${last}::date)
+      VALUES (${chatId}, ${enabled}, ${hour}, ${last}::date)
       ON CONFLICT (chat_id) DO UPDATE
         SET enabled = EXCLUDED.enabled,
             last_sent = CASE WHEN EXCLUDED.enabled THEN EXCLUDED.last_sent ELSE bot_reminders.last_sent END`;
+  }
+
+  // Soat tanlansa eslatma ham yoqiladi. Bugun allaqachon yuborilgan bo'lsa —
+  // yangi (kechroq) soatda ikkinchi marta kelmasin: GREATEST eski belgini saqlaydi.
+  async setHour(chatId: bigint, hour: number): Promise<void> {
+    if (!isValidHour(hour)) throw new Error(`Noto'g'ri soat: ${hour}`);
+    await this.init();
+    const last = lastSentOnEnable(hour, tashkentNow());
+    await this.prisma.$executeRaw`
+      INSERT INTO bot_reminders (chat_id, enabled, hour, last_sent)
+      VALUES (${chatId}, TRUE, ${hour}, ${last}::date)
+      ON CONFLICT (chat_id) DO UPDATE
+        SET enabled = TRUE, hour = EXCLUDED.hour,
+            last_sent = GREATEST(bot_reminders.last_sent, EXCLUDED.last_sent)`;
   }
 
   start(telegram: Telegram): void {
@@ -73,6 +101,7 @@ export class ReminderService {
     if (this.running) return;
     this.running = true;
     try {
+      await this.init();
       const now = tashkentNow();
       const rows = await this.prisma.$queryRaw<Row[]>`
         SELECT chat_id, enabled, hour, last_sent FROM bot_reminders

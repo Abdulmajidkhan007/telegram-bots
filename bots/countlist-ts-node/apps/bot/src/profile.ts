@@ -38,7 +38,7 @@ export const USER_COMMANDS: Command[] = [
   { command: 'stats', description: '📊 Umumiy statistika' },
   { command: 'categories', description: '🏷 Kategoriyalar' },
   { command: 'export', description: '📤 Excel / CSV / PDF' },
-  { command: 'reminder', description: '🔔 Kunlik eslatma (22:00)' },
+  { command: 'reminder', description: '🔔 Kunlik eslatma (soatni tanlang)' },
   { command: 'login', description: "🔐 Dashboard'ga kirish havolasi" },
   { command: 'help', description: '❓ Yordam' },
 ];

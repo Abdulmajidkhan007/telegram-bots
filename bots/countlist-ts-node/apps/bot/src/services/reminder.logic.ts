@@ -7,6 +7,14 @@
 export const TASHKENT_OFFSET_MIN = 5 * 60;
 export const DEFAULT_HOUR = 22;
 
+// Tanlash mumkin bo'lgan soatlar (Toshkent). Callback'dan kelgan soat shu
+// ro'yxat bilan tekshiriladi — foydalanuvchi bergan callback_data ga ishonilmaydi.
+export const HOUR_OPTIONS = [8, 12, 18, 19, 20, 21, 22, 23];
+
+export function isValidHour(h: unknown): h is number {
+  return typeof h === 'number' && HOUR_OPTIONS.includes(h);
+}
+
 export interface TashkentNow {
   date: string; // 'YYYY-MM-DD' (Toshkent bo'yicha)
   hour: number; // 0..23
@@ -52,6 +60,10 @@ export function statusText(enabled: boolean, hour: number): string {
   return enabled
     ? `🔔 Kunlik eslatma: yoqilgan ✅\n\nHar kuni Toshkent vaqti bilan ${hh}:00 da:\n“Bugungi xarajatlarni yozib qo'ydingizmi? 🙂”`
     : `🔕 Kunlik eslatma: o'chirilgan\n\nYoqsangiz, har kuni Toshkent vaqti bilan ${hh}:00 da eslatib turaman.`;
+}
+
+export function statusWithHint(enabled: boolean, hour: number): string {
+  return statusText(enabled, hour) + '\n\n🕘 Soatni tanlang (Toshkent vaqti):';
 }
 
 // getTodayStats Markdown belgilari (*, _, `) bilan qaytaradi; eslatma oddiy

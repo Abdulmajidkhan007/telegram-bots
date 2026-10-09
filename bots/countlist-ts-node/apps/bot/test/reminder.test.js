@@ -43,6 +43,7 @@ test("ReminderService: vaqti kelgan chatga yuboradi, bloklagan bo'lsa o'chiradi"
   const { ReminderService } = require('../dist/services/reminder.service');
   const executed = [];
   const prisma = {
+    $executeRawUnsafe: async () => 0,
     $queryRaw: async () => [
       { chat_id: 1n, enabled: true, hour: 0, last_sent: null },
       { chat_id: 2n, enabled: true, hour: 0, last_sent: null },
@@ -65,4 +66,29 @@ test("ReminderService: vaqti kelgan chatga yuboradi, bloklagan bo'lsa o'chiradi"
   const disabled = executed.find(([sql, vals]) => sql.startsWith('INSERT') && vals[0] === 2n);
   assert.ok(disabled, "bloklagan chat uchun eslatma o'chirilmadi");
   assert.equal(disabled[1][1], false);
+});
+
+// Regressiya: Railway'da ishga tushishdagi CREATE TABLE o'tmagan, keyin har /reminder
+// "relation bot_reminders does not exist" bergan — sababi ko'rinmagan, qayta urinilmagan.
+test("ReminderService: jadval yaratilmasa sababni aytadi va keyingi safar qayta urinadi", async () => {
+  const { ReminderService } = require('../dist/services/reminder.service');
+  let attempts = 0;
+  const prisma = {
+    $executeRawUnsafe: async () => { attempts += 1; if (attempts === 1) throw new Error('permission denied for schema public'); return 0; },
+    $queryRaw: async () => [],
+  };
+  const svc = new ReminderService(prisma, {});
+  await assert.rejects(() => svc.get(1n), /bot_reminders jadvali yaratilmadi: permission denied for schema public/);
+  assert.equal(await svc.get(1n), null);   // 2-urinish o'tdi
+  await svc.get(1n);
+  assert.equal(attempts, 2);               // muvaffaqiyatdan keyin qayta yaratilmaydi
+});
+
+test('soat tanlash: faqat ruxsat etilgan soatlar', () => {
+  const { isValidHour, HOUR_OPTIONS } = require('../dist/services/reminder.logic');
+  assert.ok(HOUR_OPTIONS.includes(22));
+  assert.equal(isValidHour(21), true);
+  assert.equal(isValidHour(3), false);
+  assert.equal(isValidHour(99), false);
+  assert.equal(isValidHour('22'), false);
 });
