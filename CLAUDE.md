@@ -36,6 +36,7 @@ tools/registry.js   bots.json ustidagi TOZA mantiq (I/O yo'q → test qilinadi)
 tools/scan-secrets.js  kalit tekshiruvi (repo public!)
 tools/registry.test.js testlar
 docs/ARXITEKTURA-TARIXI.md  qarorlar tarixi
+docs/BOT-TARIFLARI.md  Bepul/Plus/Pro/Max: imkoniyatlar, to'lov oqimi (narx — faqat Railway env)
 docs/REJA.md        3 oylik reja: navbat, «tugallandi» ta'rifi, arxivlash ro'yxati
 docs/KALI-LINUX.md  Linux'da noldan ishga tushirish qo'llanmasi
 ```
