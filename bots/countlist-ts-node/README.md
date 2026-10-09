@@ -394,6 +394,12 @@ guruhdagi har kim so'ragan odam nomidan kira olardi.
 
 ---
 
+**Kunlik eslatma (`/reminder`).** Har kuni Toshkent vaqti bilan 22:00 da
+«Bugungi xarajatlarni yozib qo'ydingizmi?» keladi; guruhda — bugungi jami bilan.
+Guruhda faqat admin yoqadi/o'chiradi. Bot bloklansa yoki guruhdan chiqarilsa —
+eslatma o'zi o'chadi. Holat `bot_reminders` jadvalida (bot ishga tushganda
+o'zi yaratadi, migratsiya kerak emas).
+
 ## 🔌 API Endpoints
 
 To'liq hujjatlar: <http://localhost:3001/api/docs>
