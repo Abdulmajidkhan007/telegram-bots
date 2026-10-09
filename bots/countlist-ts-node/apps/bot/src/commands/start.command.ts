@@ -29,6 +29,7 @@ export function registerStartCommand(bot: Telegraf<BotContext>): void {
         `/stats \\- Umumiy statistika\n` +
         `/categories \\- Kategoriyalar\n` +
         `/export \\- Eksport\n` +
+        `/reminder \\- Kunlik eslatma \\(22:00\\)\n` +
         `/login \\- Dashboard'ga kirish havolasi\n` +
         `/help \\- Yordam`,
         mainInlineKeyboard(),

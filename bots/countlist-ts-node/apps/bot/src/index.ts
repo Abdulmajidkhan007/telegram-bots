@@ -17,6 +17,8 @@ import { registerAdminCommands } from './commands/admin.command';
 import { registerCallbackHandlers } from './handlers/callback.handler';
 import { registerMessageHandlers } from './handlers/message.handler';
 import { applyBotProfile } from './profile';
+import { registerReminderCommand } from './commands/reminder.command';
+import { ReminderService } from './services/reminder.service';
 
 async function bootstrap() {
   const prisma = new PrismaClient();
@@ -28,6 +30,16 @@ async function bootstrap() {
   const userService = new UserService(prisma);
   const expenseService = new ExpenseService(prisma);
   const exportService = new ExportService(prisma);
+  const reminderService = new ReminderService(prisma, expenseService);
+  // Eslatma jadvali yaratilmasa (masalan, bazada huquq yo'q) — bot baribir ishlaydi,
+  // faqat eslatma o'chiq qoladi va sababi log'da.
+  let remindersReady = true;
+  try {
+    await reminderService.init();
+  } catch (err) {
+    remindersReady = false;
+    logger.error(`Kunlik eslatma o'chiq: jadval yaratilmadi — ${(err as Error).message}`);
+  }
 
   bot.use(session<SessionData, BotContext>());
   bot.use(groupMiddleware(userService));
@@ -39,6 +51,7 @@ async function bootstrap() {
   registerLoginCommand(bot);
   registerCategoryCommands(bot, prisma);
   registerAdminCommands(bot, prisma);
+  registerReminderCommand(bot, reminderService);
 
   registerCallbackHandlers(bot, expenseService, exportService, prisma);
   registerMessageHandlers(bot, expenseService, prisma);
@@ -48,6 +61,7 @@ async function bootstrap() {
   });
 
   await applyBotProfile(bot.telegram, config.bot.adminId);
+  if (remindersReady) reminderService.start(bot.telegram);
 
   if (config.bot.webhookUrl && config.nodeEnv === 'production') {
     await bot.launch({ webhook: { domain: config.bot.webhookUrl } });
@@ -57,8 +71,8 @@ async function bootstrap() {
     logger.info('Bot started with polling');
   }
 
-  process.once('SIGINT', () => { bot.stop('SIGINT'); prisma.$disconnect(); });
-  process.once('SIGTERM', () => { bot.stop('SIGTERM'); prisma.$disconnect(); });
+  process.once('SIGINT', () => { reminderService.stop(); bot.stop('SIGINT'); prisma.$disconnect(); });
+  process.once('SIGTERM', () => { reminderService.stop(); bot.stop('SIGTERM'); prisma.$disconnect(); });
 }
 
 bootstrap().catch((err) => {
