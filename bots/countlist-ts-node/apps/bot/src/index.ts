@@ -31,14 +31,12 @@ async function bootstrap() {
   const expenseService = new ExpenseService(prisma);
   const exportService = new ExportService(prisma);
   const reminderService = new ReminderService(prisma, expenseService);
-  // Eslatma jadvali yaratilmasa (masalan, bazada huquq yo'q) — bot baribir ishlaydi,
-  // faqat eslatma o'chiq qoladi va sababi log'da.
-  let remindersReady = true;
+  // Jadval yaratilmasa bot baribir ishlaydi: har /reminder va har daqiqalik
+  // tekshiruv qayta urinadi, sabab log'da va /reminder javobida ko'rinadi.
   try {
     await reminderService.init();
   } catch (err) {
-    remindersReady = false;
-    logger.error(`Kunlik eslatma o'chiq: jadval yaratilmadi — ${(err as Error).message}`);
+    logger.error(`Kunlik eslatma: ${(err as Error).message}`);
   }
 
   bot.use(session<SessionData, BotContext>());
@@ -61,7 +59,7 @@ async function bootstrap() {
   });
 
   await applyBotProfile(bot.telegram, config.bot.adminId);
-  if (remindersReady) reminderService.start(bot.telegram);
+  reminderService.start(bot.telegram);
 
   if (config.bot.webhookUrl && config.nodeEnv === 'production') {
     await bot.launch({ webhook: { domain: config.bot.webhookUrl } });
