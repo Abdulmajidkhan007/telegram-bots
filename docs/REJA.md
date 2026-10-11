@@ -47,6 +47,15 @@ Eng yaqinini birinchi — g'alaba tezroq keladi, kuch beradi.
 | 4 | `learning-datacenter-tc-project` | «Faza 0» — 46 jadval, RBAC, Docker | **Faza 1:** guruhlar, jadval, davomat. Bitta maktabga demo ko'rsatish |
 | 5 | `go-uz` (Vroom) | 9 paket qurilgan, ilovalar «in progress» | **Bitta** ilovani tanlang (web yoki mobil), MVP darajasida ishga tushiring |
 
+### Cheklovdan istisnolar (egasi qarori)
+
+Quyidagilar «yangi loyiha yo'q» qoidasidan **ongli ravishda** chiqarilgan.
+Har biri shu repo ichida, MVP hajmida; MVP'dan keyingi fazalar navbatga qarab.
+
+| Sana | Loyiha | Sabab | Hajm |
+|---|---|---|---|
+| 2026-10-11 | `bots/hr-bot` | Ish qidirish bilan bevosita bog'liq; mavjud repo ichida, yangi repo emas | MVP = 1–3 fazalar ([`HR-BOT-PROMPT.md`](HR-BOT-PROMPT.md)). To'lov (4) va Business (5) — keyin |
+
 ### Muzlatilganlar (bu 3 oyda tegilmaydi)
 
 - `DevCraft-AI` — faqat `ARCHITECTURE.md` bor, kod yo'q. G'oya kuchli, lekin
@@ -97,6 +106,7 @@ keyin qaytib ko'riladi.
 
 - 2026-10-07 — **hr-bot**: umumiy (multi-tenant) HR bot — CV qabul, AI ball,
   vakansiya yopilganda har nomzodga javob. Reja: [`HR-BOT-PROMPT.md`](HR-BOT-PROMPT.md)
+  → **2026-10-11: istisno sifatida boshlandi** (yuqoridagi jadval), `bots/hr-bot`.
 - 2026-10-07 — **bot-factory**: shablondan bot yasovchi platforma (alohida repo,
   hr-bot MVP'dan keyin). Reja: [`BOT-FACTORY-PROMPT.md`](BOT-FACTORY-PROMPT.md)
 

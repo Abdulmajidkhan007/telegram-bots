@@ -1,6 +1,6 @@
 # 🤖 Telegram Bots Monorepo
 
-**13 ta mustaqil Telegram bot — bitta repoda.** Har bot `bots/<nom>/` papkasida to'liq
+**14 ta mustaqil Telegram bot — bitta repoda.** Har bot `bots/<nom>/` papkasida to'liq
 alohida loyiha: o'z kodi, o'z `package.json`/`requirements.txt`, o'z `.env.example`,
 o'z `README.md`. Papkani nusxalab olsangiz — bot mustaqil ishlaydi.
 
@@ -26,6 +26,7 @@ o'z `README.md`. Papkani nusxalab olsangiz — bot mustaqil ishlaydi.
 | 11 | [`atoyo-ai-bot`](bots/atoyo-ai-bot) | Python | Mahsulot rasmlarini **Gemini** bilan tahlil qilib katalog kartochkasi yasaydi (Telethon **userbot**) |
 | 12 | [`atoyo-rag-bot`](bots/atoyo-rag-bot) | Python | Santexnika katalogi ustida **RAG** savol-javob: semantik qidiruv, ovoz va rasm, lid → admin guruh + **n8n** |
 | 13 | [`kino-bot`](bots/kino-bot) | Python | **Kino kodi** bo'yicha videoni beradi: majburiy obuna, admin panel, reklama, statistika, `/backup` va `/restore` |
+| 14 | [`hr-bot`](bots/hr-bot) | Python | **HR bot** (ko'p kompaniyali): vakansiya havolasi, PDF CV, **Gemini** ball, HR qarorlari, yopilganda **har** nomzodga javob |
 
 Batafsil ma'lumot — har bot papkasidagi `README.md` da.
 
@@ -43,7 +44,7 @@ git clone https://github.com/Abdulmajidkhan007/save-video-downloader-bot.git
 cd save-video-downloader-bot
 ```
 
-Bitta buyruq — **hamma 13 ta bot** yuklab olinadi.
+Bitta buyruq — **hamma 14 ta bot** yuklab olinadi.
 
 ### 2. Botlar ro'yxatini ko'rish
 
@@ -131,7 +132,7 @@ npm run check     # testlar + kalit tekshiruvi
 │   │   ├── src/  package.json  .env.example  README.md
 │   ├── anonim-bot/
 │   ├── quiz-bot/
-│   └── ...                     # jami 13 ta
+│   └── ...                     # jami 14 ta
 ├── tools/
 │   ├── run.js                  # boshqaruvchi CLI (list/setup/install/start/doctor)
 │   ├── registry.js             # bots.json ustidagi toza mantiq
@@ -212,7 +213,7 @@ litsenziya ham birga ketadi.
 
 | Bot | Litsenziya | Nimaga ruxsat |
 |-----|-----------|----------------|
-| `save-video-downloader-bot`, `anonim-bot`, `arxiv-topadi-bot`, `gemini-qa-bot`, `idfinder-bot`, `malware-bot`, `quiz-bot`, `xulosa-ai-bot`, `countlist-ts-node`, `atoyo-ai-bot`, `atoyo-rag-bot`, `kino-bot` | [MIT](LICENSE) | Istalgan maqsadda, tijoratda ham — faqat mualliflik va litsenziya matni saqlansin |
+| `save-video-downloader-bot`, `anonim-bot`, `arxiv-topadi-bot`, `gemini-qa-bot`, `idfinder-bot`, `malware-bot`, `quiz-bot`, `xulosa-ai-bot`, `countlist-ts-node`, `atoyo-ai-bot`, `atoyo-rag-bot`, `kino-bot`, `hr-bot` | [MIT](LICENSE) | Istalgan maqsadda, tijoratda ham — faqat mualliflik va litsenziya matni saqlansin |
 | `killspam-bot` | [PolyForm Noncommercial 1.0.0](bots/killspam-bot/LICENSE) | Faqat notijorat maqsadda |
 
 Repo ildizi (`tools/`, `docs/` va boshqalar) — [MIT](LICENSE).
