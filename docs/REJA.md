@@ -109,6 +109,8 @@ keyin qaytib ko'riladi.
   → **2026-10-11: istisno sifatida boshlandi** (yuqoridagi jadval), `bots/hr-bot`.
 - 2026-10-07 — **bot-factory**: shablondan bot yasovchi platforma (alohida repo,
   hr-bot MVP'dan keyin). Reja: [`BOT-FACTORY-PROMPT.md`](BOT-FACTORY-PROMPT.md)
+  → 2026-10-11: batafsil reja va skelet [`BOT-FACTORY-REJA.md`](BOT-FACTORY-REJA.md);
+  repo **ochilmadi** — qaror egasida (o'sha fayl, 5-bo'lim).
 
 ---
 
