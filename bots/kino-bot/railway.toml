@@ -1,0 +1,10 @@
+# Railway'da: Settings → Root Directory = /bots/kino-bot,
+# Config-as-code fayl yo'li = /bots/kino-bot/railway.toml (Root Directory'ga ergashmaydi).
+[build]
+builder = "DOCKERFILE"
+watchPatterns = ["/bots/kino-bot/**"]
+
+[deploy]
+restartPolicyType = "ALWAYS"
+# Bitta token — bitta jarayon: ikkita nusxa getUpdates'da bir-birini uradi (409 Conflict).
+numReplicas = 1

@@ -75,7 +75,7 @@ cp .env.example .env
 | `INITIAL_CHANNELS`  | Opsional: boshlang'ich obuna kanallari `@a,@b` (faqat channels.json bo'sh bo'lsa seed) |
 | `SOURCE_CHANNELS`   | Opsional: avto-tarqatish manba kanallari `@a,-1001234` (bot ADMIN bo'lishi shart) |
 | `FORWARD_MODE`      | Opsional: `copy` (default) yoki `forward`               |
-| `DATA_DIR`          | JSON papka (lokal `./data`, Railway `/app/data`)        |
+| `DATA_DIR`          | JSON papka (lokal `./data`, Railway `/data`)            |
 | `DOWNLOADS_DIR`     | Vaqtinchalik fayllar papkasi (default `./downloads`)    |
 | `YTDLP_COOKIES_B64` | Opsional: `cookies.txt` base64 ko'rinishi (YouTube fix) |
 | `YTDLP_COOKIES`     | Opsional: cookies.txt yo'li (default `DATA_DIR/cookies.txt`) |
@@ -113,16 +113,16 @@ orqali chiqadi va YouTube ishlaydi (**proxy/pul kerak emas**).
 
 ## ☁️ 2. Railway deploy qadamlari
 
-1. Loyihani GitHub ga push qiling.
-2. Railway'da **New Project → Deploy from GitHub repo** ni tanlang.
-3. **Volume qo'shing**: Service → *Volumes* → *New Volume*, mount path: `/app/data`.
-4. **Environment o'zgaruvchilarini** kiriting (Variables bo'limi — pastdagi ro'yxatga qarang).
-5. `nixpacks.toml` `nodejs`, `curl` ni o'rnatadi. `npm install` esa `postinstall`
-   orqali **yt-dlp** (`yt-dlp_linux`), **gallery-dl** (Codeberg'dan) va statik
-   **ffmpeg/ffprobe** binary'larini `bin/` ga yuklaydi. Barcha `curl`'lar `-f`
-   bilan — 404 bo'lsa build to'xtaydi (buzuq fayl yozilmaydi). Bot ishga
+To'liq, telefondan bajariladigan qo'llanma: [`docs/DEPLOY.md`](../../docs/DEPLOY.md).
+
+1. Railway'da **New Project → Deploy from GitHub repo**, Root Directory
+   `/bots/save-video-downloader-bot`, Config File `/bots/save-video-downloader-bot/railway.toml`.
+2. **Volume qo'shing**, mount path: `/data` (`DATA_DIR` bilan bir xil bo'lsin).
+3. **Environment o'zgaruvchilarini** kiriting (Variables bo'limi — pastdagi ro'yxatga qarang).
+4. Build `Dockerfile` bo'yicha: `ffmpeg` va `curl` apt'dan, `npm ci` esa `postinstall`
+   orqali **yt-dlp** va **gallery-dl** binary'larini `bin/` ga yuklaydi. Bot ishga
    tushganda diagnostika + `--version` loglari chiqadi.
-6. Deploy tugagach bot polling rejimida ishga tushadi.
+5. Deploy tugagach bot polling rejimida ishga tushadi.
 
 ### Railway env o'zgaruvchilari ro'yxati
 
@@ -130,7 +130,7 @@ orqali chiqadi va YouTube ishlaydi (**proxy/pul kerak emas**).
 | --- | --- | --- |
 | `BOT_TOKEN` | bot tokeningiz | ✅ |
 | `ADMIN_IDS` | `123456789` (Telegram ID) | ✅ |
-| `DATA_DIR` | `/app/data` | ✅ (Volume bilan) |
+| `DATA_DIR` | `/data` | ✅ (Volume mount path bilan bir xil) |
 | `YTDLP_COOKIES_B64` | cookies.txt base64 (pastga qarang) | ⛔️ opsional |
 | `ACR_HOST` / `ACR_ACCESS_KEY` / `ACR_ACCESS_SECRET` | ACRCloud (musiqa aniqlash) | ⛔️ opsional |
 

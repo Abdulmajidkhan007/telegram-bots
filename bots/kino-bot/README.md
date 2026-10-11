@@ -62,7 +62,10 @@ python main.py
 
 ## ☁️ Railway
 
-1. Servis: Root Directory `bots/kino-bot`, Watch Paths `bots/kino-bot/**`.
+To'liq, telefondan bajariladigan qo'llanma: [`docs/DEPLOY.md`](../../docs/DEPLOY.md).
+
+1. Servis: Root Directory `/bots/kino-bot`, Config File `/bots/kino-bot/railway.toml`
+   (build `Dockerfile` bo'yicha, watch paths shu faylda).
 2. **Volume qo'shing** (Mount path `/data`) va Variables'ga `DATA_DIR=/data`.
    Volume'siz baza konteyner ichida turadi va **har deploy'da o'chadi**.
 3. Variables: `BOT_TOKEN`, `SUPER_ADMIN_ID`, `DATA_DIR`.
