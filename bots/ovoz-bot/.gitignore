@@ -1,0 +1,10 @@
+.env
+# Limit bazasi — ichida foydalanuvchi ID'lari bor, repo PUBLIC
+*.db
+*.db-journal
+data/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/

@@ -54,6 +54,7 @@ Har biri shu repo ichida, MVP hajmida; MVP'dan keyingi fazalar navbatga qarab.
 
 | Sana | Loyiha | Sabab | Hajm |
 |---|---|---|---|
+| 2026-10-11 | `bots/ovoz-bot` | Egasi ruxsati («telegram-bots/ovoz-bot ni boshla»): Gemini ilovasi ovozli xabarni yomon tushunadi, API orqali o'zimiz boshqaramiz; mavjud repo ichida | Faqat 1-faza (STT + TTS). 2-faza `/myvoice` — boshlanmagan ([`OVOZ-BOT-PROMPT.md`](OVOZ-BOT-PROMPT.md)) |
 | 2026-10-11 | `bots/hr-bot` | Ish qidirish bilan bevosita bog'liq; mavjud repo ichida, yangi repo emas | MVP = 1–3 fazalar ([`HR-BOT-PROMPT.md`](HR-BOT-PROMPT.md)). To'lov (4) va Business (5) — keyin |
 
 ### Muzlatilganlar (bu 3 oyda tegilmaydi)

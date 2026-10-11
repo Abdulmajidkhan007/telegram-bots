@@ -42,9 +42,9 @@ docs/REJA.md        3 oylik reja: navbat, «tugallandi» ta'rifi, arxivlash ro'y
 docs/KALI-LINUX.md  Linux'da noldan ishga tushirish qo'llanmasi
 ```
 
-**14 ta bot:** `save-video-downloader-bot`, `anonim-bot`, `arxiv-topadi-bot`,
+**15 ta bot:** `save-video-downloader-bot`, `anonim-bot`, `arxiv-topadi-bot`,
 `gemini-qa-bot`, `idfinder-bot`, `malware-bot`, `quiz-bot` (Node) ·
-`killspam-bot`, `xulosa-ai-bot`, `atoyo-ai-bot`, `atoyo-rag-bot`, `kino-bot`, `hr-bot` (Python) ·
+`killspam-bot`, `xulosa-ai-bot`, `atoyo-ai-bot`, `atoyo-rag-bot`, `kino-bot`, `hr-bot`, `ovoz-bot` (Python) ·
 `countlist-ts-node` (TypeScript monorepo).
 
 ---

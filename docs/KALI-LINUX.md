@@ -1,4 +1,4 @@
-# 14 ta botni Kali Linux'da ishga tushirish
+# 15 ta botni Kali Linux'da ishga tushirish
 
 > Noldan: tizimni tayyorlash → klon → kalitlar → bitta bot → hammasi.
 > Har qadam tekshiriladigan: buyruq beriladi, natija nima bo'lishi aytiladi.
@@ -35,7 +35,7 @@ npm run bot gemini-qa-bot
 
 # 8. Hammasini birdan
 npm start          # faqat avtomatik ishga tushadiganlar (7 ta)
-npm run start:all  # qo'shimcha xizmat talab qiladiganlar bilan (14 ta)
+npm run start:all  # qo'shimcha xizmat talab qiladiganlar bilan (15 ta)
 ```
 
 Quyida har qadam batafsil.
@@ -164,7 +164,7 @@ npm run doctor
 >
 > ```bash
 > git checkout main && git pull
-> npm run list | head -1      # "14 ta bot" bo'lishi kerak
+> npm run list | head -1      # "15 ta bot" bo'lishi kerak
 > ```
 
 `doctor` Node, Python va boshqa kerakli vositalar borligini tekshiradi.
@@ -235,6 +235,7 @@ nano bots/gemini-qa-bot/.env
 | **countlist-ts-node** | `BOT_TOKEN`, PostgreSQL, Redis, (`GEMINI_API_KEY` yoki `OPENAI_API_KEY`) | @BotFather + baza |
 | **kino-bot** | `BOT_TOKEN`, `SUPER_ADMIN_ID` | @BotFather, o'z Telegram ID'ingiz (@IDFINDER007BOT) |
 | **hr-bot** | `BOT_TOKEN`, `ADMIN_IDS`, (`GEMINI_API_KEY`) | @BotFather, o'z Telegram ID'ingiz, AI Studio |
+| **ovoz-bot** | `BOT_TOKEN`, `GEMINI_API_KEY` (+ `ffmpeg`) | @BotFather, [AI Studio](https://aistudio.google.com/apikey) |
 
 **Guruh yoki kanal ID sini bilish kerak bo'lsa:** avval `idfinder-bot` ni
 ishga tushiring — u aynan shuning uchun yozilgan.
@@ -261,6 +262,7 @@ ishga tushiring — u aynan shuning uchun yozilgan.
 | `countlist-ts-node` | `BOT_TOKEN`, `DATABASE_URL` | ixtiyoriy |
 | `kino-bot` | `BOT_TOKEN`, `SUPER_ADMIN_ID` | ixtiyoriy (`DATA_DIR`, `PROTECT_CONTENT`, `MOVIES_PER_HOUR`) |
 | `hr-bot` | `BOT_TOKEN`, `ADMIN_IDS` | ixtiyoriy (`GEMINI_API_KEY` bo'lmasa AI ball «hisoblanmadi») |
+| `ovoz-bot` | `BOT_TOKEN`, `GEMINI_API_KEY`, tizimda `ffmpeg` | ixtiyoriy (`ADMIN_IDS`, `DAILY_LIMIT`, `TTS_MAX_CHARS`, modellar) |
 
 > ⚠️ **Har botga ALOHIDA token kerak.** Bitta tokenni ikki botda ishlatsangiz
 > Telegram `Conflict: terminated by other getUpdates` xatosini beradi.
@@ -488,7 +490,7 @@ Bot yiqilsa oyna yopilmaydi — xato matni o'sha yerda qoladi.
 npm start
 ```
 
-### Hammasi — 14 ta
+### Hammasi — 15 ta
 
 ```bash
 source .venv/bin/activate
@@ -584,7 +586,7 @@ journalctl -u telegram-botlar -f      # jonli loglar
 | `fatal error: libpq-fe.h: No such file` | psycopg2 manbadan qurilyapti | `sudo apt install -y libpq-dev build-essential` |
 | `PyO3's maximum supported version (3.13)` | Python 3.14, kutubxona hali qo'llamaydi | Python 3.12/3.13 bilan venv yarating |
 | `Exec format error` binarni ishga tushirganda | ARM qurilmada x86 binar | `rm -rf bots/save-video-downloader-bot/bin` va qayta o'rnating |
-| `npm run list` 14 tadan kam bot ko'rsatadi | eski klon yoki eski branch | `git checkout main && git pull` |
+| `npm run list` 15 tadan kam bot ko'rsatadi | eski klon yoki eski branch | `git checkout main && git pull` |
 | Bot javob bermaydi, xato ham yo'q | `.env` bo'sh yoki noto'g'ri papkada | `cat bots/<id>/.env` bilan tekshiring |
 
 ### Ishlab turgan botlarni ko'rish
