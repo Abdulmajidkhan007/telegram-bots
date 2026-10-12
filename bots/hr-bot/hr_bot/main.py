@@ -12,7 +12,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from . import config, repo, repo_billing
 from .ai import Scorer
 from .db import init_db, make_engine
-from .handlers import admin, candidate, hr, owner, payment, start
+from .handlers import admin, business, candidate, hr, owner, payment, start
 from .handlers.common import LangMiddleware, fmt_date
 from .texts import t
 
@@ -27,9 +27,11 @@ def build_dispatcher(sessionmaker, cfg, scorer) -> Dispatcher:
     dp.message.outer_middleware(LangMiddleware())
     dp.callback_query.outer_middleware(LangMiddleware())
     dp.pre_checkout_query.outer_middleware(LangMiddleware())
+    # business_message'ga middleware yo'q: HR bilan yozishgan har odamni bazaga yozmaymiz.
     # Tartib: buyruqlar (start/admin/owner) avval; to'lov xizmat xabari nomzod FSM'iga
     # tushmasin; nomzodning "istalgan xabar" qadami eng oxirida — buyruqni yutib yubormasin.
-    for r in (start.router, admin.router, owner.router, payment.router, hr.router, candidate.router):
+    for r in (start.router, admin.router, owner.router, payment.router, business.router, hr.router,
+              candidate.router):
         dp.include_router(r)
     return dp
 

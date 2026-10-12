@@ -5,7 +5,7 @@ yuboradi, AI uni vakansiya talablari bilan solishtiradi, HR qaror qiladi va
 vakansiya yopilganda **qaror qilinmagan har bir nomzod** xushmuomala javob oladi.
 
 **Muallif:** [@Abdulloh_77700](https://t.me/Abdulloh_77700) · Litsenziya: MIT ·
-Holat: **1–4 fazalar** — MVP + to'lov (Telegram Stars obunasi va karta + chek).
+Holat: **1–5 fazalar** — MVP + to'lov (Telegram Stars obunasi va karta + chek) + Telegram Business.
 To'liq spec: [`docs/HR-BOT-PROMPT.md`](../../docs/HR-BOT-PROMPT.md).
 
 ## Muammo
@@ -45,6 +45,15 @@ kompaniyalarni faollashtirish/bloklash. Yangi kompaniya haqida darhol xabar kela
   tugagach yangi vakansiya ochilmaydi (eskilari ko'rinadi va yopiladi).
 - Admin qo'lda faollashtirgan kompaniya — pilot, muddatsiz (`active_until` bo'sh).
 - `STARS_PRICE` va `CARD_PRICE_UZS` bo'sh bo'lsa — to'lov tugmasi chiqmaydi (faqat pilot).
+
+**Telegram Business** (HR'da Telegram Premium kerak) — userbot emas, rasmiy yo'l:
+HR Settings → Telegram Business → Chatbots → `@hr_ai_007_bot` ni ulaydi («xabarlarga
+javob berish» huquqi bilan). Bot ulanishni qayd etadi (qaysi HR, qaysi kompaniya; bir
+nechta kompaniya bo'lsa — HR tanlaydi). Nomzod HR'ga shaxsiy yozsa, bot **HR nomidan**
+ochiq vakansiyalar va deep link'larni yuboradi — har chatga `BUSINESS_REPLY_HOURS`
+(standart 24) soatda bir marta. Javob yo'q: HR'ning o'z xabarlari, huquq yo'q,
+ulanish uzilgan, HR kompaniyadan chiqarilgan, obuna tugagan, ochiq vakansiya yo'q.
+BotFather: **Bot Settings → Business Mode → Enable** kerak.
 
 **Muddat** — deadline o'tgach HR'ga bir marta eslatma. Avtomatik rad **yo'q**:
 AI ham, taymer ham hech kimni o'zi rad etmaydi — faqat HR.
@@ -92,6 +101,7 @@ python -m hr_bot.main
 | `STARS_PRICE` | — | 30 kunlik obuna, Stars (1..10000). Bo'sh — Stars o'chiq |
 | `CARD_PRICE_UZS` / `PAYMENT_CARD_NUMBER` / `PAYMENT_CARD_HOLDER` | — | karta to'lovi; narx va raqam birga beriladi |
 | `EXPIRY_REMIND_DAYS` | — | standart 3 |
+| `BUSINESS_REPLY_HOURS` | — | Business: bitta chatga necha soatda bir javob, standart 24 |
 
 Repo ildizidan: `npm run bot hr-bot`.
 
@@ -120,7 +130,8 @@ hr_bot/
   ai.py          Gemini baholash, prompt, JSON parse
   billing.py     to'lov/muddat hisobi (toza mantiq)
   repo_billing.py to'lovlar: idempotent yozuv, tasdiqlash, qaytarish, eslatmalar
+  repo_business.py Business ulanishlari va javob qoidalari
   notify.py      ommaviy xabar (20/s, 403 → undeliverable)
   texts.py       uz/ru matnlar
-  handlers/      start, owner, payment, hr, candidate, admin
+  handlers/      start, owner, payment, business, hr, candidate, admin
 ```

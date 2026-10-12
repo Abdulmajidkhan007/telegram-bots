@@ -111,4 +111,4 @@ def test_fsm_matn_filtri_buyruqni_otkazadi():
 
 def test_dispatcher_yigiladi(sm):
     dp = dispatcher(sm, SimpleNamespace(admin_ids=frozenset()))
-    assert [r.name for r in dp.sub_routers] == ["start", "admin", "owner", "payment", "hr", "candidate"]
+    assert [r.name for r in dp.sub_routers] == ["start", "admin", "owner", "payment", "business", "hr", "candidate"]
