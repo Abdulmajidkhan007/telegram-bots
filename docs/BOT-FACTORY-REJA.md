@@ -1,10 +1,9 @@
 # bot-factory — reja va skelet (repo hali ochilmagan)
 
-> Topshiriq: [`BOT-FACTORY-PROMPT.md`](BOT-FACTORY-PROMPT.md). Holat (2026-10-11):
-> **faqat reja.** Spec bo'yicha platforma **alohida repo** (`bot-factory`) bo'lishi
-> kerak, egasi esa hozircha repo ochmaslikni aytdi. Shuning uchun kod yozilmadi —
-> skelet pastda fayl daraxti va interfeys sifatida turibdi; repo ochilgach shu
-> fayldan ko'chiriladi. Repo cheklovi (2026-12-11) ham shuni talab qiladi.
+> Topshiriq: [`BOT-FACTORY-PROMPT.md`](BOT-FACTORY-PROMPT.md). Holat (2026-10-12):
+> **faqat reja.** Platforma alohida repoda yoziladi — reponi egasi ochadi (§5).
+> Asosiy bot — **`@Yovuzhackerbot`**, kodi noldan. Skelet pastda fayl daraxti va
+> interfeys sifatida turibdi; yangi repo'da shu fayldan boshlanadi.
 >
 > Navbat: hr-bot MVP'dan keyin (hr-bot keyin premium shablonga aylanadi).
 
@@ -124,11 +123,30 @@ class Template(Protocol):
 | 5 | Railway: Dockerfile, `/health`, Alembic, kunlik zaxira | `docs/DEPLOY.md` tajribasi |
 | 6 | Premium: HR (hr-bot'dan), AI FAQ, katalog | `bots/hr-bot` |
 
-## 5. Egasidan javob kerak
+## 5. Egasining qarorlari (2026-10-12)
 
-1. **Alohida repo qachon ochiladi?** Spec alohida repo deydi, REJA.md esa 2026-12-11 gacha
-   yangi repo yo'q deydi. Variantlar: (a) 2026-12-11 dan keyin; (b) hr-bot kabi istisno
-   qilib hozir. Qaror REJA.md «Cheklovdan istisnolar» jadvaliga yoziladi.
-2. **`@Yovuzhackerbot` kodi qayerda?** Spec u managed bots'ni ishlatadi deydi — kodini
-   o'qib, haqiqiy oqimni (tugma yoki deep link) solishtirish kerak.
-3. **Domen**: webhook uchun Railway domeni yetarlimi yoki o'z domeningiz bo'ladimi?
+1. **Alohida repo — egasi o'zi ochadi** va bot-factory o'sha yerda yoziladi.
+   Shu repoda faqat shu reja qoladi. (REJA.md «Cheklovdan istisnolar» jadvalida.)
+2. **`@Yovuzhackerbot` — bot-factory'ning asosiy (universal) boti.** Uning tayyor
+   kodi yo'q — **noldan yoziladi**. Tokeni faqat yangi repo'ning `.env` / Railway
+   Variables'ida. BotFather Mini App'da bot boshqaruvi (managed bots) yoqiladi.
+3. **Ochiq qolgan:** webhook domeni (Railway domeni yoki o'z domeningiz) — 5-fazagacha
+   hal qilinadi, lokal ishlab chiqish polling'da.
+
+## 6. Hozirgi holat — nima bor, nima yo'q
+
+**Bor (hujjat):** managed bots faktlari (§1), arxitektura (§2), fayl daraxti va
+shablon interfeysi (§3), fazalar (§4), Stars obunasi qoidasi.
+
+**Yo'q (hali kod yozilmagan):** ishlaydigan bot, bot yaratish, shablonlar, to'lov,
+deploy. Ya'ni foydalanuvchi uchun hozircha **hech qanday imkoniyat ishlamaydi**.
+
+**Qayta ishlatsa bo'ladigan tayyor tajriba shu repodan** (import emas — o'qib,
+qayta yoziladi):
+| Kerakli qism | Qayerdan o'rganiladi |
+|---|---|
+| Ko'p tenantli izolyatsiya, rollar, deep link tekshiruvi | `bots/hr-bot` (`repo.py`, `links.py`) |
+| Soxta Telegram sessiyasi bilan to'liq oqim testi | `bots/hr-bot/tests/test_flow.py` |
+| Gemini retry/zaxira model, ovoz | `bots/ovoz-bot/ovoz_bot/gemini.py` |
+| Railway Dockerfile + Volume | `docs/DEPLOY.md` |
+| Anonim savol-javob, guruh himoyasi mantiqi | `bots/anonim-bot`, `bots/killspam-bot` |

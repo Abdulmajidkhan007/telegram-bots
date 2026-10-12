@@ -54,6 +54,7 @@ Har biri shu repo ichida, MVP hajmida; MVP'dan keyingi fazalar navbatga qarab.
 
 | Sana | Loyiha | Sabab | Hajm |
 |---|---|---|---|
+| 2026-10-12 | `bot-factory` (alohida repo, egasi ochadi) | Asosiy bot `@Yovuzhackerbot` — universal bot konstruktor; kod noldan | Reja: [`BOT-FACTORY-REJA.md`](BOT-FACTORY-REJA.md), 1–2 fazalar |
 | 2026-10-11 | `bots/ovoz-bot` | Egasi ruxsati («telegram-bots/ovoz-bot ni boshla»): Gemini ilovasi ovozli xabarni yomon tushunadi, API orqali o'zimiz boshqaramiz; mavjud repo ichida | Faqat 1-faza (STT + TTS). 2-faza `/myvoice` — boshlanmagan ([`OVOZ-BOT-PROMPT.md`](OVOZ-BOT-PROMPT.md)) |
 | 2026-10-11 | `bots/hr-bot` | Ish qidirish bilan bevosita bog'liq; mavjud repo ichida, yangi repo emas | MVP = 1–3 fazalar ([`HR-BOT-PROMPT.md`](HR-BOT-PROMPT.md)). To'lov (4) va Business (5) — keyin |
 
@@ -111,7 +112,7 @@ keyin qaytib ko'riladi.
 - 2026-10-07 — **bot-factory**: shablondan bot yasovchi platforma (alohida repo,
   hr-bot MVP'dan keyin). Reja: [`BOT-FACTORY-PROMPT.md`](BOT-FACTORY-PROMPT.md)
   → 2026-10-11: batafsil reja va skelet [`BOT-FACTORY-REJA.md`](BOT-FACTORY-REJA.md);
-  repo **ochilmadi** — qaror egasida (o'sha fayl, 5-bo'lim).
+  → 2026-10-12: egasi alohida repo ochadi, asosiy bot `@Yovuzhackerbot` (istisnolar jadvali).
 
 ---
 
