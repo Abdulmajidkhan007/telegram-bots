@@ -1,4 +1,4 @@
-import { Telegraf } from 'telegraf';
+import { Telegraf, Markup } from 'telegraf';
 import { PrismaClient } from '@prisma/client';
 import { BotContext } from '../types/context';
 import { ExpenseService } from '../services/expense.service';
@@ -6,6 +6,14 @@ import { logger } from '../utils/logger';
 import { sendCategoryList } from '../commands/categories.command';
 import { config } from '../config';
 import { transcribeVoice, VoiceError, MAX_VOICE_SECONDS } from '../services/voice.service';
+import { parseTransactionText } from '@expense-tracker/shared';
+import { undoCallbackData, INCOME_NOT_SUPPORTED } from '../utils/quick-entry';
+
+function undoKeyboard(expenseId: string) {
+  return Markup.inlineKeyboard([[Markup.button.callback('↩️ Bekor qilish', undoCallbackData(expenseId))]]);
+}
+
+const MDV2 = /[_*[\]()~`>#+\-=|{}.!]/g;
 
 function parseCategoryInput(text: string): { icon: string; name: string } {
   const parts = text.trim().split(/\s+/);
@@ -65,6 +73,13 @@ export function registerMessageHandlers(
     if (!ctx.dbGroup || !ctx.dbUser) return;
     if (text.length < 3) return;
 
+    // "+ 5 mln oylik" — aniq daromad. Bazada daromad turi yo'q: jim qolsak
+    // foydalanuvchi yozildi deb o'ylaydi, xarajat qilib yozsak hisobot buziladi.
+    if (parseTransactionText(text)?.kind === 'income') {
+      await ctx.reply(INCOME_NOT_SUPPORTED, { reply_parameters: { message_id: ctx.message.message_id } });
+      return;
+    }
+
     try {
       const result = await expenseService.parseAndCreate({
         rawText: text,
@@ -75,8 +90,8 @@ export function registerMessageHandlers(
 
       if (result) {
         await ctx.replyWithMarkdownV2(
-          result.formatted.replace(/[_*[\]()~`>#+\-=|{}.!]/g, '\\$&'),
-          { reply_parameters: { message_id: ctx.message.message_id } },
+          result.formatted.replace(MDV2, '\\$&'),
+          { reply_parameters: { message_id: ctx.message.message_id }, ...undoKeyboard(result.expense.id) },
         );
       }
     } catch (error) {
@@ -111,6 +126,13 @@ export function registerMessageHandlers(
           })
         : null;
 
+      if (!result && text && parseTransactionText(text)?.kind === 'income') {
+        await ctx.reply(`🎙 ${text}\n\n${INCOME_NOT_SUPPORTED}`, {
+          reply_parameters: { message_id: ctx.message.message_id },
+        });
+        return;
+      }
+
       // Ovozda xarajat topilmasa javob bermaymiz — oddiy suhbat bo'lishi mumkin.
       if (!result) {
         logger.debug(`Ovozda xarajat topilmadi: "${text}"`);
@@ -118,8 +140,8 @@ export function registerMessageHandlers(
       }
 
       await ctx.replyWithMarkdownV2(
-        `🎙 ${text}\n\n${result.formatted}`.replace(/[_*[\]()~`>#+\-=|{}.!]/g, '\\$&'),
-        { reply_parameters: { message_id: ctx.message.message_id } },
+        `🎙 ${text}\n\n${result.formatted}`.replace(MDV2, '\\$&'),
+        { reply_parameters: { message_id: ctx.message.message_id }, ...undoKeyboard(result.expense.id) },
       );
     } catch (error) {
       logger.error('Voice handler error:', error);

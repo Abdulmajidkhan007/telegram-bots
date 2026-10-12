@@ -56,6 +56,32 @@ export class ExpenseService {
     return { expense, formatted };
   }
 
+  /**
+   * "Bekor qilish" tugmasi: faqat muallifning o'zi, faqat shu guruhda, faqat
+   * faol va UNDO_WINDOW_MS ichidagi xarajatni. Shart where ichida — tekshiruv
+   * va yozish orasida holat o'zgarsa ham ikki marta o'chmaydi.
+   * API'dagi o'chirish bilan bir xil: status DELETED + deletedAt.
+   */
+  async cancelByAuthor(params: {
+    expenseId: string;
+    userId: string;
+    groupId: string;
+    notBefore: Date;
+  }): Promise<boolean> {
+    const res = await this.prisma.expense.updateMany({
+      where: {
+        id: params.expenseId,
+        userId: params.userId,
+        groupId: params.groupId,
+        status: 'ACTIVE',
+        createdAt: { gte: params.notBefore },
+      },
+      data: { status: 'DELETED', deletedAt: new Date() },
+    });
+    if (res.count > 0) await this.invalidateGroupCache(params.groupId);
+    return res.count > 0;
+  }
+
   private formatExpenseMessage(
     expense: Expense & { category: { name: string; icon: string } | null; user: { firstName: string } },
   ): string {
