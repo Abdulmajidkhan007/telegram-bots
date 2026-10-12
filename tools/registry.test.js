@@ -131,7 +131,7 @@ test('haqiqiy bots.json: torch kerak bo\'lgan bot CPU torch\'ni requirements\'da
 
 // Doimiy serverga chiqariladigan botlar (docs/DEPLOY.md). Railway'da Root
 // Directory = bot papkasi, shuning uchun konfig shu papkada bo'lishi shart.
-const DEPLOY_BOTS = ['kino-bot', 'anonim-bot', 'save-video-downloader-bot'];
+const DEPLOY_BOTS = ['kino-bot', 'anonim-bot', 'save-video-downloader-bot', 'hr-bot', 'ovoz-bot'];
 
 test('deploy: har ommaviy botda Dockerfile, .dockerignore va railway.toml bor', () => {
   for (const id of DEPLOY_BOTS) {

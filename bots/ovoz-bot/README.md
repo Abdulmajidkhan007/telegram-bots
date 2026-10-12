@@ -74,6 +74,10 @@ Ishga tushganda tekshiriladi: token, kalit, ffmpeg, standart ovoz nomi va
 | `DATA_DIR` | bot papkasi | Railway: `/data` (Volume) |
 | `FFMPEG_PATH` | PATH'dan | |
 
+**Doimiy server (Railway / Docker):** `Dockerfile` (Python 3.14-slim + `ffmpeg`,
+`DATA_DIR=/data`), `.dockerignore`, `railway.toml`. Qadamlar —
+[`docs/DEPLOY.md`](../../docs/DEPLOY.md#5-ovoz-bot).
+
 ## Testlar
 
 ```bash

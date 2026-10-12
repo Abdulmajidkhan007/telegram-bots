@@ -53,6 +53,14 @@ class Config:
         return self.stars_price > 0 or self.card_price_uzs > 0
 
 
+def default_db_url(data_dir: str) -> str:
+    """DATABASE_URL bo'sh bo'lsa — SQLite. Railway'da DATA_DIR=/data (Volume): aks holda
+    baza konteyner ichida qolib, har deploy'da kompaniyalar va arizalar o'chadi."""
+    papka = Path(data_dir.strip()) if data_dir.strip() else BOT_DIR
+    papka.mkdir(parents=True, exist_ok=True)
+    return f"sqlite+aiosqlite:///{papka / 'hr_bot.db'}"
+
+
 def check_payment(stars_price: int, card_price: int, card_number: str) -> None:
     """Yarim sozlangan to'lov — jim ishlamaslik o'rniga ishga tushishda aniq xato."""
     if not 0 <= stars_price <= billing.MAX_STARS:
@@ -79,7 +87,7 @@ def load() -> Config:
     card_price = _int("CARD_PRICE_UZS", 0)
     card_number = os.getenv("PAYMENT_CARD_NUMBER", "").strip()
     check_payment(stars_price, card_price, card_number)
-    db_url = os.getenv("DATABASE_URL", "").strip() or f"sqlite+aiosqlite:///{BOT_DIR / 'hr_bot.db'}"
+    db_url = os.getenv("DATABASE_URL", "").strip() or default_db_url(os.getenv("DATA_DIR", ""))
     return Config(
         bot_token=token,
         admin_ids=admin_ids,

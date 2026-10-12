@@ -93,7 +93,8 @@ python -m hr_bot.main
 |---|---|---|
 | `BOT_TOKEN` | ✅ | @BotFather |
 | `ADMIN_IDS` | ✅ | platforma adminlari (vergul bilan) |
-| `DATABASE_URL` | — | bo'sh: `hr_bot.db` (SQLite). PostgreSQL: `postgresql+asyncpg://...` |
+| `DATA_DIR` | — | SQLite papkasi; bo'sh — bot papkasi. Docker/Railway: `/data` (Volume) |
+| `DATABASE_URL` | — | bo'sh: `DATA_DIR/hr_bot.db` (SQLite). PostgreSQL: `postgresql+asyncpg://...` |
 | `GEMINI_API_KEY` | — | bo'sh bo'lsa AI o'chiq |
 | `GEMINI_MODEL` | — | standart `gemini-2.5-flash` |
 | `AI_DAILY_LIMIT` | — | standart 200, `0` — AI o'chiq |
@@ -104,6 +105,11 @@ python -m hr_bot.main
 | `BUSINESS_REPLY_HOURS` | — | Business: bitta chatga necha soatda bir javob, standart 24 |
 
 Repo ildizidan: `npm run bot hr-bot`.
+
+**Doimiy server (Railway / Docker):** `Dockerfile` (Python 3.14-slim, `DATA_DIR=/data`),
+`.dockerignore` (`.env` va baza obrazga tushmaydi), `railway.toml`. Qadamlar —
+[`docs/DEPLOY.md`](../../docs/DEPLOY.md#4-hr-bot). Eski SQLite bazasi bilan ham ishlaydi:
+yangi ustunlar ishga tushganda avtomatik qo'shiladi.
 
 ## Testlar
 

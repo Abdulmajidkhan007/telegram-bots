@@ -300,3 +300,39 @@ def test_karta_chek_oqimi(sm):
         await s.msg(OWNER, "/panel")
         assert "Faol:" in s.texts(OWNER)[-1]
     run(body())
+
+
+def test_data_dir_bazani_volume_ga_qoyadi(tmp_path):
+    assert config.default_db_url(str(tmp_path / "data")) == f"sqlite+aiosqlite:///{tmp_path / 'data' / 'hr_bot.db'}"
+    assert (tmp_path / "data").is_dir()
+    assert config.default_db_url("").endswith("/hr-bot/hr_bot.db")
+
+
+def test_soatlik_vazifa_cv_ochiradi_va_obuna_eslatadi(sm):
+    """main.housekeeping_once: retention + muddat eslatmasi haqiqatan ulangan (Faza 6 tekshiruvi)."""
+    from unittest.mock import AsyncMock, MagicMock
+
+    from hr_bot.db import Application
+    from hr_bot.main import housekeeping_once
+    cid = run(_company(sm, "active"))
+
+    async def body():
+        async with sm() as s:
+            c = await s.get(Company, cid)
+            v = await repo.create_vacancy(s, cid, OWNER, "Dev", "x", 5)
+            app, _ = await repo.submit_application(s, v, c, 777, "N", "FILE", "CV matni", "")
+            await repo.close_vacancy(s, v.id, OWNER)
+            v.closed_at = now() - timedelta(days=31)
+            await repo_billing.record_stars_payment(s, cid, OWNER, 500, "ch_1", True, at=now() - timedelta(days=28))
+            await s.commit()
+        bot = MagicMock()
+        bot.send_message = AsyncMock()
+        cfg = MagicMock(cv_retention_days=30, expiry_remind_days=3)
+        await housekeeping_once(bot, sm, cfg)
+        await housekeeping_once(bot, sm, cfg)  # ikkinchi soat — takror eslatma yo'q
+        async with sm() as s:
+            a = await s.get(Application, app.id)
+            assert a.cv_text is None and a.cv_file_id is None and a.cv_deleted_at is not None
+        eslatmalar = [c.args for c in bot.send_message.call_args_list if "obunasi" in c.args[1]]
+        assert len(eslatmalar) == 1 and eslatmalar[0][0] == OWNER
+    run(body())

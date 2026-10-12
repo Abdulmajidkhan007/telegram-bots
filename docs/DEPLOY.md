@@ -1,6 +1,6 @@
 # Doimiy serverga chiqarish (Railway) — telefondan
 
-> 3 ta ommaviy bot: **kino-bot**, **anonim-bot**, **save-video-downloader-bot**.
+> 5 ta bot: **kino-bot**, **anonim-bot**, **save-video-downloader-bot**, **hr-bot**, **ovoz-bot**.
 > Har biri Railway'da **alohida servis**, lekin bitta loyiha (project) ichida.
 > Hamma qadam railway.com saytida, telefon brauzeridan bajariladi.
 
@@ -9,8 +9,8 @@
 - **Token faqat Railway → servis → Variables'da.** Repoga, `.env` ga, chatga yozilmaydi.
 - **Bitta token — bitta jarayon.** Bot Railway'da ishlasa, uni telefonda/Kali'da
   o'chiring, aks holda `409 Conflict` chiqadi va xabarlar yo'qoladi.
-- **Volume majburiy.** Uchala bot ham ma'lumotni JSON faylda saqlaydi. Volume'siz
-  har deploy'da foydalanuvchilar va kinolar **o'chadi**.
+- **Volume majburiy.** Hamma bot ma'lumotni faylda saqlaydi (JSON yoki SQLite). Volume'siz
+  har deploy'da foydalanuvchilar, kinolar, kompaniyalar va arizalar **o'chadi**.
 - Har bot papkasida tayyor: `Dockerfile`, `.dockerignore` (`.env` obrazga tushmaydi),
   `railway.toml` (Dockerfile builder, `restartPolicy = ALWAYS`, 1 nusxa).
 
@@ -94,6 +94,48 @@ deploy bo'ladi (`watchPatterns`).
 - ⚠️ **Ma'lum cheklov:** YouTube Railway (datacenter) IP'larini tez-tez bloklaydi.
   Instagram/TikTok ishlaydi, YouTube uchun cookies yoki proxy kerak bo'lishi mumkin.
 
+## 4. hr-bot
+
+| Variable | Qiymat | Majburiy |
+|---|---|---|
+| `BOT_TOKEN` | @BotFather'dan (`@hr_ai_007_bot`) | ✅ |
+| `ADMIN_IDS` | platforma adminlari ID (vergul bilan) | ✅ |
+| `DATA_DIR` | `/data` | ✅ (SQLite `hr_bot.db` shu yerda) |
+| `GEMINI_API_KEY` / `GEMINI_MODEL` | AI Studio / `gemini-2.5-flash` | — (bo'lmasa AI ball «hisoblanmadi») |
+| `AI_DAILY_LIMIT` / `CV_RETENTION_DAYS` | `200` / `30` | — |
+| `STARS_PRICE` | 30 kunlik obuna, Stars (1..10000) | — (bo'sh — Stars o'chiq) |
+| `CARD_PRICE_UZS` + `PAYMENT_CARD_NUMBER` (+ `PAYMENT_CARD_HOLDER`) | narx so'mda, karta raqami | — (ikkalasi birga) |
+| `EXPIRY_REMIND_DAYS` / `BUSINESS_REPLY_HOURS` | `3` / `24` | — |
+
+- Root Directory: `/bots/hr-bot`, Config: `/bots/hr-bot/railway.toml`
+- Volume: `/data` — **ichida nomzodlar CV matni** (shaxsiy ma'lumot), Volume'ni boshqa servis bilan bo'lishmang.
+- Log'da kutiladi: `@hr_ai_007_bot ishga tushdi; adminlar: N ta` (AI yoqilgan bo'lsa oldin `AI: <model>, kunlik limit N`).
+- Narx yoki karta raqami noto'g'ri bo'lsa bot **ishga tushmaydi** va sababini yozadi
+  (masalan `❌ STARS_PRICE 0..10000 bo'lishi kerak`).
+- **BotFather sozlamalari:**
+  - Stars to'lovi uchun to'lov provayderi ulanmaydi (Bot API: Stars uchun `provider_token` bo'sh).
+  - Telegram Business: **Bot Settings → Business Mode → Turn on**. Keyin HR (Premium)
+    Settings → Telegram Business → Chatbots → `@hr_ai_007_bot` (javob berish huquqi bilan).
+- Hozircha `PostgreSQL` shart emas: SQLite + Volume yetadi. O'tish — `DATABASE_URL=postgresql+asyncpg://…`
+  (`asyncpg` ni `requirements.txt` ga qo'shish kerak bo'ladi).
+
+## 5. ovoz-bot
+
+| Variable | Qiymat | Majburiy |
+|---|---|---|
+| `BOT_TOKEN` | @BotFather'dan | ✅ |
+| `GEMINI_API_KEY` | [AI Studio](https://aistudio.google.com/apikey) | ✅ |
+| `DATA_DIR` | `/data` | ✅ (kunlik limit bazasi) |
+| `ADMIN_IDS` | limitsiz foydalanuvchilar | — |
+| `DAILY_LIMIT` / `TTS_MAX_CHARS` | `30` / `1000` | — |
+| `GEMINI_STT_MODEL` / `GEMINI_STT_MODEL_FALLBACK` / `GEMINI_TTS_MODEL` | bot README'siga qarang | — |
+
+- Root Directory: `/bots/ovoz-bot`, Config: `/bots/ovoz-bot/railway.toml`
+- Volume: `/data`
+- Build'da `ffmpeg` apt'dan o'rnatiladi (`FFMPEG_PATH` kerak emas).
+- Ishga tushganda token, kalit, ffmpeg va **uchala model** tekshiriladi — xato bo'lsa
+  aniq sabab bilan to'xtaydi (Deploy logs'da ko'rinadi).
+
 ---
 
 ## Muammo bo'lsa
@@ -105,6 +147,8 @@ deploy bo'ladi (`watchPatterns`).
 | `❌ .env da BOT_TOKEN to'ldirilmagan` | Variables kiritilmagan | 5-qadam |
 | Deploydan keyin foydalanuvchilar 0 | Volume ulanmagan yoki `DATA_DIR` boshqa | 4-qadam; mount path = `DATA_DIR` |
 | `Dockerfile not found` | Root Directory noto'g'ri | `/bots/<bot-id>` ekanini tekshiring |
+| hr-bot: to'lov tugmasi yo'q | `STARS_PRICE` va `CARD_PRICE_UZS` bo'sh | Variables'ni to'ldiring (yoki pilot rejimida qoldiring) |
+| hr-bot: Business'da bot javob bermaydi | Business Mode o'chiq / javob huquqi yo'q / ochiq vakansiya yo'q | BotFather → Business Mode; HR'ga bot yuborgan ogohlantirishni o'qing |
 
 ## Allaqachon Railway'da ishlayotgan servis bo'lsa
 
