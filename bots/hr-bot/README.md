@@ -5,7 +5,7 @@ yuboradi, AI uni vakansiya talablari bilan solishtiradi, HR qaror qiladi va
 vakansiya yopilganda **qaror qilinmagan har bir nomzod** xushmuomala javob oladi.
 
 **Muallif:** [@Abdulloh_77700](https://t.me/Abdulloh_77700) · Litsenziya: MIT ·
-Holat: **MVP (1–3 fazalar)** — to'lov (4) va Telegram Business (5) hali yo'q.
+Holat: **1–4 fazalar** — MVP + to'lov (Telegram Stars obunasi va karta + chek).
 To'liq spec: [`docs/HR-BOT-PROMPT.md`](../../docs/HR-BOT-PROMPT.md).
 
 ## Muammo
@@ -31,6 +31,20 @@ qilinmaganlarning **hammasiga** rad xati.
 
 **Platforma admini** (`ADMIN_IDS`) — `/admin`: statistika, kutayotgan
 kompaniyalarni faollashtirish/bloklash. Yangi kompaniya haqida darhol xabar keladi.
+
+**To'lov** (`/panel` → «💳 To'lov», faqat kompaniya egasi):
+- **Telegram Stars** — 30 kunlik obuna (`createInvoiceLink`, `subscription_period=2592000`,
+  `XTR`, ≤ 10000 Stars — Bot API cheklovi). `pre_checkout_query` har holatda javob oladi:
+  payload, valyuta, narx, to'lovchi ega ekanligi, kompaniya bloklanmaganligi tekshiriladi.
+  Har to'lov (shu jumladan avtomatik yangilanish) +30 kun; bitta `telegram_payment_charge_id`
+  ikki marta kelsa — bir marta hisoblanadi. Admin «↩️ Pulni qaytarish» → `refundStarPayment`
+  + obuna yangilanishi bekor qilinadi (`editUserStarSubscription`), 30 kun qaytarib olinadi.
+- **Karta + chek** (zaxira) — karta raqami va narx env'dan; ega chekni rasm/PDF yuboradi,
+  admin «✅ Tasdiqlash / ❌ Rad etish». Tasdiqlash **idempotent** (shartli `UPDATE … WHERE status='pending'`).
+- `active_until` — tugashidan `EXPIRY_REMIND_DAYS` oldin va tugaganda egaga bir martadan eslatma;
+  tugagach yangi vakansiya ochilmaydi (eskilari ko'rinadi va yopiladi).
+- Admin qo'lda faollashtirgan kompaniya — pilot, muddatsiz (`active_until` bo'sh).
+- `STARS_PRICE` va `CARD_PRICE_UZS` bo'sh bo'lsa — to'lov tugmasi chiqmaydi (faqat pilot).
 
 **Muddat** — deadline o'tgach HR'ga bir marta eslatma. Avtomatik rad **yo'q**:
 AI ham, taymer ham hech kimni o'zi rad etmaydi — faqat HR.
@@ -75,6 +89,9 @@ python -m hr_bot.main
 | `GEMINI_MODEL` | — | standart `gemini-2.5-flash` |
 | `AI_DAILY_LIMIT` | — | standart 200, `0` — AI o'chiq |
 | `CV_RETENTION_DAYS` | — | standart 30 |
+| `STARS_PRICE` | — | 30 kunlik obuna, Stars (1..10000). Bo'sh — Stars o'chiq |
+| `CARD_PRICE_UZS` / `PAYMENT_CARD_NUMBER` / `PAYMENT_CARD_HOLDER` | — | karta to'lovi; narx va raqam birga beriladi |
+| `EXPIRY_REMIND_DAYS` | — | standart 3 |
 
 Repo ildizidan: `npm run bot hr-bot`.
 
@@ -101,7 +118,9 @@ hr_bot/
   links.py       deep link, slug, token
   cv.py          PDF tekshiruvi va matn
   ai.py          Gemini baholash, prompt, JSON parse
+  billing.py     to'lov/muddat hisobi (toza mantiq)
+  repo_billing.py to'lovlar: idempotent yozuv, tasdiqlash, qaytarish, eslatmalar
   notify.py      ommaviy xabar (20/s, 403 → undeliverable)
   texts.py       uz/ru matnlar
-  handlers/      start, owner, hr, candidate, admin
+  handlers/      start, owner, payment, hr, candidate, admin
 ```

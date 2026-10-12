@@ -40,7 +40,7 @@ class RoleCb(CallbackData, prefix="r"):
 
 
 class CompanyCb(CallbackData, prefix="c"):
-    action: str  # vac/new/invite
+    action: str  # vac/new/invite/pay/stars/card/biz
     company_id: int
 
 
@@ -62,6 +62,17 @@ class ApplyCb(CallbackData, prefix="ap"):
 class AdminCb(CallbackData, prefix="ad"):
     action: str  # activate/block
     company_id: int
+
+
+class PayCb(CallbackData, prefix="p"):
+    action: str  # approve/reject/refund
+    payment_id: int
+
+
+class BizCb(CallbackData, prefix="b"):
+    company_id: int
+    # connection_id (Telegram bergan, uzunligi noma'lum) callback'ga sig'masligi mumkin —
+    # shuning uchun bu yerda yo'q: ulanish foydalanuvchi ID'si bo'yicha bazadan topiladi.
 
 
 class LangMiddleware(BaseMiddleware):
