@@ -48,6 +48,14 @@ bepul tarifda Google undan o'z mahsulotlarini yaxshilashda foydalanishi mumkin.
 - STT standart modeli `gemini-3.8-flash` — cookbook'da «standard Gemini reasoning model»
   sifatida tilga olingan; bot ishga tushganda `models.get` bilan baribir tekshiradi.
 
+**2-faza (`/myvoice`) sharti — 2026-10-12 qayta tekshirildi, bajarilmadi:**
+`ai.google.dev` (TTS, narx, limitlar sahifalari) sandbox proksisida 403. Cookbook'ning
+joriy `Get_Started_Voices.ipynb` va `Get_started_TTS.ipynb` da klonlash tafsiloti bor
+(`client.voices.create(type="replicated")`, ~10 s namuna + rozilik audiosi, `store=True|False`),
+lekin **bepul tarif**, narx, kvota va **o'zbek tili** haqida bitta so'z ham yo'q.
+Shuning uchun 2-faza boshlanmadi. Egasi AI Studio'da (o'z kaliti bilan) tekshirsin:
+`client.voices.create` bepul kalitda ishlaydimi va o'zbekcha matn shu ovozda o'qiladimi.
+
 ## O'rnatish
 
 ```bash
@@ -73,6 +81,10 @@ Ishga tushganda tekshiriladi: token, kalit, ffmpeg, standart ovoz nomi va
 | `DAILY_LIMIT` / `TTS_MAX_CHARS` | 30 / 1000 | |
 | `DATA_DIR` | bot papkasi | Railway: `/data` (Volume) |
 | `FFMPEG_PATH` | PATH'dan | |
+
+**Doimiy server (Railway / Docker):** `Dockerfile` (Python 3.14-slim + `ffmpeg`,
+`DATA_DIR=/data`), `.dockerignore`, `railway.toml`. Qadamlar —
+[`docs/DEPLOY.md`](../../docs/DEPLOY.md#5-ovoz-bot).
 
 ## Testlar
 

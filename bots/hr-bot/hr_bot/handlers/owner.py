@@ -8,7 +8,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
-from .. import links, repo
+from .. import billing, links, repo
+from ..db import aware, now
 from ..texts import t
 from .common import TEXT, AdminCb, CompanyCb, esc, fmt_date
 
@@ -41,7 +42,8 @@ async def company_name(message: Message, state: FSMContext, lang: str, sessionma
     async with sessionmaker() as s:
         company = await repo.create_company(s, message.from_user.id, message.text.strip())
         await s.commit()
-    await message.answer(t(lang, "company_created", name=esc(company.name)))
+    await message.answer(t(lang, "company_created_paid" if cfg.payments_enabled else "company_created",
+                           name=esc(company.name)))
     kb = InlineKeyboardMarkup(inline_keyboard=[[
         InlineKeyboardButton(text=t("uz", "btn_activate"), callback_data=AdminCb(action="activate", company_id=company.id).pack()),
         InlineKeyboardButton(text=t("uz", "btn_block"), callback_data=AdminCb(action="block", company_id=company.id).pack()),
@@ -53,8 +55,17 @@ async def company_name(message: Message, state: FSMContext, lang: str, sessionma
             log.warning("Adminga (%s) yangi kompaniya xabari ketmadi: %s", admin_id, e)
 
 
+def _panel_text(lang: str, company) -> str:
+    matn = t(lang, "panel", name=esc(company.name), status=company.status)
+    until = aware(company.active_until)
+    if until is not None:
+        kalit = "panel_until" if until > now() else "panel_expired"
+        matn += "\n" + t(lang, kalit, date=fmt_date(until))
+    return matn
+
+
 @router.message(Command("panel"))
-async def panel(message: Message, state: FSMContext, lang: str, sessionmaker):
+async def panel(message: Message, state: FSMContext, lang: str, sessionmaker, cfg):
     await state.clear()
     async with sessionmaker() as s:
         kompaniyalar = await repo.user_companies(s, message.from_user.id)
@@ -70,8 +81,10 @@ async def panel(message: Message, state: FSMContext, lang: str, sessionmaker):
         if role == "owner":
             tugmalar.append([InlineKeyboardButton(text=t(lang, "btn_invite"),
                                                   callback_data=CompanyCb(action="invite", company_id=company.id).pack())])
-        await message.answer(t(lang, "panel", name=esc(company.name), status=company.status),
-                             reply_markup=InlineKeyboardMarkup(inline_keyboard=tugmalar))
+            if cfg.payments_enabled and company.status != "blocked":
+                tugmalar.append([InlineKeyboardButton(text=t(lang, "btn_pay"),
+                                                      callback_data=CompanyCb(action="pay", company_id=company.id).pack())])
+        await message.answer(_panel_text(lang, company), reply_markup=InlineKeyboardMarkup(inline_keyboard=tugmalar))
 
 
 @router.callback_query(CompanyCb.filter(F.action == "invite"))
@@ -95,6 +108,11 @@ async def new_vacancy(call: CallbackQuery, callback_data: CompanyCb, state: FSMC
         if await repo.member_role(s, callback_data.company_id, call.from_user.id) is None:
             await call.message.answer(t(lang, "access_denied"))
             return
+        company = await s.get(repo.Company, callback_data.company_id)
+    # 5 qadamli formani to'ldirib bo'lgach "muddat tugagan" deyish — vaqtni behuda olish.
+    if not billing.is_paid_up(company.status, aware(company.active_until), now()):
+        await call.message.answer(t(lang, "subscription_expired" if company.status == "active" else "company_not_active"))
+        return
     await state.set_state(OwnerForm.vac_title)
     await state.update_data(company_id=callback_data.company_id)
     await call.message.answer(t(lang, "ask_vac_title"))

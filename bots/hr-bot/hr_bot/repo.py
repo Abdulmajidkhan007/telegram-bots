@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from . import links, status
+from . import billing, links, status
 from .db import AiUsage, Application, Company, Invite, Member, User, Vacancy, aware, now
 
 
@@ -124,6 +124,9 @@ async def create_vacancy(
     company = await s.get(Company, company_id)
     if company.status != "active":
         raise StateError("company_not_active")
+    # Muddati tugagan — yangi vakansiya yo'q; eskilari o'qiladi va yopiladi.
+    if not billing.is_paid_up(company.status, aware(company.active_until), now()):
+        raise StateError("subscription_expired")
     if not 1 <= days <= 90:
         raise StateError("bad_days")
     mavjud = set((await s.scalars(select(Vacancy.slug))).all())

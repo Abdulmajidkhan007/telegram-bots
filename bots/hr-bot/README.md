@@ -5,7 +5,7 @@ yuboradi, AI uni vakansiya talablari bilan solishtiradi, HR qaror qiladi va
 vakansiya yopilganda **qaror qilinmagan har bir nomzod** xushmuomala javob oladi.
 
 **Muallif:** [@Abdulloh_77700](https://t.me/Abdulloh_77700) · Litsenziya: MIT ·
-Holat: **MVP (1–3 fazalar)** — to'lov (4) va Telegram Business (5) hali yo'q.
+Holat: **1–5 fazalar** — MVP + to'lov (Telegram Stars obunasi va karta + chek) + Telegram Business.
 To'liq spec: [`docs/HR-BOT-PROMPT.md`](../../docs/HR-BOT-PROMPT.md).
 
 ## Muammo
@@ -31,6 +31,29 @@ qilinmaganlarning **hammasiga** rad xati.
 
 **Platforma admini** (`ADMIN_IDS`) — `/admin`: statistika, kutayotgan
 kompaniyalarni faollashtirish/bloklash. Yangi kompaniya haqida darhol xabar keladi.
+
+**To'lov** (`/panel` → «💳 To'lov», faqat kompaniya egasi):
+- **Telegram Stars** — 30 kunlik obuna (`createInvoiceLink`, `subscription_period=2592000`,
+  `XTR`, ≤ 10000 Stars — Bot API cheklovi). `pre_checkout_query` har holatda javob oladi:
+  payload, valyuta, narx, to'lovchi ega ekanligi, kompaniya bloklanmaganligi tekshiriladi.
+  Har to'lov (shu jumladan avtomatik yangilanish) +30 kun; bitta `telegram_payment_charge_id`
+  ikki marta kelsa — bir marta hisoblanadi. Admin «↩️ Pulni qaytarish» → `refundStarPayment`
+  + obuna yangilanishi bekor qilinadi (`editUserStarSubscription`), 30 kun qaytarib olinadi.
+- **Karta + chek** (zaxira) — karta raqami va narx env'dan; ega chekni rasm/PDF yuboradi,
+  admin «✅ Tasdiqlash / ❌ Rad etish». Tasdiqlash **idempotent** (shartli `UPDATE … WHERE status='pending'`).
+- `active_until` — tugashidan `EXPIRY_REMIND_DAYS` oldin va tugaganda egaga bir martadan eslatma;
+  tugagach yangi vakansiya ochilmaydi (eskilari ko'rinadi va yopiladi).
+- Admin qo'lda faollashtirgan kompaniya — pilot, muddatsiz (`active_until` bo'sh).
+- `STARS_PRICE` va `CARD_PRICE_UZS` bo'sh bo'lsa — to'lov tugmasi chiqmaydi (faqat pilot).
+
+**Telegram Business** (HR'da Telegram Premium kerak) — userbot emas, rasmiy yo'l:
+HR Settings → Telegram Business → Chatbots → `@hr_ai_007_bot` ni ulaydi («xabarlarga
+javob berish» huquqi bilan). Bot ulanishni qayd etadi (qaysi HR, qaysi kompaniya; bir
+nechta kompaniya bo'lsa — HR tanlaydi). Nomzod HR'ga shaxsiy yozsa, bot **HR nomidan**
+ochiq vakansiyalar va deep link'larni yuboradi — har chatga `BUSINESS_REPLY_HOURS`
+(standart 24) soatda bir marta. Javob yo'q: HR'ning o'z xabarlari, huquq yo'q,
+ulanish uzilgan, HR kompaniyadan chiqarilgan, obuna tugagan, ochiq vakansiya yo'q.
+BotFather: **Bot Settings → Business Mode → Enable** kerak.
 
 **Muddat** — deadline o'tgach HR'ga bir marta eslatma. Avtomatik rad **yo'q**:
 AI ham, taymer ham hech kimni o'zi rad etmaydi — faqat HR.
@@ -70,13 +93,23 @@ python -m hr_bot.main
 |---|---|---|
 | `BOT_TOKEN` | ✅ | @BotFather |
 | `ADMIN_IDS` | ✅ | platforma adminlari (vergul bilan) |
-| `DATABASE_URL` | — | bo'sh: `hr_bot.db` (SQLite). PostgreSQL: `postgresql+asyncpg://...` |
+| `DATA_DIR` | — | SQLite papkasi; bo'sh — bot papkasi. Docker/Railway: `/data` (Volume) |
+| `DATABASE_URL` | — | bo'sh: `DATA_DIR/hr_bot.db` (SQLite). PostgreSQL: `postgresql+asyncpg://...` |
 | `GEMINI_API_KEY` | — | bo'sh bo'lsa AI o'chiq |
 | `GEMINI_MODEL` | — | standart `gemini-2.5-flash` |
 | `AI_DAILY_LIMIT` | — | standart 200, `0` — AI o'chiq |
 | `CV_RETENTION_DAYS` | — | standart 30 |
+| `STARS_PRICE` | — | 30 kunlik obuna, Stars (1..10000). Bo'sh — Stars o'chiq |
+| `CARD_PRICE_UZS` / `PAYMENT_CARD_NUMBER` / `PAYMENT_CARD_HOLDER` | — | karta to'lovi; narx va raqam birga beriladi |
+| `EXPIRY_REMIND_DAYS` | — | standart 3 |
+| `BUSINESS_REPLY_HOURS` | — | Business: bitta chatga necha soatda bir javob, standart 24 |
 
 Repo ildizidan: `npm run bot hr-bot`.
+
+**Doimiy server (Railway / Docker):** `Dockerfile` (Python 3.14-slim, `DATA_DIR=/data`),
+`.dockerignore` (`.env` va baza obrazga tushmaydi), `railway.toml`. Qadamlar —
+[`docs/DEPLOY.md`](../../docs/DEPLOY.md#4-hr-bot). Eski SQLite bazasi bilan ham ishlaydi:
+yangi ustunlar ishga tushganda avtomatik qo'shiladi.
 
 ## Testlar
 
@@ -101,7 +134,10 @@ hr_bot/
   links.py       deep link, slug, token
   cv.py          PDF tekshiruvi va matn
   ai.py          Gemini baholash, prompt, JSON parse
+  billing.py     to'lov/muddat hisobi (toza mantiq)
+  repo_billing.py to'lovlar: idempotent yozuv, tasdiqlash, qaytarish, eslatmalar
+  repo_business.py Business ulanishlari va javob qoidalari
   notify.py      ommaviy xabar (20/s, 403 → undeliverable)
   texts.py       uz/ru matnlar
-  handlers/      start, owner, hr, candidate, admin
+  handlers/      start, owner, payment, business, hr, candidate, admin
 ```

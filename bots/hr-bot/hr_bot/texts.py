@@ -133,6 +133,123 @@ T: dict[str, dict[str, str]] = {
         "uz": "⏰ «{title}» muddati tugadi: {n} nomzod qaror kutmoqda. Yopish: /panel",
         "ru": "⏰ Срок «{title}» истёк: {n} кандидатов ждут решения. Закрыть: /panel",
     },
+    # --- to'lov (4-faza) ---
+    "company_created_paid": {
+        "uz": "✅ «{name}» ro'yxatga olindi. Faollashtirish: /panel → «💳 To'lov» (yoki platforma admini tasdiqlashini kuting).",
+        "ru": "✅ «{name}» зарегистрирована. Активация: /panel → «💳 Оплата» (или дождитесь администратора платформы).",
+    },
+    "panel_until": {"uz": "⏳ Faol: {date} gacha", "ru": "⏳ Активна до {date}"},
+    "panel_expired": {"uz": "⛔️ Obuna {date} da tugagan", "ru": "⛔️ Подписка истекла {date}"},
+    "btn_pay": {"uz": "💳 To'lov", "ru": "💳 Оплата"},
+    "pay_menu": {
+        "uz": "💳 «{name}» — 30 kunlik obuna. To'lov usulini tanlang:",
+        "ru": "💳 «{name}» — подписка на 30 дней. Выберите способ оплаты:",
+    },
+    "btn_pay_stars": {"uz": "⭐ {price} Stars / 30 kun", "ru": "⭐ {price} Stars / 30 дней"},
+    "btn_pay_card": {"uz": "💳 Karta orqali — {price} so'm", "ru": "💳 Картой — {price} сум"},
+    "pay_disabled": {
+        "uz": "To'lov hozircha yoqilmagan — kompaniyani platforma admini faollashtiradi.",
+        "ru": "Оплата пока не включена — компанию активирует администратор платформы.",
+    },
+    "pay_stars_title": {"uz": "HR bot — 30 kun", "ru": "HR бот — 30 дней"},
+    "pay_stars_desc": {
+        "uz": "«{name}»: vakansiyalar, AI saralash va har nomzodga javob — 30 kunlik obuna.",
+        "ru": "«{name}»: вакансии, ИИ-сортировка и ответ каждому кандидату — подписка на 30 дней.",
+    },
+    "pay_stars_link": {
+        "uz": "⭐ Obuna har 30 kunda avtomatik yangilanadi; Telegram sozlamalarida bekor qilish mumkin.",
+        "ru": "⭐ Подписка продлевается каждые 30 дней; отменить можно в настройках Telegram.",
+    },
+    "btn_pay_open": {"uz": "⭐ To'lash", "ru": "⭐ Оплатить"},
+    "pay_link_failed": {
+        "uz": "❌ Telegram to'lov havolasini bermadi. Birozdan keyin qayta urinib ko'ring.",
+        "ru": "❌ Telegram не выдал ссылку на оплату. Попробуйте чуть позже.",
+    },
+    "pay_card_info": {
+        "uz": "💳 Karta: <code>{card}</code>{holder}\nSumma: <b>{price} so'm</b> (30 kun)\n\nTo'lovdan keyin chekni <b>rasm yoki PDF</b> qilib shu yerga yuboring.",
+        "ru": "💳 Карта: <code>{card}</code>{holder}\nСумма: <b>{price} сум</b> (30 дней)\n\nПосле оплаты отправьте чек сюда <b>фото или PDF</b>.",
+    },
+    "pay_receipt_bad": {"uz": "❌ Chekni rasm yoki PDF qilib yuboring.", "ru": "❌ Отправьте чек фото или PDF."},
+    "pay_receipt_sent": {
+        "uz": "✅ Chek qabul qilindi. Admin tekshirgach xabar beramiz.",
+        "ru": "✅ Чек получен. Сообщим после проверки администратором.",
+    },
+    "pay_pending_exists": {"uz": "⏳ Oldingi chekingiz hali tekshirilmoqda.", "ru": "⏳ Предыдущий чек ещё проверяется."},
+    "admin_receipt": {
+        "uz": "🧾 Chek: «{name}» (kompaniya {id}), {price} so'm, to'lov #{pid}",
+        "ru": "🧾 Чек: «{name}» (компания {id}), {price} сум, платёж #{pid}",
+    },
+    "btn_pay_approve": {"uz": "✅ Tasdiqlash", "ru": "✅ Подтвердить"},
+    "btn_pay_reject": {"uz": "❌ Rad etish", "ru": "❌ Отклонить"},
+    "pay_approved": {
+        "uz": "✅ To'lov tasdiqlandi. «{name}» {date} gacha faol. /panel",
+        "ru": "✅ Оплата подтверждена. «{name}» активна до {date}. /panel",
+    },
+    "pay_rejected": {
+        "uz": "❌ «{name}» uchun chek tasdiqlanmadi. Savol bo'lsa platforma admini bilan bog'laning.",
+        "ru": "❌ Чек для «{name}» не подтверждён. По вопросам — к администратору платформы.",
+    },
+    "pay_already_decided": {"uz": "Bu to'lov bo'yicha qaror allaqachon qabul qilingan.", "ru": "По этому платежу решение уже принято."},
+    "pay_done_stars": {
+        "uz": "⭐ To'lov qabul qilindi. «{name}» {date} gacha faol. /panel",
+        "ru": "⭐ Оплата получена. «{name}» активна до {date}. /panel",
+    },
+    "admin_stars": {
+        "uz": "⭐ Stars: «{name}» (kompaniya {id}), {amount} XTR{recurring}, to'lov #{pid}",
+        "ru": "⭐ Stars: «{name}» (компания {id}), {amount} XTR{recurring}, платёж #{pid}",
+    },
+    "admin_unknown_payment": {
+        "uz": "⚠️ Noma'lum Stars to'lov: user {uid}, {amount} XTR, charge <code>{charge}</code> — tekshiring.",
+        "ru": "⚠️ Неизвестный платёж Stars: user {uid}, {amount} XTR, charge <code>{charge}</code> — проверьте.",
+    },
+    "recurring": {"uz": " (obuna yangilandi)", "ru": " (продление подписки)"},
+    "btn_refund": {"uz": "↩️ Pulni qaytarish", "ru": "↩️ Вернуть деньги"},
+    "pay_refunded": {
+        "uz": "↩️ «{name}» uchun {amount} Stars qaytarildi, obuna bekor qilindi.",
+        "ru": "↩️ Для «{name}» возвращено {amount} Stars, подписка отменена.",
+    },
+    "pay_already_refunded": {"uz": "Bu to'lov allaqachon qaytarilgan.", "ru": "Этот платёж уже возвращён."},
+    "refund_failed": {"uz": "❌ Telegram pulni qaytarmadi: {err}", "ru": "❌ Telegram не вернул деньги: {err}"},
+    "pay_bad_invoice": {"uz": "To'lov havolasi noto'g'ri. /panel dan yangisini oling.", "ru": "Неверная ссылка на оплату. Получите новую в /panel."},
+    "pay_price_changed": {"uz": "Narx o'zgargan. /panel dan yangi havola oling.", "ru": "Цена изменилась. Получите новую ссылку в /panel."},
+    "pay_not_owner": {"uz": "Faqat kompaniya egasi to'lay oladi.", "ru": "Оплатить может только владелец компании."},
+    "pay_error": {"uz": "To'lovni hozir tekshirib bo'lmadi, birozdan keyin urinib ko'ring.", "ru": "Не удалось проверить платёж, попробуйте позже."},
+    "company_blocked": {"uz": "⛔️ Kompaniya bloklangan.", "ru": "⛔️ Компания заблокирована."},
+    "subscription_expired": {
+        "uz": "⛔️ Obuna muddati tugagan — yangi vakansiya ochib bo'lmaydi. /panel → «💳 To'lov»",
+        "ru": "⛔️ Подписка истекла — новую вакансию открыть нельзя. /panel → «💳 Оплата»",
+    },
+    "expiry_soon": {
+        "uz": "⏳ «{name}» obunasi {date} da tugaydi. Uzaytirish: /panel → «💳 To'lov»",
+        "ru": "⏳ Подписка «{name}» заканчивается {date}. Продлить: /panel → «💳 Оплата»",
+    },
+    "expiry_expired": {
+        "uz": "⛔️ «{name}» obunasi tugadi: yangi vakansiya ochilmaydi (eskilari ko'rinadi). Uzaytirish: /panel",
+        "ru": "⛔️ Подписка «{name}» истекла: новые вакансии не открываются (старые доступны). Продлить: /panel",
+    },
+    # --- Telegram Business (5-faza) ---
+    "biz_connected": {
+        "uz": "🔗 Telegram Business ulandi. Nomzod sizga yozsa, bot «{name}» ochiq vakansiyalari havolalarini yuboradi ({hours} soatda bir marta).",
+        "ru": "🔗 Telegram Business подключён. Когда кандидат напишет вам, бот отправит ссылки на открытые вакансии «{name}» (раз в {hours} ч).",
+    },
+    "biz_choose": {
+        "uz": "🔗 Telegram Business ulandi. Qaysi kompaniya vakansiyalarini ko'rsatay?",
+        "ru": "🔗 Telegram Business подключён. Вакансии какой компании показывать?",
+    },
+    "biz_no_company": {
+        "uz": "🔗 Business ulandi, lekin siz hech bir kompaniyaga a'zo emassiz — bot javob bermaydi. Avval /start yoki HR taklif havolasi.",
+        "ru": "🔗 Business подключён, но вы не состоите ни в одной компании — бот не будет отвечать. Сначала /start или ссылка-приглашение HR.",
+    },
+    "biz_no_reply_right": {
+        "uz": "⚠️ Botga «xabarlarga javob berish» huquqi berilmagan — Settings → Telegram Business → Chatbots da yoqing.",
+        "ru": "⚠️ Боту не выдано право отвечать на сообщения — включите в Настройки → Telegram для бизнеса → Чат-боты.",
+    },
+    "biz_disabled": {"uz": "🔌 Telegram Business uzildi — bot sizning chatlaringizga javob bermaydi.", "ru": "🔌 Telegram Business отключён — бот больше не отвечает в ваших чатах."},
+    "biz_vacancies": {
+        "uz": "Assalomu alaykum! «{company}» ochiq vakansiyalari:\n\n{lines}\n\nAriza — havola orqali: bot CV'ni qabul qiladi va natijani o'zi yozadi.",
+        "ru": "Здравствуйте! Открытые вакансии «{company}»:\n\n{lines}\n\nОтклик — по ссылке: бот примет резюме и сам сообщит результат.",
+    },
+    "biz_line": {"uz": "• <b>{title}</b> ({deadline} gacha)\n{link}", "ru": "• <b>{title}</b> (до {deadline})\n{link}"},
 }
 
 

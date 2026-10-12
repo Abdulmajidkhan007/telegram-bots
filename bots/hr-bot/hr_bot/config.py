@@ -5,6 +5,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from . import billing
+
 BOT_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -38,6 +40,38 @@ class Config:
     gemini_model: str
     ai_daily_limit: int
     cv_retention_days: int
+    # To'lov: 0 / bo'sh — o'sha usul o'chiq. Ikkalasi o'chiq bo'lsa — faqat pilot (admin faollashtiradi).
+    stars_price: int = 0
+    card_price_uzs: int = 0
+    card_number: str = ""
+    card_holder: str = ""
+    expiry_remind_days: int = 3
+    business_reply_hours: int = 24
+
+    @property
+    def payments_enabled(self) -> bool:
+        return self.stars_price > 0 or self.card_price_uzs > 0
+
+
+def default_db_url(data_dir: str) -> str:
+    """DATABASE_URL bo'sh bo'lsa — SQLite. Railway'da DATA_DIR=/data (Volume): aks holda
+    baza konteyner ichida qolib, har deploy'da kompaniyalar va arizalar o'chadi."""
+    papka = Path(data_dir.strip()) if data_dir.strip() else BOT_DIR
+    papka.mkdir(parents=True, exist_ok=True)
+    return f"sqlite+aiosqlite:///{papka / 'hr_bot.db'}"
+
+
+def check_payment(stars_price: int, card_price: int, card_number: str) -> None:
+    """Yarim sozlangan to'lov — jim ishlamaslik o'rniga ishga tushishda aniq xato."""
+    if not 0 <= stars_price <= billing.MAX_STARS:
+        # Bot API: obuna narxi 10000 Stars dan oshmasligi kerak.
+        raise SystemExit(f"❌ STARS_PRICE 0..{billing.MAX_STARS} bo'lishi kerak, hozir: {stars_price}")
+    if card_price < 0:
+        raise SystemExit("❌ CARD_PRICE_UZS manfiy bo'lishi mumkin emas")
+    if card_price > 0 and not card_number:
+        raise SystemExit("❌ CARD_PRICE_UZS berilgan, lekin PAYMENT_CARD_NUMBER bo'sh")
+    if card_number and card_price == 0:
+        raise SystemExit("❌ PAYMENT_CARD_NUMBER berilgan, lekin CARD_PRICE_UZS bo'sh")
 
 
 def load() -> Config:
@@ -49,7 +83,11 @@ def load() -> Config:
     if not admin_ids:
         # Adminsiz hech bir kompaniya faollashmaydi — bot ishlaydi-yu, foydasiz bo'ladi.
         raise SystemExit("❌ .env da ADMIN_IDS to'ldirilmagan (platforma admini Telegram ID'si)")
-    db_url = os.getenv("DATABASE_URL", "").strip() or f"sqlite+aiosqlite:///{BOT_DIR / 'hr_bot.db'}"
+    stars_price = _int("STARS_PRICE", 0)
+    card_price = _int("CARD_PRICE_UZS", 0)
+    card_number = os.getenv("PAYMENT_CARD_NUMBER", "").strip()
+    check_payment(stars_price, card_price, card_number)
+    db_url = os.getenv("DATABASE_URL", "").strip() or default_db_url(os.getenv("DATA_DIR", ""))
     return Config(
         bot_token=token,
         admin_ids=admin_ids,
@@ -58,4 +96,10 @@ def load() -> Config:
         gemini_model=os.getenv("GEMINI_MODEL", "").strip() or "gemini-2.5-flash",
         ai_daily_limit=max(0, _int("AI_DAILY_LIMIT", 200)),
         cv_retention_days=max(1, _int("CV_RETENTION_DAYS", 30)),
+        stars_price=stars_price,
+        card_price_uzs=card_price,
+        card_number=card_number,
+        card_holder=os.getenv("PAYMENT_CARD_HOLDER", "").strip(),
+        expiry_remind_days=max(1, _int("EXPIRY_REMIND_DAYS", 3)),
+        business_reply_hours=max(1, _int("BUSINESS_REPLY_HOURS", 24)),
     )

@@ -9,11 +9,11 @@ from aiogram.enums import ParseMode
 from aiogram.exceptions import TelegramAPIError
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from . import config, repo
+from . import config, repo, repo_billing
 from .ai import Scorer
 from .db import init_db, make_engine
-from .handlers import admin, candidate, hr, owner, start
-from .handlers.common import LangMiddleware
+from .handlers import admin, business, candidate, hr, owner, payment, start
+from .handlers.common import LangMiddleware, fmt_date
 from .texts import t
 
 log = logging.getLogger("hr_bot")
@@ -26,9 +26,12 @@ def build_dispatcher(sessionmaker, cfg, scorer) -> Dispatcher:
     dp = Dispatcher(storage=MemoryStorage(), sessionmaker=sessionmaker, cfg=cfg, scorer=scorer)
     dp.message.outer_middleware(LangMiddleware())
     dp.callback_query.outer_middleware(LangMiddleware())
-    # Tartib: buyruqlar (start/admin/owner) avval; nomzodning "istalgan xabar"
-    # qadami eng oxirida — buyruqni yutib yubormasin.
-    for r in (start.router, admin.router, owner.router, hr.router, candidate.router):
+    dp.pre_checkout_query.outer_middleware(LangMiddleware())
+    # business_message'ga middleware yo'q: HR bilan yozishgan har odamni bazaga yozmaymiz.
+    # Tartib: buyruqlar (start/admin/owner) avval; to'lov xizmat xabari nomzod FSM'iga
+    # tushmasin; nomzodning "istalgan xabar" qadami eng oxirida — buyruqni yutib yubormasin.
+    for r in (start.router, admin.router, owner.router, payment.router, business.router, hr.router,
+              candidate.router):
         dp.include_router(r)
     return dp
 
@@ -60,6 +63,18 @@ async def housekeeping_once(bot: Bot, sessionmaker, cfg) -> None:
         await s.commit()
     if ochirildi:
         log.info("Saqlash muddati: %d ta CV o'chirildi", ochirildi)
+    async with sessionmaker() as s:
+        tugayotganlar = await repo_billing.expiry_notices(s, cfg.expiry_remind_days)
+        await s.commit()
+    for company, bosqich, egalar in tugayotganlar:
+        for uid in egalar:
+            async with sessionmaker() as s:
+                u = await s.get(repo.User, uid)
+            try:
+                await bot.send_message(uid, t(u.lang if u else "uz", f"expiry_{bosqich}", name=html.escape(company.name),
+                                              date=fmt_date(company.active_until)))
+            except TelegramAPIError as e:
+                log.warning("Obuna eslatmasi ketmadi (user %s): %s", uid, e)
     for vacancy, azolar, n in muddati_otgan:
         if n == 0:
             continue

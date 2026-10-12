@@ -1,0 +1,15 @@
+# Sirlar va lokal baza obrazga tushmasin — token faqat Railway Variables'da.
+# Baza ichida nomzodlar CV matni bor (shaxsiy ma'lumot).
+.env
+.env.*
+!.env.example
+*.db
+*.db-journal
+*.sqlite3
+data/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+tests/
