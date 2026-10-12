@@ -1,0 +1,10 @@
+# Sirlar va lokal ma'lumot obrazga tushmasin — token faqat Railway Variables'da.
+.env
+.env.*
+!.env.example
+node_modules/
+data/
+test/
+assets/
+scripts/
+*.log

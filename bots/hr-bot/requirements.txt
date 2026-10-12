@@ -1,0 +1,11 @@
+# Har biri Python 3.14 + aarch64 (Kali/Termux) uchun g'ildirak borligi tekshirilgan
+# (pip download --only-binary=:all: --python-version 3.14 --platform manylinux2014_aarch64).
+# Qattiq qadalmagan: eski versiyaga qadalsa 3.14 da g'ildiraksiz pydantic tortilib,
+# o'rnatish yiqiladi (killspam-bot tajribasi).
+aiogram>=3.15,<4
+pydantic>=2.12
+sqlalchemy[asyncio]>=2.0.30,<3
+aiosqlite>=0.20
+pypdf>=5
+google-genai>=1.0.0
+python-dotenv>=1.0.1

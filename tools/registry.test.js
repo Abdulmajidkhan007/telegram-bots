@@ -129,6 +129,46 @@ test('haqiqiy bots.json: torch kerak bo\'lgan bot CPU torch\'ni requirements\'da
   }
 });
 
+// Doimiy serverga chiqariladigan botlar (docs/DEPLOY.md). Railway'da Root
+// Directory = bot papkasi, shuning uchun konfig shu papkada bo'lishi shart.
+const DEPLOY_BOTS = ['kino-bot', 'anonim-bot', 'save-video-downloader-bot'];
+
+test('deploy: har ommaviy botda Dockerfile, .dockerignore va railway.toml bor', () => {
+  for (const id of DEPLOY_BOTS) {
+    const dir = path.join(__dirname, '..', 'bots', id);
+    for (const f of ['Dockerfile', '.dockerignore', 'railway.toml']) {
+      assert.ok(fs.existsSync(path.join(dir, f)), `${id}: ${f} yo'q`);
+    }
+  }
+});
+
+// Repo public: .dockerignore'siz `COPY . .` lokal .env ni obrazga solib qo'yadi.
+test('deploy: .dockerignore .env ni va lokal ma\'lumotni obrazdan chiqaradi', () => {
+  for (const id of DEPLOY_BOTS) {
+    const lines = fs.readFileSync(path.join(__dirname, '..', 'bots', id, '.dockerignore'), 'utf8')
+      .split(/\r?\n/).map((s) => s.trim());
+    assert.ok(lines.includes('.env'), `${id}: .dockerignore da .env yo'q`);
+  }
+});
+
+test('deploy: railway.toml Dockerfile builder va o\'z papkasini kuzatadi', () => {
+  for (const id of DEPLOY_BOTS) {
+    const toml = fs.readFileSync(path.join(__dirname, '..', 'bots', id, 'railway.toml'), 'utf8');
+    assert.match(toml, /builder\s*=\s*"DOCKERFILE"/, `${id}: builder DOCKERFILE emas`);
+    assert.ok(toml.includes(`"/bots/${id}/**"`), `${id}: watchPatterns boshqa papkani ko'rsatadi`);
+  }
+});
+
+// Volume /data ga ulanadi — Dockerfile standarti ham shu bo'lsin, aks holda
+// Variables'da DATA_DIR unutilsa baza konteyner ichiga yozilib, deploy'da o'chadi.
+test('deploy: Dockerfile DATA_DIR ni /data ga qo\'yadi va .env ni nusxalamaydi', () => {
+  for (const id of DEPLOY_BOTS) {
+    const df = fs.readFileSync(path.join(__dirname, '..', 'bots', id, 'Dockerfile'), 'utf8');
+    assert.match(df, /DATA_DIR=\/data\b/, `${id}: DATA_DIR=/data yo'q`);
+    assert.doesNotMatch(df, /COPY[^\n]*\.env\b/, `${id}: Dockerfile .env ni nusxalayapti`);
+  }
+});
+
 test('padWidth: eng uzun id uzunligini beradi', () => {
   assert.strictEqual(padWidth([bot({ id: 'ab' }), bot({ id: 'abcd' })]), 4);
 });

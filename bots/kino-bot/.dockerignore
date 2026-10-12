@@ -1,0 +1,14 @@
+# Sirlar va lokal baza obrazga tushmasin — token faqat Railway Variables'da.
+.env
+.env.*
+!.env.example
+database.json
+database.json.tmp
+*.json.bak
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+tests/
+assets/

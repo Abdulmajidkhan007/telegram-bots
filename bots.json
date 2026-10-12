@@ -319,6 +319,59 @@
         "python3 sync_db.py (birinchi ishga tushirishdan oldin)"
       ],
       "note": "Docker bilan ishga tushirish tavsiya etiladi: docker compose up -d (n8n bilan birga)."
+    },
+    {
+      "id": "hr-bot",
+      "name": "HR Bot (multi-tenant)",
+      "desc": "Kompaniyalar uchun HR bot: vakansiya deep link, PDF CV qabul, Gemini ball, HR qarorlari, yopilganda har nomzodga javob.",
+      "runtime": "python",
+      "autoStart": true,
+      "install": [
+        [
+          "pip",
+          "install",
+          "-r",
+          "requirements.txt"
+        ]
+      ],
+      "start": [
+        [
+          "python3",
+          "-m",
+          "hr_bot.main"
+        ]
+      ],
+      "requires": [
+        "Gemini API kaliti (ixtiyoriy — AI ball uchun)"
+      ],
+      "note": "SQLite (hr_bot.db) — qo'shimcha xizmat kerak emas. ADMIN_IDS majburiy: kompaniyalarni platforma admini faollashtiradi."
+    },
+    {
+      "id": "ovoz-bot",
+      "name": "Ovoz Bot (STT + TTS)",
+      "desc": "Gemini bilan ovoz → matn (voice/video-xabar/audio) va matn → ovozli xabar (Gemini 3.8 TTS), kunlik limit.",
+      "runtime": "python",
+      "autoStart": true,
+      "install": [
+        [
+          "pip",
+          "install",
+          "-r",
+          "requirements.txt"
+        ]
+      ],
+      "start": [
+        [
+          "python3",
+          "-m",
+          "ovoz_bot.main"
+        ]
+      ],
+      "requires": [
+        "ffmpeg",
+        "Gemini API kaliti"
+      ],
+      "note": "1-faza (MVP). /myvoice (ovoz klonlash) — 2-faza, boshlanmagan."
     }
   ]
 }

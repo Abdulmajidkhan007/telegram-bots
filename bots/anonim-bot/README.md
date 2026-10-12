@@ -80,43 +80,27 @@ npm test
 
 ## 🌐 Railway'ga deploy qilish
 
-### 1. GitHub'ga yuklang
-```bash
-git init
-git add .
-git commit -m "initial: anonim bot v2.2.1"
-git branch -M main
-git remote add origin <YOUR_GITHUB_URL>
-git push -u origin main
-```
+To'liq, telefondan bajariladigan qo'llanma: [`docs/DEPLOY.md`](../../docs/DEPLOY.md).
 
-### 2. Railway'da yangi loyiha
-1. [railway.com](https://railway.com) → **New Project** → **Deploy from GitHub repo** → loyihani tanlang
-2. Railway avtomatik aniqlaydi: `npm install` → `npm start`
-
-### 3. Environment variables qo'shish
-Variables bo'limida:
+1. Railway → **New Project** → **Deploy from GitHub repo** → `telegram-bots`.
+2. Settings: Root Directory `/bots/anonim-bot`, Config File `/bots/anonim-bot/railway.toml`
+   (build `Dockerfile` bo'yicha).
+3. **Volume** qo'shing: Mount path `/data`. **Volume bo'lmasa, har deploy'da
+   foydalanuvchilar, kodlar, sessiyalar o'chadi!**
+4. Variables:
 
 | Nom | Qiymat | Izoh |
 |-----|--------|------|
 | `BOT_TOKEN` | `123:AAE...` | @BotFather'dan |
 | `ADMIN_ID` | `123456789` | @userinfobot'dan |
-| `DATA_DIR` | `/app/data` | **Volume mount path** |
+| `DATA_DIR` | `/data` | **Volume mount path** bilan bir xil |
 | `RATE_PER_MIN` | `5` | ixtiyoriy |
 | `RATE_PER_HOUR` | `30` | ixtiyoriy |
 | `REQUIRED_CHANNELS` | `@kanal1,@kanal2` | ixtiyoriy boshlang'ich kanallar |
 
-### 4. ⚠️ Volume qo'shish (MUHIM!)
-Settings → **Volumes** → **+ New Volume**:
-- Mount path: `/app/data`
-- Size: 1 GB
-
-**Volume bo'lmasa, har deploy'da foydalanuvchilar, kodlar, sessiyalar o'chadi!**
-
-### 5. Deploy
-"Deploy" tugmasini bosing. Loglarda quyidagi ko'rinishi kerak:
+5. Deploy. Loglarda quyidagi ko'rinishi kerak:
 ```
-✅ @your_bot_username ishga tushdi (DATA_DIR=/app/data)
+✅ @your_bot_username ishga tushdi (DATA_DIR=/data)
 ```
 
 ---
