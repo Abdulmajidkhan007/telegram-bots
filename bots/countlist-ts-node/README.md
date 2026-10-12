@@ -50,7 +50,8 @@ Bot: ✅ Xarajat qo'shildi
 
 ### 🤖 Telegram Bot
 
-- ✅ Natural matn parsing: `500000 so'm`, `2 mln`, `50k`, summa oxirida ham: `taksi 15000`
+- ✅ **Tezkor kiritish** — tugma bosmasdan, guruhda shunchaki yozing: `- 10 ming taksiga`, `500000 so'm`, `2 mln`, `50k`, `10 тысяч такси`, summa oxirida ham: `taksi 15000`
+- ✅ Har yozuv ostida **«↩️ Bekor qilish»** (faqat yozgan odam, 24 soat ichida)
 - ✅ Ovozli xabar orqali xarajat (Google Gemini yoki OpenAI Whisper — `GEMINI_API_KEY` yoki `OPENAI_API_KEY`, ixtiyoriy)
 - ✅ Avtomatik kategoriya aniqlash
 - ✅ `/start /help /today /week /month /stats /top /categories /limit /export /settings`
@@ -347,6 +348,15 @@ Guruhda quyidagicha xabar yuboring:
 | `50k taksi` | 50,000 UZS | 🚗 Transport |
 | `100 usd telefonga` | $100 | 💻 Texnologiya |
 | `15000 sport` | 15,000 UZS | ⚽ Sport |
+| `- 10 ming taksiga` | 10,000 UZS | 🚗 Transport |
+| `10 тысяч такси` / `50 минг нон` | 10,000 / 50,000 UZS | — |
+| `25 000 so‘m ovqat` | 25,000 UZS | 🍕 Oziq-ovqat |
+
+- Boshidagi `-` (yoki `–`, `−`) — xarajat. Ishorasiz yozilsa ham xarajat.
+- `+ 5 mln oylik` — daromad: bot **hali daromadni hisoblamaydi** va buni ochiq aytadi (xarajat qilib yozmaydi).
+- Valyuta yoki `k/ming/mln` siz 500 dan kichik son xarajat hisoblanmaydi — `3 kishi keladi` yozilmaydi.
+- Ovozli xabar ham xuddi shu qoidalar bilan ishlaydi.
+- Yozilgan xarajat ostidagi **↩️ Bekor qilish** — faqat yozgan odam, 24 soat ichida, bir marta.
 
 ### Statistika ko'rish
 

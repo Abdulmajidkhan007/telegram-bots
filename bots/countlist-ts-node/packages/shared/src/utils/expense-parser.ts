@@ -4,6 +4,11 @@ const MULTIPLIERS: Record<string, number> = {
   k: 1_000,
   ming: 1_000,
   мин: 1_000,
+  минг: 1_000,
+  тыс: 1_000,
+  тысяч: 1_000,
+  тысячи: 1_000,
+  тысяча: 1_000,
   mln: 1_000_000,
   млн: 1_000_000,
   million: 1_000_000,
@@ -16,6 +21,9 @@ const CURRENCY_MAP: Record<string, Currency> = {
   som: 'UZS',
   "so'm": 'UZS',
   "so`m": 'UZS',
+  'so‘m': 'UZS',
+  'so’m': 'UZS',
+  'soʻm': 'UZS',
   uzs: 'UZS',
   сум: 'UZS',
   usd: 'USD',
@@ -107,12 +115,16 @@ const CATEGORY_KEYWORDS: Record<string, string> = {
   sovga: "Sovg'a",
 };
 
-const MULT = 'mln|million|milion|млн|mlrd|миллиард|k|ming|мин';
-const CUR = "so['`]?m|uzs|usd|dollar|доллар|\\$|eur|euro|евро|€|rub|rubl|рубль|₽|сум";
+// Uzunrog'i oldin: "минг" "мин" dan, "тысяч" "тыс" dan oldin turmasa, regex
+// qisqasini olib qolardi va "10 тысяч такси" 10 so'm deb yozilardi.
+// Oxiridagi (?![\\p{L}]) — "k" "kitob" ning boshini ko'paytiruvchi deb olmasin.
+const MULT = '(?:mlrd|миллиард|million|milion|mln|млн|тысячи|тысяча|тысяч|тыс|минг|мин|ming|k)(?![\\p{L}])';
+// Apostrof turlari: ' ` ‘ ’ ʻ — telefon klaviaturalari har xil belgi qo'yadi.
+const CUR = "so['`‘’ʻ]?m|uzs|usd|dollar|доллар|\\$|eur|euro|евро|€|rub|rubl|рубль|₽|сум";
 const NUM = '\\d[\\d\\s,.]*';
 
-// Summa oxirida, valyuta va ko'paytiruvchisiz yozilganda shundan kichik son
-// xarajat hisoblanmaydi: guruhdagi "soat 5", "xona 12" kabi gaplar yozilib
+// Summa valyuta va ko'paytiruvchisiz yozilganda (boshida ham, oxirida ham)
+// shundan kichik son xarajat hisoblanmaydi: guruhdagi "soat 5", "xona 12" kabi gaplar yozilib
 // qolmasin. 500 so'mdan kichik xarajat amalda bo'lmaydi.
 const MIN_BARE_TRAILING_AMOUNT = 500;
 
@@ -144,22 +156,58 @@ function build(
 
   const desc = description.trim().replace(/\s+(uchun|ga)$/i, '').trim();
   if (!desc) return null;
+  // "10 ming" — izoh emas, ko'paytiruvchi: regex uni tashlab ketsa 10 so'm
+  // "ming" nomli xarajat yozilardi.
+  if (new RegExp(`^(?:${MULT}|${CUR})$`, 'iu').test(desc)) return null;
 
   return { amount, currency, description: desc, categoryHint: detectCategory(desc) };
 }
 
+export type TransactionKind = 'expense' | 'income';
+
+export interface TransactionParseResult extends ExpenseParseResult {
+  kind: TransactionKind;
+}
+
+// Boshidagi ishora: "- 10 ming taksiga" — xarajat, "+ 5 mln oylik" — daromad.
+// Telefonlar "-" o'rniga tire (–, —) yoki minus (−) qo'yadi.
+const SIGN_RE = /^([-−–—+])\s*(?=\d)/;
+
+/**
+ * Tezkor kiritish: istalgan xabardan tranzaksiya. Ishora bo'lmasa — xarajat
+ * (eski xatti-harakat). Daromad faqat aniq "+" bilan — tasodifiy son daromad
+ * bo'lib qolmasin.
+ */
+export function parseTransactionText(text: string): TransactionParseResult | null {
+  const trimmed = text.trim();
+  const sign = trimmed.match(SIGN_RE);
+  const kind: TransactionKind = sign && sign[1] === '+' ? 'income' : 'expense';
+  const parsed = parseAmountAndDescription(sign ? trimmed.slice(sign[0].length) : trimmed);
+  return parsed ? { kind, ...parsed } : null;
+}
+
+/** Faqat xarajat (bazada daromad turi hali yo'q). "+" bilan yozilgan matn — null. */
 export function parseExpenseText(text: string): ExpenseParseResult | null {
+  const r = parseTransactionText(text);
+  if (!r || r.kind !== 'expense') return null;
+  const { kind: _kind, ...expense } = r;
+  return expense;
+}
+
+function parseAmountAndDescription(text: string): ExpenseParseResult | null {
   const t = text.toLowerCase().trim();
 
   // 1) Summa boshida: "500000 so'm ovqatga", "2 mln remontga", "50k non"
-  const lead = t.match(new RegExp(`^(${NUM})\\s*(${MULT})?\\s*(${CUR})?\\s+(.+)$`, 'i'));
+  const lead = t.match(new RegExp(`^(${NUM})\\s*(${MULT})?\\s*(${CUR})?\\s+(.+)$`, 'iu'));
   if (lead) {
+    const bare = !lead[2] && !lead[3];
     const r = build(lead[1], lead[2], lead[3], lead[4]);
-    if (r) return r;
+    // Boshida ham xuddi oxiridagi kabi: "3 kishi keladi" 3 so'mlik xarajat emas.
+    if (r && !(bare && r.amount < MIN_BARE_TRAILING_AMOUNT)) return r;
   }
 
   // 2) Summa oxirida: "taksi 15000", "remont uchun 2 mln", "kitob 10$"
-  const trail = t.match(new RegExp(`^(.*?\\D)\\s*(${NUM})\\s*(${MULT})?\\s*(${CUR})?$`, 'i'));
+  const trail = t.match(new RegExp(`^(.*?\\D)\\s*(${NUM})\\s*(${MULT})?\\s*(${CUR})?$`, 'iu'));
   if (trail) {
     const bare = !trail[3] && !trail[4];
     const r = build(trail[2], trail[3], trail[4], trail[1]);

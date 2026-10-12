@@ -84,3 +84,76 @@ test("python versiyasidan ko'chirilgan kalit so'zlar", () => {
   assert.equal(parseExpenseText('600000 klinika').categoryHint, "Sog'liq");
   assert.equal(parseExpenseText('1 mln repetitor').categoryHint, "Ta'lim");
 });
+
+// ── Tezkor kiritish: ishora, rus/kirill yozuvlari ─────────────────────────
+const { parseTransactionText } = require('../dist/utils/expense-parser');
+
+// Regressiya: "- 10 ming taksiga" (Shaxsiy Moliya uslubi) null qaytarardi —
+// bot xabarni jimgina tashlab ketardi.
+test('boshidagi "-" — xarajat (tire va minus belgilari ham)', () => {
+  for (const t of ['- 10 ming taksiga', '-10k taksi', '– 10 ming taksiga', '− 10000 taksi', '—10 ming taksi']) {
+    const r = parseTransactionText(t);
+    assert.equal(r.kind, 'expense', t);
+    assert.equal(r.amount, 10_000, t);
+    assert.equal(r.categoryHint, 'Transport', t);
+    assert.equal(parseExpenseText(t).amount, 10_000, t);
+  }
+});
+
+test('boshidagi "+" — daromad; xarajat sifatida yozilmaydi', () => {
+  assert.deepEqual(parseTransactionText('+ 5 mln oylik'),
+    { kind: 'income', amount: 5_000_000, currency: 'UZS', description: 'oylik', categoryHint: undefined });
+  assert.equal(parseTransactionText('+500k bonus').amount, 500_000);
+  assert.equal(parseExpenseText('+ 5 mln oylik'), null);
+});
+
+test('ishorasiz — eski xatti-harakat: xarajat', () => {
+  assert.equal(parseTransactionText('50k ovqat').kind, 'expense');
+  assert.equal(parseTransactionText('taksi 15000').kind, 'expense');
+});
+
+// Regressiya: "10 тысяч такси" 10 so'm deb yozilardi ("тысяч" tanilmasdi),
+// "50 минг нон" ham 50 so'm — regex "мин" ni olib, "г" da sinardi.
+test('rus va o\'zbek kirill ko\'paytiruvchilari', () => {
+  assert.equal(parseExpenseText('10 тысяч такси').amount, 10_000);
+  assert.equal(parseExpenseText('10 тысяч такси').description, 'такси');
+  assert.equal(parseExpenseText('10 тыс продукты').amount, 10_000);
+  assert.equal(parseExpenseText('2 тысячи хлеб').amount, 2_000);
+  assert.equal(parseExpenseText('50 минг нон').amount, 50_000);
+  assert.equal(parseExpenseText('1.5 млн ремонт').amount, 1_500_000);
+  assert.equal(parseExpenseText('такси 30 тыс').amount, 30_000);
+});
+
+// Regressiya: telefon klaviaturasidagi egri apostrof "so‘m" valyuta deb
+// tanilmasdi va izohga tushib qolardi.
+test("so'm yozilishining barcha apostroflari", () => {
+  for (const t of ["25 000 so'm ovqat", '25 000 so‘m ovqat', '25 000 so’m ovqat', '25 000 soʻm ovqat', '- 25 000 so‘m ovqat']) {
+    const r = parseExpenseText(t);
+    assert.equal(r.amount, 25_000, t);
+    assert.equal(r.description, 'ovqat', t);
+  }
+});
+
+// Regressiya: "10 ming" — 10 so'm, izohi "ming" bo'lib yozilardi.
+test("izohsiz summa — ko'paytiruvchi izoh bo'lib qolmaydi", () => {
+  assert.equal(parseExpenseText('10 ming'), null);
+  assert.equal(parseExpenseText('-10 ming'), null);
+  assert.equal(parseExpenseText("500 so'm"), null);
+});
+
+// Regressiya: boshida kichik son ("3 kishi keladi") 3 so'mlik xarajat bo'lardi.
+test('boshidagi kichik yalang son xarajat emas', () => {
+  assert.equal(parseExpenseText('3 kishi keladi'), null);
+  assert.equal(parseExpenseText('5 da uchrashamiz'), null);
+  assert.equal(parseExpenseText('-5 da uchrashamiz'), null);
+  // Valyuta yoki ko'paytiruvchi bo'lsa — kichik summa ham to'g'ri
+  assert.equal(parseExpenseText('5$ kofe').amount, 5);
+  assert.equal(parseExpenseText('5k non').amount, 5_000);
+  assert.equal(parseExpenseText('500 non').amount, 500);
+});
+
+test('ishora yolg\'iz yoki matn bilan — tranzaksiya emas', () => {
+  assert.equal(parseTransactionText('+ salom'), null);
+  assert.equal(parseTransactionText('- bu gap'), null);
+  assert.equal(parseTransactionText('+'), null);
+});

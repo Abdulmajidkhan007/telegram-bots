@@ -1,12 +1,13 @@
-import { Telegraf, session } from 'telegraf';
+import { Telegraf } from 'telegraf';
 import { PrismaClient } from '@prisma/client';
 import { config } from './config';
 import { logger } from './utils/logger';
-import { BotContext, SessionData } from './types/context';
+import { BotContext } from './types/context';
 import { groupMiddleware } from './middlewares/group.middleware';
 import { UserService } from './services/user.service';
 import { ExpenseService } from './services/expense.service';
 import { ExportService } from './services/export.service';
+import { botSession } from './utils/session';
 import { registerStartCommand } from './commands/start.command';
 import { registerHelpCommand } from './commands/help.command';
 import { registerStatsCommands } from './commands/stats.command';
@@ -39,7 +40,7 @@ async function bootstrap() {
     logger.error(`Kunlik eslatma: ${(err as Error).message}`);
   }
 
-  bot.use(session<SessionData, BotContext>());
+  bot.use(botSession());
   bot.use(groupMiddleware(userService));
 
   registerStartCommand(bot);

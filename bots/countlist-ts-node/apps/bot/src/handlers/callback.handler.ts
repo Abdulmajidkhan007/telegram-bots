@@ -10,6 +10,7 @@ import { sendCategoryList } from '../commands/categories.command';
 import { sendUserList, sendGroupList } from '../commands/admin.command';
 import { formatAmount } from '@expense-tracker/shared';
 import { config } from '../config';
+import { UNDO_CALLBACK_RE, UNDO_WINDOW_MS } from '../utils/quick-entry';
 
 function isAdmin(ctx: BotContext): boolean {
   return !!config.bot.adminId && ctx.dbUser?.telegramId === config.bot.adminId;
@@ -159,6 +160,35 @@ export function registerCallbackHandlers(
       escapeMarkdownV2(`🏠 *Bosh Menyu*\n\nQuyidagi tugmalardan foydalaning:`),
       { parse_mode: 'MarkdownV2', ...mainInlineKeyboard() },
     );
+  });
+
+  // ── Tezkor kiritish: "↩️ Bekor qilish" ────────────────────────
+  bot.action(UNDO_CALLBACK_RE, async (ctx) => {
+    if (!ctx.dbGroup || !ctx.dbUser) return ctx.answerCbQuery();
+    const expenseId = ctx.match[1];
+    try {
+      const ok = await expenseService.cancelByAuthor({
+        expenseId,
+        userId: ctx.dbUser.id,
+        groupId: ctx.dbGroup.id,
+        notBefore: new Date(Date.now() - UNDO_WINDOW_MS),
+      });
+      if (!ok) {
+        // Sababini aytamiz: boshqa odam bosgan, allaqachon bekor qilingan yoki muddati o'tgan.
+        return ctx.answerCbQuery(
+          "Bekor qilib bo'lmadi: faqat yozgan odam, 24 soat ichida va bir marta bekor qila oladi.",
+          { show_alert: true },
+        );
+      }
+      await ctx.answerCbQuery('Bekor qilindi');
+      const old = ctx.callbackQuery.message && 'text' in ctx.callbackQuery.message
+        ? ctx.callbackQuery.message.text : '';
+      await ctx.editMessageText(`❌ Bekor qilindi\n\n${old}`).catch((err) =>
+        logger.warn(`Bekor qilish xabarini yangilab bo'lmadi: ${err?.message ?? err}`));
+    } catch (err) {
+      logger.error('Expense undo error:', err);
+      await ctx.answerCbQuery("❌ Bekor qilishda xato. Qayta urinib ko'ring.", { show_alert: true });
+    }
   });
 
   bot.action('cancel', async (ctx) => {
