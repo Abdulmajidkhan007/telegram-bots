@@ -16,8 +16,8 @@ export function registerAdminCommands(bot: Telegraf<BotContext>, prisma: PrismaC
     const [userCount, groupCount, expenseCount, totalAgg] = await Promise.all([
       prisma.user.count(),
       prisma.group.count(),
-      prisma.expense.count({ where: { status: 'ACTIVE' } }),
-      prisma.expense.aggregate({ where: { status: 'ACTIVE' }, _sum: { amount: true } }),
+      prisma.expense.count({ where: { type: 'EXPENSE', status: 'ACTIVE' } }),
+      prisma.expense.aggregate({ where: { type: 'EXPENSE', status: 'ACTIVE' }, _sum: { amount: true } }),
     ]);
 
     const total = formatAmount(Number(totalAgg._sum.amount || 0));
@@ -54,9 +54,9 @@ export function registerAdminCommands(bot: Telegraf<BotContext>, prisma: PrismaC
     if (!user) return ctx.reply('❌ Foydalanuvchi topilmadi.');
 
     const [totalAgg, recentExpenses] = await Promise.all([
-      prisma.expense.aggregate({ where: { userId: user.id, status: 'ACTIVE' }, _sum: { amount: true } }),
+      prisma.expense.aggregate({ where: { userId: user.id, type: 'EXPENSE', status: 'ACTIVE' }, _sum: { amount: true } }),
       prisma.expense.findMany({
-        where: { userId: user.id, status: 'ACTIVE' },
+        where: { userId: user.id, type: 'EXPENSE', status: 'ACTIVE' },
         orderBy: { date: 'desc' },
         take: 5,
         include: { category: true },

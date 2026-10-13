@@ -1,23 +1,37 @@
 // Tezkor kiritish (guruhda shunchaki "- 10 ming taksiga" yozish) uchun toza
 // yordamchilar — Telegram va bazasiz test qilinadi.
 
-// Xarajat yozilgach "Bekor qilish" shu muddat ichida ishlaydi. Eski xabardagi
-// tugma bir oydan keyin bosilib, hisobot jimgina o'zgarib ketmasin.
+import { LocalDate, addDays, formatIsoDate, formatShortDate, parseIsoDate } from '@expense-tracker/shared';
+
+// Yozuvdan keyin tugmalar (Bekor qilish, hisob, sana, kategoriya) shu muddat
+// ichida ishlaydi. Eski xabardagi tugma bir oydan keyin bosilib, hisobot
+// jimgina o'zgarib ketmasin.
 export const UNDO_WINDOW_MS = 24 * 60 * 60 * 1000;
 
-const UNDO_PREFIX = 'exp:undo:';
 // Prisma cuid() — kichik lotin harf va raqamlar. callback_data foydalanuvchi
 // qo'lida (soxta tugma yasash mumkin), shuning uchun format qat'iy tekshiriladi.
-const EXPENSE_ID_RE = /^[a-z0-9]{20,32}$/;
+const ID = '[a-z0-9]{20,32}';
+const ID_RE = new RegExp(`^${ID}$`);
+const CALLBACK_MAX_BYTES = 64;
 
-export const UNDO_CALLBACK_RE = /^exp:undo:([a-z0-9]{20,32})$/;
+function assertId(id: string): void {
+  if (!ID_RE.test(id)) throw new Error(`Kutilmagan ID formati: ${id}`);
+}
+
+function checked(data: string): string {
+  // Telegram cheklovi: callback_data ≤ 64 bayt — oshsa tugma umuman yuborilmaydi.
+  if (Buffer.byteLength(data) > CALLBACK_MAX_BYTES) {
+    throw new Error(`callback_data juda uzun (${Buffer.byteLength(data)} bayt): ${data}`);
+  }
+  return data;
+}
+
+// ── Bekor qilish ─────────────────────────────────────────────────
+export const UNDO_CALLBACK_RE = new RegExp(`^exp:undo:(${ID})$`);
 
 export function undoCallbackData(expenseId: string): string {
-  if (!EXPENSE_ID_RE.test(expenseId)) {
-    throw new Error(`Kutilmagan xarajat ID formati: ${expenseId}`);
-  }
-  // Telegram cheklovi: callback_data ≤ 64 bayt.
-  return UNDO_PREFIX + expenseId;
+  assertId(expenseId);
+  return checked(`exp:undo:${expenseId}`);
 }
 
 export function parseUndoCallback(data: string | undefined): string | null {
@@ -25,6 +39,80 @@ export function parseUndoCallback(data: string | undefined): string | null {
   return m ? m[1] : null;
 }
 
-export const INCOME_NOT_SUPPORTED =
-  "➕ Daromad yozuvi hali qo'llanmaydi — bot faqat xarajatlarni hisoblaydi. " +
-  'Xarajat uchun: "- 10 ming taksiga" yoki "10 ming taksiga".';
+// ── Yozuvni tahrirlash tugmalari ─────────────────────────────────
+// Qisqa prefikslar: ikki cuid (25+25) + prefiks 64 baytga sig'ishi kerak.
+export const TX_ACCOUNT_RE = new RegExp(`^ta:(${ID}):(${ID})$`);
+export const TX_DATE_MENU_RE = new RegExp(`^tdm:(${ID})$`);
+export const TX_DATE_RE = new RegExp(`^td:(${ID}):(\\d{4}-\\d{2}-\\d{2})$`);
+export const TX_CAT_MENU_RE = new RegExp(`^tcm:(${ID})$`);
+export const TX_CAT_RE = new RegExp(`^tc:(${ID}):(${ID})$`);
+export const TX_NEW_CAT_RE = new RegExp(`^tcn:(${ID})$`);
+export const TX_BACK_RE = new RegExp(`^tb:(${ID})$`);
+
+export const txCallback = {
+  account(expenseId: string, accountId: string): string {
+    assertId(expenseId);
+    assertId(accountId);
+    return checked(`ta:${expenseId}:${accountId}`);
+  },
+  dateMenu(expenseId: string): string {
+    assertId(expenseId);
+    return checked(`tdm:${expenseId}`);
+  },
+  date(expenseId: string, d: LocalDate): string {
+    assertId(expenseId);
+    return checked(`td:${expenseId}:${formatIsoDate(d)}`);
+  },
+  categoryMenu(expenseId: string): string {
+    assertId(expenseId);
+    return checked(`tcm:${expenseId}`);
+  },
+  category(expenseId: string, categoryId: string): string {
+    assertId(expenseId);
+    assertId(categoryId);
+    return checked(`tc:${expenseId}:${categoryId}`);
+  },
+  newCategory(expenseId: string): string {
+    assertId(expenseId);
+    return checked(`tcn:${expenseId}`);
+  },
+  back(expenseId: string): string {
+    assertId(expenseId);
+    return checked(`tb:${expenseId}`);
+  },
+};
+
+/** Callback'dagi sana: format to'g'ri, mavjud kun va kelajakda emas. */
+export function parseCallbackDate(raw: string, today: LocalDate): LocalDate | null {
+  const d = parseIsoDate(raw);
+  if (!d) return null;
+  const future = d.year * 10000 + d.month * 100 + d.day > today.year * 10000 + today.month * 100 + today.day;
+  return future ? null : d;
+}
+
+// Sana tanlash tugmalari: bugun, kecha va undan oldingi 5 kun. Eskiroq sana
+// uchun matnda "12.10" yoziladi — 30 ta tugma chatni to'ldirib yuboradi.
+export const DATE_PICKER_DAYS = 7;
+
+export function datePickerOptions(today: LocalDate): Array<{ label: string; date: LocalDate }> {
+  return Array.from({ length: DATE_PICKER_DAYS }, (_, i) => {
+    const date = addDays(today, -i);
+    const label = i === 0 ? 'Bugun' : i === 1 ? 'Kecha' : formatShortDate(date, today);
+    return { label, date };
+  });
+}
+
+/**
+ * Yangi kategoriya nomi: "🌸 Gullar" yoki "Gullar". Bo'sh, juda uzun yoki
+ * summaga o'xshash matn (adashib xarajat yozilgan) — null.
+ */
+export function parseNewCategoryName(text: string): { icon: string; name: string } | null {
+  const t = text.trim().replace(/\s+/g, ' ');
+  const m = /^(\p{Extended_Pictographic}[\u{FE0F}\u{200D}\p{Extended_Pictographic}]*)\s*(.*)$/u.exec(t);
+  const icon = m ? m[1] : '📦';
+  const name = (m ? m[2] : t).trim();
+  if (!name || name.length > 32) return null;
+  if (/\d/.test(name)) return null;
+  // Birinchi harf katta: ro'yxatda "gullar" va "Gullar" aralashib ketmasin.
+  return { icon, name: name[0].toLocaleUpperCase('uz') + name.slice(1) };
+}

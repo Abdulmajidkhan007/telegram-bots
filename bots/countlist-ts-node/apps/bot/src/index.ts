@@ -20,6 +20,9 @@ import { registerMessageHandlers } from './handlers/message.handler';
 import { applyBotProfile } from './profile';
 import { registerReminderCommand } from './commands/reminder.command';
 import { ReminderService } from './services/reminder.service';
+import { AccountService } from './services/account.service';
+import { registerAccountCommands } from './commands/accounts.command';
+import { EntryUi } from './handlers/entry.handler';
 
 async function bootstrap() {
   const prisma = new PrismaClient();
@@ -31,6 +34,8 @@ async function bootstrap() {
   const userService = new UserService(prisma);
   const expenseService = new ExpenseService(prisma);
   const exportService = new ExportService(prisma);
+  const accountService = new AccountService(prisma);
+  const entryUi = new EntryUi(prisma, expenseService, accountService);
   const reminderService = new ReminderService(prisma, expenseService);
   // Jadval yaratilmasa bot baribir ishlaydi: har /reminder va har daqiqalik
   // tekshiruv qayta urinadi, sabab log'da va /reminder javobida ko'rinadi.
@@ -51,9 +56,11 @@ async function bootstrap() {
   registerCategoryCommands(bot, prisma);
   registerAdminCommands(bot, prisma);
   registerReminderCommand(bot, reminderService);
+  registerAccountCommands(bot, accountService);
 
   registerCallbackHandlers(bot, expenseService, exportService, prisma);
-  registerMessageHandlers(bot, expenseService, prisma);
+  entryUi.register(bot);
+  registerMessageHandlers(bot, expenseService, accountService, entryUi, prisma);
 
   bot.catch((err, ctx) => {
     logger.error(`Bot error for ${ctx.updateType}:`, err);

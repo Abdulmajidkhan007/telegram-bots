@@ -1,4 +1,4 @@
-import { Telegraf, Markup } from 'telegraf';
+import { Telegraf } from 'telegraf';
 import { PrismaClient } from '@prisma/client';
 import { BotContext } from '../types/context';
 import { ExpenseService } from '../services/expense.service';
@@ -6,14 +6,19 @@ import { logger } from '../utils/logger';
 import { sendCategoryList } from '../commands/categories.command';
 import { config } from '../config';
 import { transcribeVoice, VoiceError, MAX_VOICE_SECONDS } from '../services/voice.service';
-import { parseTransactionText } from '@expense-tracker/shared';
-import { undoCallbackData, INCOME_NOT_SUPPORTED } from '../utils/quick-entry';
+import { DateTokenError } from '@expense-tracker/shared';
+import { AccountService } from '../services/account.service';
+import { handleAccountText } from '../commands/accounts.command';
+import { EntryUi } from './entry.handler';
+import { groupTimeZone } from '../utils/group-time';
 
-function undoKeyboard(expenseId: string) {
-  return Markup.inlineKeyboard([[Markup.button.callback('↩️ Bekor qilish', undoCallbackData(expenseId))]]);
+function dateErrorText(error: DateTokenError): string {
+  // Hozircha yagona xato turi — kelajak sana; switch yangi tur qo'shilsa TS ogohlantiradi.
+  switch (error) {
+    case 'future':
+      return "📅 Bu sana hali kelmagan — yozilmadi. Kelajakdagi xarajatni oldindan yozib bo'lmaydi.";
+  }
 }
-
-const MDV2 = /[_*[\]()~`>#+\-=|{}.!]/g;
 
 function parseCategoryInput(text: string): { icon: string; name: string } {
   const parts = text.trim().split(/\s+/);
@@ -28,11 +33,23 @@ function parseCategoryInput(text: string): { icon: string; name: string } {
 export function registerMessageHandlers(
   bot: Telegraf<BotContext>,
   expenseService: ExpenseService,
+  accountService: AccountService,
+  entryUi: EntryUi,
   prisma: PrismaClient,
 ): void {
   bot.on('text', async (ctx) => {
     const text = ctx.message.text.trim();
     if (!text || text.startsWith('/')) return;
+
+    try {
+      if (await handleAccountText(ctx, accountService, text)) return;
+      if (await entryUi.handleNewCategoryText(ctx, text)) return;
+    } catch (err) {
+      logger.error('Kutilayotgan qadam (hisob/kategoriya) xatosi:', err);
+      ctx.session = {};
+      await ctx.reply(`❌ Saqlanmadi: ${err instanceof Error ? err.message : String(err)}`);
+      return;
+    }
 
     // Handle category add session
     if (ctx.session.step === 'cat:add' && ctx.dbGroup) {
@@ -73,29 +90,26 @@ export function registerMessageHandlers(
     if (!ctx.dbGroup || !ctx.dbUser) return;
     if (text.length < 3) return;
 
-    // "+ 5 mln oylik" — aniq daromad. Bazada daromad turi yo'q: jim qolsak
-    // foydalanuvchi yozildi deb o'ylaydi, xarajat qilib yozsak hisobot buziladi.
-    if (parseTransactionText(text)?.kind === 'income') {
-      await ctx.reply(INCOME_NOT_SUPPORTED, { reply_parameters: { message_id: ctx.message.message_id } });
-      return;
-    }
-
     try {
-      const result = await expenseService.parseAndCreate({
+      const result = await expenseService.createFromText({
         rawText: text,
         userId: ctx.dbUser.id,
         groupId: ctx.dbGroup.id,
+        timeZone: groupTimeZone(ctx.dbGroup.timezone),
         telegramMsgId: BigInt(ctx.message.message_id),
       });
-
-      if (result) {
-        await ctx.replyWithMarkdownV2(
-          result.formatted.replace(MDV2, '\\$&'),
-          { reply_parameters: { message_id: ctx.message.message_id }, ...undoKeyboard(result.expense.id) },
-        );
+      if (!result) return;
+      if ('error' in result) {
+        await ctx.reply(dateErrorText(result.error), { reply_parameters: { message_id: ctx.message.message_id } });
+        return;
       }
+      await entryUi.reply(ctx, result.expense.id, ctx.message.message_id);
     } catch (error) {
+      // Foydalanuvchi yozildi deb o'ylamasin: jim qolish o'rniga sababini aytamiz.
       logger.error('Message handler error:', error);
+      await ctx.reply("❌ Yozuv saqlanmadi (server xatosi). Birozdan keyin qayta yuboring.", {
+        reply_parameters: { message_id: ctx.message.message_id },
+      }).catch((err) => logger.error(`Xato xabari ham yuborilmadi: ${err?.message ?? err}`));
     }
   });
 
@@ -118,31 +132,29 @@ export function registerMessageHandlers(
       const text = await transcribeVoice(link.toString(), config.voice);
 
       const result = text
-        ? await expenseService.parseAndCreate({
+        ? await expenseService.createFromText({
             rawText: text,
             userId: ctx.dbUser.id,
             groupId: ctx.dbGroup.id,
+            timeZone: groupTimeZone(ctx.dbGroup.timezone),
             telegramMsgId: BigInt(ctx.message.message_id),
+            source: 'VOICE',
           })
         : null;
 
-      if (!result && text && parseTransactionText(text)?.kind === 'income') {
-        await ctx.reply(`🎙 ${text}\n\n${INCOME_NOT_SUPPORTED}`, {
+      // Ovozda summa topilmasa javob bermaymiz — oddiy suhbat bo'lishi mumkin.
+      if (!result) {
+        logger.debug(`Ovozda tranzaksiya topilmadi: "${text}"`);
+        return;
+      }
+      if ('error' in result) {
+        await ctx.reply(`🎙 ${text}\n\n${dateErrorText(result.error)}`, {
           reply_parameters: { message_id: ctx.message.message_id },
         });
         return;
       }
 
-      // Ovozda xarajat topilmasa javob bermaymiz — oddiy suhbat bo'lishi mumkin.
-      if (!result) {
-        logger.debug(`Ovozda xarajat topilmadi: "${text}"`);
-        return;
-      }
-
-      await ctx.replyWithMarkdownV2(
-        `🎙 ${text}\n\n${result.formatted}`.replace(MDV2, '\\$&'),
-        { reply_parameters: { message_id: ctx.message.message_id }, ...undoKeyboard(result.expense.id) },
-      );
+      await entryUi.reply(ctx, result.expense.id, ctx.message.message_id, `🎙 ${text}\n\n`);
     } catch (error) {
       logger.error('Voice handler error:', error);
       if (error instanceof VoiceError) {

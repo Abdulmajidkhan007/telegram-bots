@@ -47,6 +47,9 @@ export class ExpensesService {
     limit?: number;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
+    /** Default EXPENSE: eski dashboard sahifalari daromadni xarajat deb ko'rsatmasin. */
+    type?: 'EXPENSE' | 'INCOME' | 'ALL';
+    search?: string;
   }): Promise<{ data: Expense[]; meta: PaginationMeta }> {
     const page = params.page || 1;
     const limit = Math.min(params.limit || 20, 100);
@@ -58,6 +61,16 @@ export class ExpensesService {
       deletedAt: null,
     };
 
+    const type = params.type ?? 'EXPENSE';
+    if (type !== 'ALL') where.type = type;
+    const search = params.search?.trim();
+    if (search) {
+      where.OR = [
+        { description: { contains: search, mode: 'insensitive' } },
+        { category: { name: { contains: search, mode: 'insensitive' } } },
+        { account: { name: { contains: search, mode: 'insensitive' } } },
+      ];
+    }
     if (params.userId) where.userId = params.userId;
     if (params.categoryId) where.categoryId = params.categoryId;
     if (params.month) where.month = params.month;
@@ -75,7 +88,7 @@ export class ExpensesService {
     const [data, total] = await Promise.all([
       this.prisma.expense.findMany({
         where,
-        include: { category: true, user: true },
+        include: { category: true, user: true, account: true },
         orderBy,
         skip,
         take: limit,
@@ -129,7 +142,7 @@ export class ExpensesService {
   async getGroupStats(groupId: string, month: number, year: number) {
     const [total, byCategory, byUser, daily] = await Promise.all([
       this.prisma.expense.aggregate({
-        where: { groupId, month, year, status: 'ACTIVE' },
+        where: { groupId, month, year, type: 'EXPENSE', status: 'ACTIVE' },
         _sum: { amount: true },
         _count: true,
         _avg: { amount: true },
@@ -137,7 +150,7 @@ export class ExpensesService {
 
       this.prisma.expense.groupBy({
         by: ['categoryId'],
-        where: { groupId, month, year, status: 'ACTIVE' },
+        where: { groupId, month, year, type: 'EXPENSE', status: 'ACTIVE' },
         _sum: { amount: true },
         _count: true,
         orderBy: { _sum: { amount: 'desc' } },
@@ -145,7 +158,7 @@ export class ExpensesService {
 
       this.prisma.expense.groupBy({
         by: ['userId'],
-        where: { groupId, month, year, status: 'ACTIVE' },
+        where: { groupId, month, year, type: 'EXPENSE', status: 'ACTIVE' },
         _sum: { amount: true },
         _count: true,
         orderBy: { _sum: { amount: 'desc' } },
@@ -153,7 +166,7 @@ export class ExpensesService {
 
       this.prisma.expense.groupBy({
         by: ['dayOfYear'],
-        where: { groupId, month, year, status: 'ACTIVE' },
+        where: { groupId, month, year, type: 'EXPENSE', status: 'ACTIVE' },
         _sum: { amount: true },
         _count: true,
         orderBy: { dayOfYear: 'asc' },

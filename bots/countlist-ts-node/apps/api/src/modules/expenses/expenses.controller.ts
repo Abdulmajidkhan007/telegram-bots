@@ -52,6 +52,8 @@ export class ExpensesController {
       limit: query.limit ? Number(query.limit) : 20,
       sortBy: query.sortBy,
       sortOrder: query.sortOrder,
+      type: query.type,
+      search: query.search,
     });
   }
 

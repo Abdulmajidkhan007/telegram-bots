@@ -51,10 +51,13 @@ Bot: ✅ Xarajat qo'shildi
 ### 🤖 Telegram Bot
 
 - ✅ **Tezkor kiritish** — tugma bosmasdan, guruhda shunchaki yozing: `- 10 ming taksiga`, `500000 so'm`, `2 mln`, `50k`, `10 тысяч такси`, summa oxirida ham: `taksi 15000`
-- ✅ Har yozuv ostida **«↩️ Bekor qilish»** (faqat yozgan odam, 24 soat ichida)
+- ✅ **Daromad** — `+2 mln oylik` (`+` belgisi bilan; xarajat hisobotlariga aralashmaydi, `/month` da alohida qator)
+- ✅ **Eski sana** — `kecha 30k non`, `o'tgan kuni ...`, `3 kun oldin ...`, `вчера ...`, `12.10 non 8000`, `05.10.2026 ...`; yoki yozuv ostidagi **📅 Sana** tugmasi (oxirgi 7 kun). Kelajak sanasi qabul qilinmaydi
+- ✅ **💳 Hisoblar** (`/hisoblar`) — karta/naqd, boshlang'ich qoldiq, balans (boshlang'ich + daromad − xarajat), ⭐ asosiy, ⬆️ tartib, 🔒 yopish (o'chirilmaydi) / 👁 qayta ochish, «Nol hisoblarni yopish»
+- ✅ Har yozuv ostida tugmalar: hisob tanlash, **📅 Sana**, **🏷 Kategoriya** (➕ yangi kategoriya — saqlanadi va keyin o'zi taklif qilinadi), **«↩️ Bekor qilish»** — faqat yozgan odam, 24 soat ichida
 - ✅ Ovozli xabar orqali xarajat (Google Gemini yoki OpenAI Whisper — `GEMINI_API_KEY` yoki `OPENAI_API_KEY`, ixtiyoriy)
 - ✅ Avtomatik kategoriya aniqlash
-- ✅ `/start /help /today /week /month /stats /top /categories /limit /export /settings`
+- ✅ `/start /help /today /week /month /stats /top /categories /hisoblar /cancel /export /reminder /login`
 - ✅ Inline keyboard menyular
 - ✅ Multi-currency: UZS, USD, EUR, RUB
 - ✅ Multi-group support

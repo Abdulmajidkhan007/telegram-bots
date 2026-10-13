@@ -69,6 +69,7 @@ model Group {
   recurringExpenses RecurringExpense[]
   exports          Export[]
   settings         GroupSettings?
+  accounts         Account[]
 
   @@map("groups")
   @@index([telegramId])
@@ -160,6 +161,10 @@ model Expense {
   year         Int
   week         Int
   dayOfYear    Int             @map("day_of_year")
+  // Daromad ham shu jadvalda: alohida jadval hisob balansini ikki joydan
+  // yig'ishni talab qilardi. Eski yozuvlar default bo'yicha EXPENSE bo'ladi.
+  type         TransactionType @default(EXPENSE)
+  accountId    String?         @map("account_id")
   status       ExpenseStatus   @default(ACTIVE)
   source       ExpenseSource   @default(TEXT)
   receiptUrl   String?         @map("receipt_url")
@@ -174,6 +179,7 @@ model Expense {
   group     Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
   category  Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   recurring RecurringExpense? @relation(fields: [recurringId], references: [id], onDelete: SetNull)
+  account   Account?  @relation(fields: [accountId], references: [id], onDelete: SetNull)
 
   @@map("expenses")
   @@index([groupId, month, year])
@@ -183,6 +189,37 @@ model Expense {
   @@index([categoryId])
   @@index([date])
   @@index([status])
+  @@index([accountId])
+}
+
+enum TransactionType {
+  EXPENSE
+  INCOME
+}
+
+// ─── ACCOUNTS (hisob / karta) ─────────────────────────────────────
+// Balans saqlanmaydi — initialBalance + daromadlar − xarajatlardan hisoblanadi,
+// shunda tahrir/o'chirishdan keyin balans hech qachon "siljib" qolmaydi.
+model Account {
+  id             String    @id @default(cuid())
+  groupId        String    @map("group_id")
+  name           String
+  icon           String    @default("💳")
+  currency       String    @default("UZS")
+  initialBalance Decimal   @default(0) @map("initial_balance") @db.Decimal(15, 2)
+  // Kichigi tepada; 0 — asosiy (tezkor kiritishda avtomatik tanlanadi).
+  sortOrder      Int       @default(0) @map("sort_order")
+  // Yopilgan hisob o'chirilmaydi: tarixdagi tranzaksiyalar unga bog'liq qoladi.
+  isHidden       Boolean   @default(false) @map("is_hidden")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  deletedAt      DateTime? @map("deleted_at")
+
+  group    Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  expenses Expense[]
+
+  @@map("accounts")
+  @@index([groupId, isHidden])
 }
 
 enum ExpenseStatus {

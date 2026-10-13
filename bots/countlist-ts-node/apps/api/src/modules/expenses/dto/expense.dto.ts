@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional, IsEnum, IsDateString, IsPositive } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsEnum, IsDateString, IsPositive, MaxLength } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional, PartialType, OmitType } from '@nestjs/swagger';
 
 export class CreateExpenseDto {
@@ -87,4 +87,15 @@ export class ExpenseQueryDto {
   @ApiPropertyOptional({ enum: ['asc', 'desc'] })
   @IsOptional()
   sortOrder?: 'asc' | 'desc';
+
+  @ApiPropertyOptional({ enum: ['EXPENSE', 'INCOME', 'ALL'], default: 'EXPENSE' })
+  @IsOptional()
+  @IsEnum(['EXPENSE', 'INCOME', 'ALL'])
+  type?: 'EXPENSE' | 'INCOME' | 'ALL';
+
+  @ApiPropertyOptional({ description: "Izoh, kategoriya yoki hisob nomi bo'yicha" })
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  search?: string;
 }

@@ -15,7 +15,7 @@ export const DESCRIPTION =
   "\n" +
   "📌 Qanday ishlaydi:\n" +
   "1️⃣ Botni guruhingizga qo'shing va admin qiling\n" +
-  "2️⃣ Xarajatni oddiy yozing: «50k taksi», «2 mln remont»\n" +
+  "2️⃣ Oddiy yozing: «- 50k taksi», «+2 mln oylik», «kecha 30k non»\n" +
   "3️⃣ Bugun / hafta / oy hisoboti, kategoriyalar, limitlar\n" +
   "\n" +
   "🎙 Ovozli xabar ham tushunadi\n" +
@@ -36,10 +36,12 @@ export const USER_COMMANDS: Command[] = [
   { command: 'month', description: '🗓 Oylik statistika' },
   { command: 'top', description: '⚡ Top kategoriyalar' },
   { command: 'stats', description: '📊 Umumiy statistika' },
+  { command: 'hisoblar', description: '💳 Hisoblar: qoldiq, tartib, yopish' },
   { command: 'categories', description: '🏷 Kategoriyalar' },
   { command: 'export', description: '📤 Excel / CSV / PDF' },
   { command: 'reminder', description: '🔔 Kunlik eslatma (soatni tanlang)' },
   { command: 'login', description: "🔐 Dashboard'ga kirish havolasi" },
+  { command: 'cancel', description: '❌ Kutilayotgan amalni bekor qilish' },
   { command: 'help', description: '❓ Yordam' },
 ];
 

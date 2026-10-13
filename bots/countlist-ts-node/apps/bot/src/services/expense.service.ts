@@ -1,64 +1,169 @@
 import { PrismaClient, Expense, Prisma } from '@prisma/client';
-import { parseExpenseText, formatAmount, getWeekNumber, getDayOfYear } from '@expense-tracker/shared';
+import {
+  formatAmount,
+  getWeekNumber,
+  getDayOfYear,
+  parseQuickEntry,
+  localDateInTz,
+  localDateToStorage,
+  LocalDate,
+  DateTokenError,
+} from '@expense-tracker/shared';
 import { logger } from '../utils/logger';
 import { deleteCacheValue } from '../utils/redis';
+import { matchCategoryByName } from '../utils/entry-format';
+
+export type CreateResult = { ok: true; expense: Expense } | { ok: false; error: DateTokenError };
+
+/**
+ * month/year/week/dayOfYear — hisobotlar shu ustunlar bo'yicha guruhlaydi.
+ * Kalendar kuni server soatidan emas, guruh mintaqasidagi kundan olinadi:
+ * Railway UTC da, Toshkentda 00:00–05:00 orasidagi xarajat kechagi kunga tushardi.
+ */
+function dateFields(at: Date, day: LocalDate) {
+  const noonUtc = localDateToStorage(day);
+  return {
+    date: at,
+    month: day.month,
+    year: day.year,
+    week: getWeekNumber(noonUtc),
+    dayOfYear: getDayOfYear(noonUtc),
+  };
+}
 
 export class ExpenseService {
   constructor(private prisma: PrismaClient) {}
 
-  async parseAndCreate(params: {
+  /**
+   * Tezkor kiritish: matn (yoki ovozdan olingan matn) → xarajat/daromad.
+   * Sana matnda bo'lsa ("kecha", "12.10") — o'sha kun, bo'lmasa hozir.
+   * Hisob — guruhning asosiy (eng tepadagi ochiq) hisobi, tugma bilan o'zgaradi.
+   */
+  async createFromText(params: {
     rawText: string;
     userId: string;
     groupId: string;
+    timeZone: string;
     telegramMsgId?: bigint;
-  }): Promise<{ expense: Expense; formatted: string } | null> {
-    const parsed = parseExpenseText(params.rawText);
+    source?: 'TEXT' | 'VOICE';
+  }): Promise<CreateResult | null> {
+    const today = localDateInTz(new Date(), params.timeZone);
+    const parsed = parseQuickEntry(params.rawText, today);
     if (!parsed) return null;
+    if ('error' in parsed) return { ok: false, error: parsed.error };
+    const entry = parsed.entry;
 
-    const now = new Date();
-    const category = parsed.categoryHint
-      ? await this.prisma.category.findFirst({
-          where: {
-            OR: [{ groupId: params.groupId }, { isDefault: true }],
-            name: parsed.categoryHint,
-          },
-        })
+    // Daromadga xarajat kategoriyasi qo'yilmaydi: "oylik" ichidagi tasodifiy
+    // kalit so'z daromadni "Uy-joy" qilib qo'ymasin.
+    const categoryId = entry.kind === 'expense'
+      ? await this.resolveCategoryId(params.groupId, entry.description, entry.categoryHint)
       : null;
+    const accountId = await this.primaryAccountId(params.groupId);
 
+    const at = entry.date ? localDateToStorage(entry.date) : new Date();
     const expense = await this.prisma.expense.create({
       data: {
         userId: params.userId,
         groupId: params.groupId,
-        categoryId: category?.id,
-        amount: new Prisma.Decimal(parsed.amount),
-        currency: parsed.currency,
-        description: parsed.description,
+        categoryId,
+        accountId,
+        type: entry.kind === 'income' ? 'INCOME' : 'EXPENSE',
+        amount: new Prisma.Decimal(entry.amount),
+        currency: entry.currency,
+        description: entry.description,
         rawText: params.rawText,
-        date: now,
-        month: now.getMonth() + 1,
-        year: now.getFullYear(),
-        week: getWeekNumber(now),
-        dayOfYear: getDayOfYear(now),
-        source: 'TEXT',
+        ...dateFields(at, entry.date ?? today),
+        source: params.source ?? 'TEXT',
         telegramMsgId: params.telegramMsgId,
       },
-      include: { category: true, user: true },
     });
 
     await this.invalidateGroupCache(params.groupId);
+    logger.info(`${expense.type} created: ${expense.id} - ${entry.amount} ${entry.currency}`);
+    return { ok: true, expense };
+  }
 
-    const formatted = this.formatExpenseMessage(expense as Expense & {
-      category: { name: string; icon: string } | null;
-      user: { firstName: string };
+  private async primaryAccountId(groupId: string): Promise<string | null> {
+    const acc = await this.prisma.account.findFirst({
+      where: { groupId, isHidden: false, deletedAt: null },
+      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+      select: { id: true },
     });
+    return acc?.id ?? null;
+  }
 
-    logger.info(`Expense created: ${expense.id} - ${parsed.amount} ${parsed.currency}`);
-    return { expense, formatted };
+  /**
+   * Kategoriya tanlash tartibi:
+   * 1) kalit so'z lug'ati (taksi → Transport);
+   * 2) guruhning o'z kategoriyasi nomi izohda bor ("gul" → 🌸 Gul);
+   * 3) shu guruhda xuddi shu izoh bilan oxirgi marta tanlangan kategoriya —
+   *    foydalanuvchi bir marta tugma bilan tanlasa, keyingi safar o'zi qo'yiladi.
+   */
+  private async resolveCategoryId(groupId: string, description: string, hint?: string): Promise<string | null> {
+    const scope = { OR: [{ groupId }, { isDefault: true }], deletedAt: null };
+    if (hint) {
+      const cat = await this.prisma.category.findFirst({ where: { ...scope, name: hint }, select: { id: true } });
+      if (cat) return cat.id;
+    }
+
+    const custom = await this.prisma.category.findMany({
+      where: { groupId, deletedAt: null, isDefault: false },
+      select: { id: true, name: true },
+    });
+    const byName = matchCategoryByName(description, custom);
+    if (byName) return byName;
+
+    const prev = await this.prisma.expense.findFirst({
+      where: {
+        groupId,
+        type: 'EXPENSE',
+        status: 'ACTIVE',
+        categoryId: { not: null },
+        description: { equals: description, mode: 'insensitive' },
+      },
+      orderBy: { createdAt: 'desc' },
+      select: { categoryId: true },
+    });
+    return prev?.categoryId ?? null;
+  }
+
+  /**
+   * Yozuv tugmalari (hisob, sana, kategoriya): faqat muallif, shu guruhda,
+   * faol va UNDO_WINDOW_MS ichidagi yozuv. Shart where ichida — tekshiruv va
+   * yozish orasida holat o'zgarsa ham boshqaning yozuvi o'zgarmaydi.
+   */
+  async updateByAuthor(
+    params: { expenseId: string; userId: string; groupId: string; notBefore: Date },
+    change: { accountId?: string; categoryId?: string; date?: LocalDate },
+  ): Promise<boolean> {
+    const data: Prisma.ExpenseUncheckedUpdateManyInput = {};
+    if (change.accountId) data.accountId = change.accountId;
+    if (change.categoryId) data.categoryId = change.categoryId;
+    if (change.date) Object.assign(data, dateFields(localDateToStorage(change.date), change.date));
+    const res = await this.prisma.expense.updateMany({
+      where: {
+        id: params.expenseId,
+        userId: params.userId,
+        groupId: params.groupId,
+        status: 'ACTIVE',
+        createdAt: { gte: params.notBefore },
+      },
+      data,
+    });
+    if (res.count > 0) await this.invalidateGroupCache(params.groupId);
+    return res.count > 0;
+  }
+
+  async findForRender(expenseId: string, groupId: string) {
+    return this.prisma.expense.findFirst({
+      where: { id: expenseId, groupId },
+      include: { category: true, user: true, account: true },
+    });
   }
 
   /**
    * "Bekor qilish" tugmasi: faqat muallifning o'zi, faqat shu guruhda, faqat
-   * faol va UNDO_WINDOW_MS ichidagi xarajatni. Shart where ichida — tekshiruv
+   * faol va UNDO_WINDOW_MS ichidagi xarajat. Shart where ichida — tekshiruv
    * va yozish orasida holat o'zgarsa ham ikki marta o'chmaydi.
    * API'dagi o'chirish bilan bir xil: status DELETED + deletedAt.
    */
@@ -82,24 +187,6 @@ export class ExpenseService {
     return res.count > 0;
   }
 
-  private formatExpenseMessage(
-    expense: Expense & { category: { name: string; icon: string } | null; user: { firstName: string } },
-  ): string {
-    const amount = formatAmount(Number(expense.amount), expense.currency as 'UZS');
-    const cat = expense.category
-      ? `${expense.category.icon} ${expense.category.name}`
-      : '📦 Boshqa';
-
-    return (
-      `✅ *Xarajat qo'shildi*\n\n` +
-      `👤 ${expense.user.firstName}\n` +
-      `💵 *${amount}*\n` +
-      `📝 ${expense.description}\n` +
-      `🏷 ${cat}\n` +
-      `📅 ${new Date(expense.date).toLocaleDateString('uz-UZ')}`
-    );
-  }
-
   async getTodayStats(groupId: string): Promise<string> {
     const today = new Date();
     const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -110,7 +197,7 @@ export class ExpenseService {
         where: {
           groupId,
           date: { gte: startOfDay, lte: endOfDay },
-          status: 'ACTIVE',
+          type: 'EXPENSE', status: 'ACTIVE',
         },
         include: { user: true, category: true },
         orderBy: { date: 'desc' },
@@ -120,7 +207,7 @@ export class ExpenseService {
         where: {
           groupId,
           date: { gte: startOfDay, lte: endOfDay },
-          status: 'ACTIVE',
+          type: 'EXPENSE', status: 'ACTIVE',
         },
         _sum: { amount: true },
         _count: true,
@@ -157,13 +244,13 @@ export class ExpenseService {
 
     const [total, byDay] = await Promise.all([
       this.prisma.expense.aggregate({
-        where: { groupId, date: { gte: weekStart }, status: 'ACTIVE' },
+        where: { groupId, date: { gte: weekStart }, type: 'EXPENSE', status: 'ACTIVE' },
         _sum: { amount: true },
         _count: true,
       }),
       this.prisma.expense.groupBy({
         by: ['dayOfYear'],
-        where: { groupId, date: { gte: weekStart }, status: 'ACTIVE' },
+        where: { groupId, date: { gte: weekStart }, type: 'EXPENSE', status: 'ACTIVE' },
         _sum: { amount: true },
         orderBy: { dayOfYear: 'asc' },
       }),
@@ -193,22 +280,26 @@ export class ExpenseService {
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
 
-    const [total, byCategory, topUsers] = await Promise.all([
+    const [total, income, byCategory, topUsers] = await Promise.all([
       this.prisma.expense.aggregate({
-        where: { groupId, month, year, status: 'ACTIVE' },
+        where: { groupId, month, year, type: 'EXPENSE', status: 'ACTIVE' },
         _sum: { amount: true },
         _count: true,
       }),
+      this.prisma.expense.aggregate({
+        where: { groupId, month, year, type: 'INCOME', status: 'ACTIVE' },
+        _sum: { amount: true },
+      }),
       this.prisma.expense.groupBy({
         by: ['categoryId'],
-        where: { groupId, month, year, status: 'ACTIVE' },
+        where: { groupId, month, year, type: 'EXPENSE', status: 'ACTIVE' },
         _sum: { amount: true },
         orderBy: { _sum: { amount: 'desc' } },
         take: 5,
       }),
       this.prisma.expense.groupBy({
         by: ['userId'],
-        where: { groupId, month, year, status: 'ACTIVE' },
+        where: { groupId, month, year, type: 'EXPENSE', status: 'ACTIVE' },
         _sum: { amount: true },
         orderBy: { _sum: { amount: 'desc' } },
         take: 5,
@@ -219,7 +310,10 @@ export class ExpenseService {
     const monthName = now.toLocaleDateString('uz-UZ', { month: 'long', year: 'numeric' });
 
     let msg = `🗓 *${monthName} xarajatlari*\n`;
-    msg += `💰 Jami: *${totalAmount}* (${total._count} ta)\n\n`;
+    msg += `💰 Jami: *${totalAmount}* (${total._count} ta)\n`;
+    const incomeSum = Number(income._sum.amount || 0);
+    if (incomeSum > 0) msg += `➕ Daromad: *${formatAmount(incomeSum)}*\n`;
+    msg += '\n';
 
     if (byCategory.length > 0) {
       msg += `📊 *Kategoriyalar bo'yicha:*\n`;
@@ -262,7 +356,7 @@ export class ExpenseService {
 
     const data = await this.prisma.expense.groupBy({
       by: ['categoryId'],
-      where: { groupId, month: m, year: y, status: 'ACTIVE' },
+      where: { groupId, month: m, year: y, type: 'EXPENSE', status: 'ACTIVE' },
       _sum: { amount: true },
       _count: true,
       orderBy: { _sum: { amount: 'desc' } },

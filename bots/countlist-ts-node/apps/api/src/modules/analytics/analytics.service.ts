@@ -28,12 +28,12 @@ export class AnalyticsService {
 
     const [current, previous, todayTotal] = await Promise.all([
       this.prisma.expense.aggregate({
-        where: { groupId, month, year, status: 'ACTIVE' },
+        where: { groupId, month, year, type: 'EXPENSE', status: 'ACTIVE' },
         _sum: { amount: true },
         _count: true,
       }),
       this.prisma.expense.aggregate({
-        where: { groupId, month: prevMonth, year: prevYear, status: 'ACTIVE' },
+        where: { groupId, month: prevMonth, year: prevYear, type: 'EXPENSE', status: 'ACTIVE' },
         _sum: { amount: true },
         _count: true,
       }),
@@ -41,7 +41,7 @@ export class AnalyticsService {
         where: {
           groupId,
           date: { gte: startOfDay(now), lte: endOfDay(now) },
-          status: 'ACTIVE',
+          type: 'EXPENSE', status: 'ACTIVE',
         },
         _sum: { amount: true },
       }),
@@ -56,7 +56,7 @@ export class AnalyticsService {
 
     const topCat = await this.prisma.expense.groupBy({
       by: ['categoryId'],
-      where: { groupId, month, year, status: 'ACTIVE' },
+      where: { groupId, month, year, type: 'EXPENSE', status: 'ACTIVE' },
       _sum: { amount: true },
       orderBy: { _sum: { amount: 'desc' } },
       take: 1,
@@ -88,7 +88,7 @@ export class AnalyticsService {
       where: {
         groupId,
         date: { gte: startOfDay(start), lte: endOfDay(end) },
-        status: 'ACTIVE',
+        type: 'EXPENSE', status: 'ACTIVE',
       },
       _sum: { amount: true },
       _count: true,
@@ -120,7 +120,7 @@ export class AnalyticsService {
         where: {
           groupId,
           date: { gte: weekStart, lte: weekEnd },
-          status: 'ACTIVE',
+          type: 'EXPENSE', status: 'ACTIVE',
         },
         _sum: { amount: true },
         _count: true,
@@ -145,7 +145,7 @@ export class AnalyticsService {
       const m = monthStart.getMonth() + 1;
       const y = monthStart.getFullYear();
       const agg = await this.prisma.expense.aggregate({
-        where: { groupId, month: m, year: y, status: 'ACTIVE' },
+        where: { groupId, month: m, year: y, type: 'EXPENSE', status: 'ACTIVE' },
         _sum: { amount: true },
         _count: true,
       });
@@ -167,7 +167,7 @@ export class AnalyticsService {
       where: {
         groupId,
         date: { gte: start, lte: end },
-        status: 'ACTIVE',
+        type: 'EXPENSE', status: 'ACTIVE',
       },
       _sum: { amount: true },
       _count: true,
@@ -200,7 +200,7 @@ export class AnalyticsService {
       where: {
         groupId,
         date: { gte: start, lte: end },
-        status: 'ACTIVE',
+        type: 'EXPENSE', status: 'ACTIVE',
       },
       _sum: { amount: true },
       _count: true,

@@ -81,7 +81,7 @@ export class GroupsService {
         include: { settings: true },
       }),
       this.prisma.expense.aggregate({
-        where: { groupId, month, year, status: 'ACTIVE' },
+        where: { groupId, month, year, type: 'EXPENSE', status: 'ACTIVE' },
         _sum: { amount: true },
         _count: true,
       }),
