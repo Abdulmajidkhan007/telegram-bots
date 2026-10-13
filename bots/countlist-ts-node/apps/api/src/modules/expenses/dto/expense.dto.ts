@@ -1,5 +1,5 @@
-import { IsString, IsNumber, IsOptional, IsEnum, IsDateString, IsPositive, MaxLength } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional, PartialType, OmitType } from '@nestjs/swagger';
+import { IsString, IsNumber, IsOptional, IsEnum, IsDateString, IsPositive, MaxLength, Matches, ValidateIf } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateExpenseDto {
   @ApiProperty({ example: 500000 })
@@ -36,7 +36,46 @@ export class CreateExpenseDto {
   source?: 'TEXT' | 'VOICE' | 'OCR' | 'RECURRING' | 'MANUAL';
 }
 
-export class UpdateExpenseDto extends PartialType(OmitType(CreateExpenseDto, ['groupId'] as const)) {}
+// Mini App tahriri. Sana — "YYYY-MM-DD" (guruh mintaqasidagi kun), ISO lahza
+// emas: telefon mintaqasi boshqa bo'lsa ham kun siljimasin.
+export class UpdateExpenseDto {
+  @ApiPropertyOptional({ example: 50000 })
+  @IsOptional()
+  @IsNumber()
+  @IsPositive()
+  amount?: number;
+
+  @ApiPropertyOptional({ enum: ['UZS', 'USD', 'EUR', 'RUB'] })
+  @IsOptional()
+  @IsEnum(['UZS', 'USD', 'EUR', 'RUB'])
+  currency?: 'UZS' | 'USD' | 'EUR' | 'RUB';
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  description?: string;
+
+  @ApiPropertyOptional({ nullable: true, description: 'null — kategoriyani olib tashlash' })
+  @ValidateIf((_, v) => v !== null && v !== undefined)
+  @IsString()
+  categoryId?: string | null;
+
+  @ApiPropertyOptional({ nullable: true, description: 'null — hisobsiz' })
+  @ValidateIf((_, v) => v !== null && v !== undefined)
+  @IsString()
+  accountId?: string | null;
+
+  @ApiPropertyOptional({ enum: ['EXPENSE', 'INCOME'] })
+  @IsOptional()
+  @IsEnum(['EXPENSE', 'INCOME'])
+  type?: 'EXPENSE' | 'INCOME';
+
+  @ApiPropertyOptional({ example: '2026-10-12' })
+  @IsOptional()
+  @Matches(/^\d{4}-\d{2}-\d{2}$/)
+  date?: string;
+}
 
 export class ExpenseQueryDto {
   @ApiPropertyOptional()

@@ -4,6 +4,7 @@ import { DashboardLayout } from './components/layout/DashboardLayout';
 import { LoginPage } from './pages/LoginPage';
 import { OverviewPage } from './pages/OverviewPage';
 import { ExpensesPage } from './pages/ExpensesPage';
+import { HistoryPage } from './pages/HistoryPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { CategoriesPage } from './pages/CategoriesPage';
 import { GroupsPage } from './pages/GroupsPage';
@@ -41,6 +42,7 @@ function App() {
           }
         >
           <Route index element={<OverviewPage />} />
+          <Route path="history" element={<HistoryPage />} />
           <Route path="expenses" element={<ExpensesPage />} />
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="categories" element={<CategoriesPage />} />

@@ -1,10 +1,11 @@
 import {
-  LayoutDashboard, Receipt, BarChart3, Tag, Users, Building2,
+  LayoutDashboard, Receipt, History, BarChart3, Tag, Users, Building2,
   Target, RefreshCw, Download, Settings,
 } from 'lucide-react';
 
 export const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard', short: 'Asosiy' },
+  { to: '/history', icon: History, label: 'Tarix', short: 'Tarix' },
   { to: '/expenses', icon: Receipt, label: 'Xarajatlar', short: 'Xarajat' },
   { to: '/analytics', icon: BarChart3, label: 'Analitika', short: 'Tahlil' },
   { to: '/categories', icon: Tag, label: 'Kategoriyalar', short: 'Kategoriya' },
@@ -17,4 +18,4 @@ export const navItems = [
 ];
 
 // Telefondagi pastki panelga sig'adigan asosiylar; qolgani "Menyu" orqali.
-export const bottomNavPaths = ['/', '/expenses', '/analytics', '/categories'];
+export const bottomNavPaths = ['/', '/history', '/expenses', '/analytics'];

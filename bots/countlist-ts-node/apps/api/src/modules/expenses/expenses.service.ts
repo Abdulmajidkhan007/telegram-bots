@@ -1,7 +1,22 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Prisma, Expense } from '@prisma/client';
-import { getWeekNumber, getDayOfYear } from '@expense-tracker/shared';
+import { getWeekNumber, getDayOfYear, localDateInTz } from '@expense-tracker/shared';
+import { buildExpenseUpdate, ExpenseChangeError } from './expense-update';
+
+const logger = new Logger('ExpensesService');
+
+/** Bazadagi noto'g'ri mintaqa butun tahrirni yiqitmasin — log va Toshkent. */
+function safeTimeZone(tz: string | undefined): string {
+  if (!tz) return 'Asia/Tashkent';
+  try {
+    new Intl.DateTimeFormat('en', { timeZone: tz });
+    return tz;
+  } catch (err) {
+    logger.warn(`Guruh vaqt mintaqasi noto'g'ri ("${tz}"): ${(err as Error).message}`);
+    return 'Asia/Tashkent';
+  }
+}
 import { CreateExpenseDto, UpdateExpenseDto } from './dto/expense.dto';
 import { PaginationMeta } from '@expense-tracker/shared';
 import { GroupAccessService } from '../../common/access/group-access.service';
@@ -115,17 +130,39 @@ export class ExpensesService {
 
   async update(id: string, userId: string, dto: UpdateExpenseDto): Promise<Expense> {
     const expense = await this.findOne(id, userId);
-    if (expense.userId !== userId) throw new ForbiddenException('Not your expense');
+    if (expense.userId !== userId) throw new ForbiddenException("Faqat o'zingiz yozgan yozuvni tahrirlay olasiz");
+    if (expense.status !== 'ACTIVE') throw new NotFoundException('Expense not found');
+
+    // Soxta ID bilan boshqa guruh kategoriyasi/hisobini ulab bo'lmasin.
+    if (dto.categoryId) {
+      const cat = await this.prisma.category.findFirst({
+        where: { id: dto.categoryId, OR: [{ groupId: expense.groupId }, { isDefault: true }], deletedAt: null },
+        select: { id: true },
+      });
+      if (!cat) throw new BadRequestException('Kategoriya topilmadi');
+    }
+    if (dto.accountId) {
+      const acc = await this.prisma.account.findFirst({
+        where: { id: dto.accountId, groupId: expense.groupId, deletedAt: null },
+        select: { id: true },
+      });
+      if (!acc) throw new BadRequestException('Hisob topilmadi');
+    }
+
+    const group = (expense as Expense & { group?: { timezone?: string } }).group;
+    const today = localDateInTz(new Date(), safeTimeZone(group?.timezone));
+    let data: Prisma.ExpenseUncheckedUpdateInput;
+    try {
+      data = buildExpenseUpdate(dto, today);
+    } catch (err) {
+      if (err instanceof ExpenseChangeError) throw new BadRequestException(err.message);
+      throw err;
+    }
 
     return this.prisma.expense.update({
       where: { id },
-      data: {
-        amount: dto.amount ? new Prisma.Decimal(dto.amount) : undefined,
-        currency: dto.currency,
-        description: dto.description,
-        categoryId: dto.categoryId,
-      },
-      include: { category: true, user: true },
+      data,
+      include: { category: true, user: true, account: true },
     });
   }
 

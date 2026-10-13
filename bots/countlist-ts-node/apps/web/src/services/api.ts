@@ -96,6 +96,10 @@ export const expensesApi = {
     api.get(`/expenses/stats/${groupId}`, { params: { month, year } }),
 };
 
+export const accountsApi = {
+  list: (groupId: string) => api.get('/accounts', { params: { groupId } }),
+};
+
 export const analyticsApi = {
   dashboard: (groupId: string) => api.get(`/analytics/dashboard/${groupId}`),
   full: (groupId: string, startDate?: string, endDate?: string) =>
