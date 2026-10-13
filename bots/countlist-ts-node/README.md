@@ -79,6 +79,7 @@ Bot: ✅ Xarajat qo'shildi
 
 ### 🎨 Dashboard
 
+- ✅ **Mini App «Tarix»** (`/history`) — bot menyu tugmasidan ochilganda shu sahifa: kunlar bo'yicha yozuvlar va kunlik jami (xarajat / daromad), tezkor qidiruv (izoh, kategoriya, hisob), Hammasi/Xarajat/Daromad filtri, bosilganda tahrirlash (summa, izoh, turi, kategoriya, hisob, sana) va o'chirish (ikki bosqichli tasdiq). Boshqaning yozuvi faqat ko'rish rejimida
 - ✅ Premium fintech UI design
 - ✅ Dark / Light mode
 - ✅ Responsive (desktop + mobile)
@@ -430,12 +431,19 @@ GET    /api/v1/auth/me            # Joriy foydalanuvchi
 ### Expenses
 
 ```
-GET    /api/v1/expenses                    # List + filter
+GET    /api/v1/expenses                    # List + filter (?type=EXPENSE|INCOME|ALL, default EXPENSE; ?search=)
 POST   /api/v1/expenses                    # Qo'shish
 GET    /api/v1/expenses/:id                # Bittasini olish
-PATCH  /api/v1/expenses/:id                # Yangilash
+PATCH  /api/v1/expenses/:id                # Yangilash (faqat muallif): amount, description, type,
+                                           #   categoryId, accountId (null — olib tashlash), date "YYYY-MM-DD"
 DELETE /api/v1/expenses/:id                # O'chirish
 GET    /api/v1/expenses/stats/:groupId     # Statistika
+```
+
+### Accounts
+
+```
+GET    /api/v1/accounts?groupId=           # Hisoblar + balans (boshqaruv botda: /hisoblar)
 ```
 
 ### Analytics

@@ -5,6 +5,7 @@ import { Wallet, Send, AlertTriangle } from 'lucide-react';
 import { useAppDispatch } from '@/hooks/useAppSelector';
 import { setAuth } from '@/store/slices/auth.slice';
 import { authApi } from '@/services/api';
+import { isMiniApp } from '@/utils/telegram';
 import toast from 'react-hot-toast';
 
 const BOT_USERNAME = import.meta.env.VITE_TELEGRAM_BOT_USERNAME;
@@ -12,7 +13,6 @@ const BOT_USERNAME = import.meta.env.VITE_TELEGRAM_BOT_USERNAME;
 declare global {
   interface Window {
     onTelegramAuth?: (user: Record<string, unknown>) => void;
-    Telegram?: { WebApp?: { initData?: string; ready?: () => void; expand?: () => void } };
   }
 }
 
@@ -34,7 +34,8 @@ export function LoginPage() {
         refreshToken: payload.refreshToken,
       }));
       toast.success(`Xush kelibsiz, ${payload.user.firstName}!`);
-      navigate('/');
+      // Mini App — telefonda tez tahrir uchun: to'g'ri «Tarix»ga.
+      navigate(isMiniApp() ? '/history' : '/');
     } catch (err: any) {
       toast.error(err.response?.data?.message || `Kirish muvaffaqiyatsiz: ${err.message}`);
     } finally {
@@ -46,9 +47,13 @@ export function LoginPage() {
   // imzolab beradi, server tekshiradi: widget ham, /setdomain ham kerak emas.
   // Oddiy brauzerda initData bo'sh — pastdagi widget/havola ishlaydi.
   const inMiniApp = !!window.Telegram?.WebApp?.initData;
+  // Bir martalik: effekt ikki marta ishlasa (React StrictMode) bir soniyada
+  // ikki login ketib, bir xil refresh token 409 "Duplicate entry" berardi.
+  const webAppLoginStarted = useRef(false);
   useEffect(() => {
     const webApp = window.Telegram?.WebApp;
-    if (!webApp?.initData) return;
+    if (!webApp?.initData || webAppLoginStarted.current) return;
+    webAppLoginStarted.current = true;
     webApp.ready?.();
     webApp.expand?.();
     void finishLogin(authApi.loginWebApp(webApp.initData));

@@ -27,7 +27,8 @@ export function ExpensesPage() {
     queryKey: ['expenses', selectedGroupId, page, month, year, search],
     queryFn: () =>
       expensesApi
-        .list({ groupId: selectedGroupId, page, limit: 20, month, year })
+        // search avval so'rovga qo'shilmasdi — qidiruv maydoni hech narsa qilmasdi.
+        .list({ groupId: selectedGroupId, page, limit: 20, month, year, search: search.trim() || undefined })
         .then((r) => r.data?.data || r.data),
     enabled: !!selectedGroupId,
   });
@@ -159,7 +160,7 @@ export function ExpensesPage() {
               type="text"
               placeholder="Xarajat qidirish..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               className="input-field pl-9"
             />
           </div>

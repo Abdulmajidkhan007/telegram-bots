@@ -3,6 +3,7 @@ import {
   formatAmount,
   getWeekNumber,
   getDayOfYear,
+  dateColumns,
   parseQuickEntry,
   localDateInTz,
   localDateToStorage,
@@ -14,22 +15,6 @@ import { deleteCacheValue } from '../utils/redis';
 import { matchCategoryByName } from '../utils/entry-format';
 
 export type CreateResult = { ok: true; expense: Expense } | { ok: false; error: DateTokenError };
-
-/**
- * month/year/week/dayOfYear — hisobotlar shu ustunlar bo'yicha guruhlaydi.
- * Kalendar kuni server soatidan emas, guruh mintaqasidagi kundan olinadi:
- * Railway UTC da, Toshkentda 00:00–05:00 orasidagi xarajat kechagi kunga tushardi.
- */
-function dateFields(at: Date, day: LocalDate) {
-  const noonUtc = localDateToStorage(day);
-  return {
-    date: at,
-    month: day.month,
-    year: day.year,
-    week: getWeekNumber(noonUtc),
-    dayOfYear: getDayOfYear(noonUtc),
-  };
-}
 
 export class ExpenseService {
   constructor(private prisma: PrismaClient) {}
@@ -72,7 +57,7 @@ export class ExpenseService {
         currency: entry.currency,
         description: entry.description,
         rawText: params.rawText,
-        ...dateFields(at, entry.date ?? today),
+        ...dateColumns(at, entry.date ?? today),
         source: params.source ?? 'TEXT',
         telegramMsgId: params.telegramMsgId,
       },
@@ -139,7 +124,7 @@ export class ExpenseService {
     const data: Prisma.ExpenseUncheckedUpdateManyInput = {};
     if (change.accountId) data.accountId = change.accountId;
     if (change.categoryId) data.categoryId = change.categoryId;
-    if (change.date) Object.assign(data, dateFields(localDateToStorage(change.date), change.date));
+    if (change.date) Object.assign(data, dateColumns(localDateToStorage(change.date), change.date));
     const res = await this.prisma.expense.updateMany({
       where: {
         id: params.expenseId,

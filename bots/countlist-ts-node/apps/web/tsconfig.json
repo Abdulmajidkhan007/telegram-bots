@@ -18,7 +18,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@expense-tracker/shared": ["../../packages/shared/src"]
+      "@expense-tracker/shared": ["../../packages/shared/src"],
+      "@expense-tracker/shared/*": ["../../packages/shared/src/*"]
     }
   },
   "include": ["src"],

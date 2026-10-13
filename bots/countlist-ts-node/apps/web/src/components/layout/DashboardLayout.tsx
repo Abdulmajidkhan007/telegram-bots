@@ -1,5 +1,6 @@
-import { Outlet } from 'react-router-dom';
-import { useEffect } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { isMiniApp } from '@/utils/telegram';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { BottomNav } from './BottomNav';
@@ -18,6 +19,17 @@ export function DashboardLayout() {
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
+
+  // Mini App (allaqachon kirilgan) bosh sahifadan ochilsa — bir marta «Tarix»ga:
+  // telefonda eng ko'p kerak bo'ladigani yozuvni topib to'g'rilash.
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const redirected = useRef(false);
+  useEffect(() => {
+    if (redirected.current) return;
+    redirected.current = true;
+    if (isMiniApp() && pathname === '/') navigate('/history', { replace: true });
+  }, [navigate, pathname]);
 
   let content = <Outlet />;
   if (isLoading || (groups.length > 0 && !activeGroup)) {
