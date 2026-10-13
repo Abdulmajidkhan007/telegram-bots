@@ -243,7 +243,7 @@ export function registerCallbackHandlers(
 
     const topUsers = await prisma.expense.groupBy({
       by: ['userId'],
-      where: { status: 'ACTIVE' },
+      where: { type: 'EXPENSE', status: 'ACTIVE' },
       _sum: { amount: true },
       _count: true,
       orderBy: { _sum: { amount: 'desc' } },

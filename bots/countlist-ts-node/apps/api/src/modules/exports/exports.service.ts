@@ -35,7 +35,8 @@ export class ExportsService {
   }
 
   private async getExpenses(options: ExportOptions) {
-    const where: any = { groupId: options.groupId, status: 'ACTIVE' };
+    // Dashboard eksporti — xarajatlar hisoboti (JAMI qatori bor): daromad aralashmasin.
+    const where: any = { groupId: options.groupId, type: 'EXPENSE', status: 'ACTIVE' };
     if (options.startDate || options.endDate) {
       where.date = {};
       if (options.startDate) where.date.gte = options.startDate;

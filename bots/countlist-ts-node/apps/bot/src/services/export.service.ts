@@ -1,12 +1,17 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, TransactionType } from '@prisma/client';
+
+function typeLabel(type: TransactionType): string {
+  return type === 'INCOME' ? 'Daromad' : 'Xarajat';
+}
 
 export class ExportService {
   constructor(private prisma: PrismaClient) {}
 
   private async getExpenses(groupId: string) {
     return this.prisma.expense.findMany({
+      // Daromad ham eksportga tushadi — "Turi" ustuni ajratadi.
       where: { groupId, status: 'ACTIVE' },
-      include: { category: true, user: true },
+      include: { category: true, user: true, account: true },
       orderBy: { date: 'desc' },
       take: 5000,
     });
@@ -14,14 +19,15 @@ export class ExportService {
 
   async generateCsv(groupId: string): Promise<Buffer> {
     const expenses = await this.getExpenses(groupId);
-    const lines = ['Sana,Miqdor,Valyuta,Tavsif,Kategoriya,Foydalanuvchi'];
+    const lines = ['Sana,Turi,Miqdor,Valyuta,Tavsif,Kategoriya,Hisob,Foydalanuvchi'];
 
     for (const e of expenses) {
       const date = new Date(e.date).toISOString().split('T')[0];
       const desc = `"${e.description.replace(/"/g, '""')}"`;
       const cat = `"${(e.category?.name ?? 'Boshqa').replace(/"/g, '""')}"`;
       const user = `"${e.user.firstName.replace(/"/g, '""')}"`;
-      lines.push(`${date},${Number(e.amount)},${e.currency},${desc},${cat},${user}`);
+      const acc = `"${(e.account?.name ?? '').replace(/"/g, '""')}"`;
+      lines.push(`${date},${typeLabel(e.type)},${Number(e.amount)},${e.currency},${desc},${cat},${acc},${user}`);
     }
 
     return Buffer.from('﻿' + lines.join('\n'), 'utf-8');
@@ -38,10 +44,12 @@ export class ExportService {
 
     sheet.columns = [
       { header: 'Sana', key: 'date', width: 14 },
+      { header: 'Turi', key: 'type', width: 10 },
       { header: 'Miqdor', key: 'amount', width: 16, style: { numFmt: '#,##0' } },
       { header: 'Valyuta', key: 'currency', width: 10 },
       { header: 'Tavsif', key: 'description', width: 35 },
       { header: 'Kategoriya', key: 'category', width: 20 },
+      { header: 'Hisob', key: 'account', width: 16 },
       { header: 'Foydalanuvchi', key: 'user', width: 20 },
     ];
 
@@ -55,15 +63,17 @@ export class ExportService {
     for (const e of expenses) {
       sheet.addRow({
         date: new Date(e.date).toLocaleDateString('ru-RU'),
+        type: typeLabel(e.type),
         amount: Number(e.amount),
         currency: e.currency,
         description: e.description,
         category: e.category?.name ?? 'Boshqa',
+        account: e.account?.name ?? '',
         user: e.user.firstName,
       });
     }
 
-    sheet.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: 6 } };
+    sheet.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: 8 } };
 
     const buf = await workbook.xlsx.writeBuffer();
     return Buffer.from(buf);

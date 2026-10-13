@@ -186,6 +186,30 @@ yorliq bilan olinadi. 10 daqiqa amal qiladi; bir martalik emas (holatsiz) —
 shuning uchun faqat shaxsiy chatda beriladi va URL fragmentida (`#token=`)
 uzatiladi: serverga, nginx loglariga va Referer'ga tushmaydi.
 
+## 10. countlist: hisoblar va daromad bitta jadvalda (2026-10-13)
+
+**O'lchov:** botda hisob (karta) va daromad tushunchasi umuman yo'q edi —
+`+2 mln oylik` ga «daromad qo'llanmaydi» deb javob berardi. Sxema `prisma db push`
+bilan (API ishga tushganda) qo'llanadi, migratsiya fayllari yo'q.
+
+**Qaror:** `Expense.type` (EXPENSE | INCOME, default EXPENSE) va ixtiyoriy
+`Expense.accountId` + yangi `Account` jadvali. Alohida `Income` jadvali
+o'rniga shu — hisob balansi bitta `groupBy` bilan chiqadi, Mini App'da tahrir
+ham bitta jadval ustida. Narxi: barcha xarajat statistikasi `type: 'EXPENSE'`
+filtrini olishi shart (bot, API analytics/limits/groups/exports — hammasiga
+qo'shildi). Balans saqlanmaydi, hisoblanadi — tahrirdan keyin «siljimaydi».
+Hisob o'chirilmaydi, `isHidden` bilan yopiladi: tarixdagi yozuvlar bog'liq qoladi.
+
+**Migratsiya tekshirildi:** eski sxemadagi bazaga yozuv qo'yilib, yangi sxema
+`db push` qilindi — ma'lumot yo'qotish ogohlantirishi yo'q, eski yozuv
+`type=EXPENSE`, `account_id=NULL` bo'ldi. **Deploy tartibi:** avval API
+(u `db push` qiladi), keyin bot — aks holda bot yangi ustunlarni topmaydi.
+
+**Sana:** «kecha»/«12.10» guruh mintaqasida (default Asia/Tashkent) hisoblanadi,
+o'sha kunning 12:00 UTC sida saqlanadi — ±11 soatlik har mintaqada bir xil kun.
+Oy oxiri ustunlari (`month`, `dayOfYear`) ham shu kundan olinadi.
+→ *Yangi «tur» ustuni qo'shganda — eski agregatsiyalarning hammasini grep qil.*
+
 ---
 
 ## Keyingi qadamlar (ochiq savollar)

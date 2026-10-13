@@ -53,7 +53,7 @@ export class LimitsService {
             groupId,
             month,
             year,
-            status: 'ACTIVE',
+            type: 'EXPENSE', status: 'ACTIVE',
             categoryId: limit.categoryId || undefined,
             userId: limit.userId || undefined,
           },

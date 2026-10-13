@@ -1,4 +1,5 @@
 import { Currency, ExpenseParseResult } from '../types';
+import { DateTokenError, LocalDate, extractDateToken } from './date-token';
 
 const MULTIPLIERS: Record<string, number> = {
   k: 1_000,
@@ -253,4 +254,49 @@ export function getDayOfYear(date: Date): number {
   const start = new Date(date.getFullYear(), 0, 0);
   const diff = date.getTime() - start.getTime();
   return Math.floor(diff / (1000 * 60 * 60 * 24));
+}
+
+export interface QuickEntryResult extends TransactionParseResult {
+  /** Matnda sana ko'rsatilgan bo'lsa ("kecha", "12.10"); aks holda null — hozir. */
+  date: LocalDate | null;
+}
+
+export type QuickEntryParse =
+  | { ok: true; entry: QuickEntryResult }
+  | { ok: false; error: DateTokenError }
+  | null;
+
+/**
+ * Tezkor kiritish: ishora + summa + izoh + ixtiyoriy sana. Sana so'zi summadan
+ * oldin ajratiladi — aks holda "12.10 non 8000" dagi 12.10 summa bo'lib qolardi.
+ * Sanali talqin summa topmasa, matn sanasiz qayta tekshiriladi ("kecha" so'zi
+ * izohning o'zi bo'lishi mumkin emas, lekin "12.10" summa bo'lishi mumkin).
+ */
+export function parseQuickEntry(text: string, today: LocalDate): QuickEntryParse {
+  const token = extractDateToken(text.trim(), today);
+  if (token.date || token.error) {
+    const parsed = parseTransactionText(token.text);
+    if (parsed) {
+      return token.error ? { ok: false, error: token.error } : { ok: true, entry: { ...parsed, date: token.date } };
+    }
+  }
+  const plain = parseTransactionText(text);
+  return plain ? { ok: true, entry: { ...plain, date: null } } : null;
+}
+
+/**
+ * "Humo 1,5 mln" → { name: "Humo", amount: 1500000 }. Hisob qo'shishda
+ * boshlang'ich balans uchun. Nom harf registri saqlanadi (parser kichik
+ * harfga o'tkazadi — hisob nomi uchun bu yaramaydi).
+ */
+export function splitTrailingAmount(text: string): { rest: string; amount: number | null } {
+  const t = text.trim();
+  const m = t.match(new RegExp(`^(.*?)\\s+(-?${NUM})\\s*(${MULT})?\\s*(?:${CUR})?$`, 'iu'));
+  if (!m) return { rest: t, amount: null };
+  const negative = m[2].startsWith('-');
+  let amount = parseNumber(negative ? m[2].slice(1) : m[2]);
+  if (isNaN(amount)) return { rest: t, amount: null };
+  const mult = m[3]?.toLowerCase();
+  if (mult && MULTIPLIERS[mult]) amount *= MULTIPLIERS[mult];
+  return { rest: m[1].trim(), amount: negative ? -amount : amount };
 }
