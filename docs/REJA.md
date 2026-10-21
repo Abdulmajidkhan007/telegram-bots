@@ -41,9 +41,9 @@ Eng yaqinini birinchi — g'alaba tezroq keladi, kuch beradi.
 
 | # | Loyiha | Hozirgi holat | Shu 3 oyda nima bo'lishi kerak |
 |---|---|---|---|
-| 1 | `rn-r-e-commerce` (KidsWear) | Phase 10: veb + Android (bare RN 0.85), Payme/Click oqimi, testlar + CI; jonli sayt yo'q | **Veb'ni deploy qilish** (Firebase Hosting). Mobil keyinroq |
-| 2 | `portfolio-3d` | Firebase'ga ko'chirilgan (Hosting + Functions), rezyume PDF yangi; deploy qilinmagan | **`.firebaserc` + `firebase deploy`**, haqiqiy kontent. Bu sizning CV'ingiz |
-| 3 | `telegram-bots` (shu repo) | 13 ta bot, repo public, eski repolar o'chirilgan ✅ | 2–3 botni **doimiy** serverda ishlatish (Railway/VPS) |
+| 1 | `rn-r-e-commerce` (KidsWear) | ✅ veb jonli (kids-wear-007.web.app, 2026-10-09); APK 1.0.9 ochiladi (2026-10-21) | 2-guruh (Telegram, Payme/Click, push) — Blaze kutadi |
+| 2 | `portfolio-3d` | ✅ jonli (abdulmajidkhan-portfolio.web.app, 2026-10-09), faqat Hosting | Aloqa formasi Cloud Function'i — Blaze kutadi |
+| 3 | `telegram-bots` (shu repo) | 15 ta bot (hr-bot, ovoz-bot qo'shildi), Railway konfiglari + `DEPLOY.md` tayyor; countlist'ga Mini App (2026-10-13) | 3 ishli sessiya (deploy konfiglari, hr-bot MVP, bot-factory) bajarilgan; botlar Railway'da ishlayotgani repoda qayd etilmagan — egasi tasdiqlab yozadi |
 | 4 | `learning-datacenter-tc-project` | «Faza 0» — 46 jadval, RBAC, Docker | **Faza 1:** guruhlar, jadval, davomat. Bitta maktabga demo ko'rsatish |
 | 5 | `go-uz` (Vroom) | 9 paket qurilgan, ilovalar «in progress» | **Bitta** ilovani tanlang (web yoki mobil), MVP darajasida ishga tushiring |
 
@@ -126,3 +126,5 @@ Dushanba kuni shu uchta savolga javob yozing (shu faylga yoki kanalga):
 
 Uchala javob ham «navbatdagi loyiha» haqida bo'lishi kerak. Boshqa loyihaga
 o'tib ketilgan bo'lsa — sabab yozilsin.
+
+*Holat jadvali yangilandi: 2026-10-21*
