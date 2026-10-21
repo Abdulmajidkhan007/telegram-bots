@@ -126,7 +126,7 @@ class Template(Protocol):
 ## 5. Egasining qarorlari (2026-10-12)
 
 1. **Alohida repo — egasi o'zi ochadi** va bot-factory o'sha yerda yoziladi.
-   Shu repoda faqat shu reja qoladi. (REJA.md «Cheklovdan istisnolar» jadvalida.)
+   Shu repoda faqat shu reja qoladi. (Profil repo `docs/REJA.md` «Cheklovdan istisnolar» jadvalida.)
 2. **`@Yovuzhackerbot` — bot-factory'ning asosiy (universal) boti.** Uning tayyor
    kodi yo'q — **noldan yoziladi**. Tokeni faqat yangi repo'ning `.env` / Railway
    Variables'ida. BotFather Mini App'da bot boshqaruvi (managed bots) yoqiladi.

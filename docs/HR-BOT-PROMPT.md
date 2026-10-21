@@ -13,7 +13,7 @@
 
 ## 0. Hozir nima qilasiz (tayyorgarlik fazasi)
 
-1. O'qing: `CLAUDE.md`, `docs/REJA.md`, `docs/ARXITEKTURA-TARIXI.md`,
+1. O'qing: `CLAUDE.md`, `docs/HOLAT.md`, `docs/ARXITEKTURA-TARIXI.md`,
    `bots.json`, `tools/registry.js`, `tools/registry.test.js`, `docs/KALI-LINUX.md`.
 2. Uslub uchun ikkita Python botni o'qing: `bots/killspam-bot/` (aiogram 3,
    SQLAlchemy 2, PostgreSQL) va `bots/atoyo-rag-bot/` (Gemini, async,
@@ -184,7 +184,7 @@ hisobot (nima qilindi, qanday tekshirildi, keyingi faza). **Keyingi fazaga
 egasi "davom" degandan keyin o'tiladi.**
 
 **Faza 1 — Reja va skelet (kod deyarli yo'q)**
-- `docs/REJA.md` ga yozuv: "2026-12-11 cheklovidan istisno — egasi qarori
+- `docs/HOLAT.md` ga yozuv: "2026-12-11 cheklovidan istisno — egasi qarori
   (sana), sabab: ish qidirish bilan bevosita bog'liq, MVP hajmida".
   CLAUDE.md'dagi cheklov bo'limiga shu istisnoga havola.
 - `bots/hr-bot/README.md` — shu faylning 1–4 bo'limlari asosida spec,

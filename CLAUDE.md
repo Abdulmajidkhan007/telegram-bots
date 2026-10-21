@@ -1,156 +1,70 @@
 # CLAUDE.md — ishlash qoidalari
 
-> Bu fayl **har sessiyada o'qiladi**. Shuning uchun qisqa: faqat **qoidalar** va **xarita**.
-> «Nima uchun shunday qilingan» — [`docs/ARXITEKTURA-TARIXI.md`](docs/ARXITEKTURA-TARIXI.md) da.
-> Hajm chegarasi: **15–20 KB**. Oshsa — tarixga ko'chiring, bu yerga qisqartma qoldiring.
+> Har sessiyada o'qiladi — faqat qoidalar va xarita. «Nega shunday» —
+> `docs/ARXITEKTURA-TARIXI.md`. Repo holati — `docs/HOLAT.md`.
 
----
+## Cheklov (2026-09-11 → 2026-12-11)
 
-## 🚧 Amaldagi cheklov (2026-09-11 → 2026-12-11)
+**Yangi loyiha boshlanmaydi**, boshlanganlari tugatiladi. Navbat, «tugallandi»
+ta'rifi, istisnolar va g'oyalar qutisi — profil repo `docs/REJA.md`
+(github.com/Abdulmajidkhan007/Abdulmajidkhan007). Yangi g'oya o'sha yerga yoziladi.
 
-**Yangi loyiha boshlanmaydi.** Boshlanganlari tugatiladi — navbat va
-«tugallandi» ta'rifi [`docs/REJA.md`](docs/REJA.md) da. Yangi g'oya kelsa
-o'sha fayldagi «G'oyalar qutisi» ga yoziladi, repo ochilmaydi.
-Egasi qarori bilan istisnolar — o'sha fayldagi «Cheklovdan istisnolar» jadvalida.
+## Ikkita oltin qoida
 
----
+1. **Taxmin qilma — o'lchab ko'r.** Log, `--version`, test. Sabab aniqlanmaguncha tuzatish yozilmaydi.
+2. **Xato jim yutilmaydi.** Bo'sh `catch {}` / `except: pass` taqiqlanadi; foydalanuvchiga nima bo'lganini ayt.
 
-## 🥇 Ikkita oltin qoida
-
-1. **Taxmin qilma — o'lchab ko'r.** «Ehtimol shundandir» degan gap yechim emas.
-   Log qo'y, `--version` chiqar, `-F` bilan ro'yxatni ko'r, testda tekshir.
-   Sabab aniqlanmaguncha tuzatish yozilmaydi.
-2. **Xato jim yutilmaydi.** Bo'sh `catch {}` yoki `except: pass` — taqiqlanadi.
-   Har `catch` yo log qiladi, yo yuqoriga uzatadi. Foydalanuvchiga **nima
-   bo'lganini** ayting, «xatolik yuz berdi» emas.
-
----
-
-## 🗺 Repo xaritasi
+## Xarita
 
 ```
-bots/<id>/          har bir bot — MUSTAQIL loyiha (o'z package.json / requirements.txt,
-                    o'z .env.example, o'z README.md). Root'ga bog'liq emas.
-bots.json           botlar ro'yxati: id, runtime, install, start, autoStart
-tools/run.js        boshqaruvchi CLI — list / setup / install / start / doctor
-tools/registry.js   bots.json ustidagi TOZA mantiq (I/O yo'q → test qilinadi)
-tools/scan-secrets.js  kalit tekshiruvi (repo public!)
-tools/registry.test.js testlar
-docs/ARXITEKTURA-TARIXI.md  qarorlar tarixi
-docs/BOT-TARIFLARI.md  Bepul/Plus/Pro/Max: imkoniyatlar, to'lov oqimi (narx — faqat Railway env)
-docs/REJA.md        3 oylik reja: navbat, «tugallandi» ta'rifi, arxivlash ro'yxati
-docs/KALI-LINUX.md  Linux'da noldan ishga tushirish qo'llanmasi
+bots/<id>/          har bot MUSTAQIL: o'z package.json|requirements.txt, .env.example, README
+bots.json           ro'yxat: id, runtime, install, start, autoStart, requires, note
+tools/run.js        CLI: list / setup / install / start / doctor
+tools/registry.js   bots.json ustidagi toza mantiq (+ registry.test.js)
+tools/scan-secrets.js  kalit skaneri (repo PUBLIC)
+docs/HOLAT.md       botlar holati, deploy holati
 ```
 
-**15 ta bot:** `save-video-downloader-bot`, `anonim-bot`, `arxiv-topadi-bot`,
-`gemini-qa-bot`, `idfinder-bot`, `malware-bot`, `quiz-bot` (Node) ·
-`killspam-bot`, `xulosa-ai-bot`, `atoyo-ai-bot`, `atoyo-rag-bot`, `kino-bot`, `hr-bot`, `ovoz-bot` (Python) ·
-`countlist-ts-node` (TypeScript monorepo).
+15 bot: Node — `save-video-downloader-bot`, `anonim-bot`, `arxiv-topadi-bot`, `gemini-qa-bot`,
+`idfinder-bot`, `malware-bot`, `quiz-bot` · Python — `killspam-bot`, `xulosa-ai-bot`, `atoyo-ai-bot`,
+`atoyo-rag-bot`, `kino-bot`, `hr-bot`, `ovoz-bot` · TS — `countlist-ts-node`.
 
----
+## Xavfsizlik (repo PUBLIC)
 
-## 🔒 Xavfsizlik (repo PUBLIC)
+- Telethon `*.session`, `.env` — hech qachon commit qilinmaydi; faqat `.env.example` (namuna qiymat).
+- Kalit faqat env'da; kodga va log'ga yozilmaydi. Yangi env → darhol `.env.example` ga.
+- Tashqi buyruq — `execFile`/`spawn` (shell:false), `exec` emas.
+- `callback_data`, ID, yo'llar doim tekshiriladi.
 
-- **Telethon `*.session` fayllari — kalitdan ham xavfliroq** (akkauntga to'liq
-  kirish). Hech qachon repoga tushmaydi; har userbot papkasida `.gitignore`
-  ularni bloklaydi.
-- **`.env` hech qachon commit qilinmaydi.** Faqat `.env.example` — bo'sh yoki
-  namuna qiymatlar bilan (`BU_YERGA_YOZING`, `your_key_here`).
-- Kalit, token, parol — **faqat env orqali**. Kodga yozilmaydi, log'ga chiqarilmaydi.
-- Yangi env o'zgaruvchi qo'shsangiz — **o'sha zahoti `.env.example` ga ham** qo'shing.
-- Tashqi buyruq chaqirilganda **`execFile`/`spawn` (shell:false)** ishlatiladi,
-  `exec` emas — foydalanuvchi bergan URL/matn shellga tushmasin.
-- Foydalanuvchi bergan `callback_data`, ID va yo'llar — **doim tekshiriladi**.
-- Commit'dan oldin: `npm run scan`.
+## Tekshiruv (commit'dan oldin, hammasi yashil)
 
----
+`npm test` → `npm run scan` → (`npm run doctor`) → o'zgargan botni haqiqatan ishga tushirib,
+o'zgargan yo'lni bosib ko'r. Yiqilsa — sababni top, testni o'chirma.
 
-## ✅ Majburiy tekshiruv zanjiri (commit'dan oldin)
+## Test
 
-Tartib bilan, hammasi yashil bo'lmaguncha commit yo'q:
+Toza mantiqni test qil (parsing, limit, validatsiya); tashqi xizmatlar mock (test internetga
+chiqmaydi). Har tuzatilgan bug — regressiya testi. Testlar sekundlarda; Node'da `node:test`.
 
-```bash
-npm test          # 1. testlar o'tadimi
-npm run scan      # 2. kalit qolib ketmadimi
-npm run doctor    # 3. muhit joyidami (ixtiyoriy, lokal)
-node -c ...       # 4. o'zgargan botni haqiqiy ishga tushirib ko'ring
-```
+## Kod uslubi
 
-O'zgartirgan botni **haqiqatan ishga tushiring** va o'zgargan yo'lni bosib ko'ring.
-«Ishlashi kerak» — tekshiruv emas.
+Node: CommonJS + `'use strict'`. Izohlar o'zbekcha, «nega» ni tushuntiradi. Atrofdagi kodga
+o'xsha. Fayl 400–500 qatordan oshsa — bo'l. JSON — atomik yozuv (`.tmp` → `renameSync`).
+`bots/x` dan `bots/y` ga `require` yo'q.
 
-Qadamlardan biri yiqilsa: **avval sababni toping**, testni o'chirib tashlamang.
+## Yangi bot
 
----
+`bots/<id>/` (kod + `.env.example` + README + `.gitignore`) → `bots.json` yozuvi → `npm run check`.
 
-## 🧪 Test qoidalari
+## Jiddiy o'zgarish tartibi
 
-- **Toza mantiqni test qiling:** parsing, format tanlash, limit hisobi, validatsiya,
-  matn kesish. Bularda tashqi xizmat kerak emas.
-- **Tashqi xizmatni mock qiling:** Telegram API, Gemini, VirusTotal, yt-dlp, baza.
-  Test internetga chiqmasin.
-- **Har tuzatilgan bug uchun — regressiya testi.** Test avval yiqilishi kerak edi,
-  tuzatishdan keyin o'tsin. Aks holda bug qaytib keladi.
-- Test tez bo'lsin (sekundlar). Sekin test yozilmaydi va ishlatilmaydi.
-- Node'da `node:test` + `node:assert` yetarli — qo'shimcha kutubxona shart emas.
+MUAMMO → SABAB (o'lchov) → YECHIM → XAVF → TEKSHIRUV. Sabab topilmasa yechimga o'tilmaydi.
 
----
+## Qilinmaydi
 
-## 📐 Kod uslubi
+`.env`/kalit commit · bo'sh catch · `exec` ga foydalanuvchi matni · «ehtimol shu» tuzatish ·
+testni o'chirib yashil qilish · botlar orasida bog'liqlik · so'ralmagan katta refaktor.
 
-- **Node botlari: CommonJS** (`require`), `'use strict'`. Bir bot ichida uslub aralashmaydi.
-- Izohlar — **o'zbekcha**, «nima uchun» ni tushuntiradi, «nima qilyapti» ni emas.
-- Atrofdagi kodga o'xshating: nomlash, izoh zichligi, papka tuzilishi.
-- Fayl 400–500 qatordan oshsa — bo'ling.
-- JSON saqlashda **atomik yozuv**: `.tmp` ga yozib, keyin `fs.renameSync`.
-- Bot papkasi mustaqil qolsin: `bots/x` dan `bots/y` ga `require` qilinmaydi.
+## Model
 
----
-
-## 🧩 Yangi bot qo'shish
-
-1. `bots/<id>/` — kod + `.env.example` + `README.md` (+ `.gitignore`).
-2. `bots.json` ga yozuv: `id`, `name`, `desc`, `runtime`, `install`, `start`,
-   `autoStart` (qo'shimcha xizmat kerak bo'lsa `false`), `requires`, `note`.
-3. `npm run check` — testlar papka va `.env.example` borligini tekshiradi.
-
----
-
-## 📋 Vazifa shabloni
-
-Har jiddiy o'zgarish shu tartibda:
-
-```
-1. MUAMMO      — nima ishlamayapti / nima kerak (aniq, o'lchanadigan)
-2. SABAB       — o'lchov natijasi (log, chiqish, test). Taxmin emas.
-3. YECHIM      — nima o'zgaradi, qaysi fayllarda
-4. XAVF        — nima buzilishi mumkin, qanday qaytariladi
-5. TEKSHIRUV   — qanday tekshirildi (buyruq + natija)
-```
-
-Sabab topilmasa — 3-qadamga o'tilmaydi. Avval o'lchov qo'shiladi.
-
----
-
-## 🤖 Model tanlash
-
-| Vazifa | Model |
-|--------|-------|
-| Arxitektura, ko'p faylli refaktor, chigal bug | eng kuchli model |
-| Oddiy tuzatish, README, izoh, kichik funksiya | tezroq/arzonroq model |
-| Katta loglarni saralash, qidiruv | tezkor model |
-
-Chigal bugni arzon modelga topshirib, keyin qayta yozib chiqishdan ko'ra —
-darrov kuchli modelga berish arzonroq.
-
----
-
-## 🚫 Qilinmaydi
-
-- `.env` ni commit qilish, kalitni kodga yozish
-- Bo'sh `catch {}` / `except: pass`
-- `exec` bilan foydalanuvchi matnini shellga uzatish
-- Sababi aniqlanmagan «ehtimol shu» tuzatishlari
-- Testni o'chirib qo'yib «yashil» qilish
-- Bot papkalari o'rtasida bog'liqlik yaratish
-- So'ralmagan katta refaktorni ilova qilish
+Arxitektura, chigal bug — eng kuchli model. README, kichik tuzatish, log saralash — arzonroq model.

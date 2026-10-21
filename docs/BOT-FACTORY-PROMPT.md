@@ -13,7 +13,7 @@
 
 ## 0. Hozir nima qilasiz (tayyorgarlik fazasi)
 
-1. O'qing: telegram-bots reposidagi `CLAUDE.md`, `docs/REJA.md`, `bots.json`,
+1. O'qing: telegram-bots reposidagi `CLAUDE.md`, `docs/HOLAT.md`, `bots.json`,
    shablon bo'ladigan botlar: `bots/anonim-bot/`, `bots/killspam-bot/`,
    `bots/quiz-bot/`, `bots/idfinder-bot/`, `bots/atoyo-rag-bot/` (lid oqimi),
    va (bo'lsa) `bots/hr-bot/`.

@@ -68,4 +68,4 @@ xabar). Shuning uchun qat'iy qoidalar:
 
 Repo `CLAUDE.md` amal qiladi (testlar, `npm run scan`, `except: pass` yo'q,
 kalit faqat `.env`). Repo cheklovi (2026-12-11 gacha yangi loyiha yo'q) —
-egasi bu botni istisno qilgan bo'lsa, `docs/REJA.md` ga yozib qo'ying.
+egasi bu botni istisno qilgan bo'lsa, `docs/HOLAT.md` ga yozib qo'ying.
