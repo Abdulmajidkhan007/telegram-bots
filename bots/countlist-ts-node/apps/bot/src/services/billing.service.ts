@@ -95,10 +95,13 @@ export class BillingService {
       const sub = await tx.groupSubscription.findUnique({ where: { groupId: pay.groupId } });
       const res = applyPurchase(sub, pay.plan, now, this.cfg.prices);
       if (!res.ok) return { kind: 'rejected' as const, payment: pay };
-      await tx.payment.update({
-        where: { id: pay.id },
+      // Shartli yangilash: ikki marta tez bosilsa ikkala tranzaksiya ham yuqorida
+      // PENDING ko'rishi mumkin (READ COMMITTED) — faqat birinchisi obunani uzaytiradi.
+      const claimed = await tx.payment.updateMany({
+        where: { id: pay.id, status: 'PENDING' },
         data: { status: 'APPROVED', decidedBy: adminTelegramId, decidedAt: now },
       });
+      if (claimed.count !== 1) return { kind: 'decided' as const, payment: pay };
       await tx.groupSubscription.upsert({
         where: { groupId: pay.groupId },
         create: { groupId: pay.groupId, plan: res.plan, expiresAt: res.expiresAt, source: 'CARD' },
