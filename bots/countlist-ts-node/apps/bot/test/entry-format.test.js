@@ -114,3 +114,45 @@ test("guruh kategoriyasi izohdan topiladi (qo'shimchalar bilan)", () => {
   assert.equal(matchCategoryByName('taksi', cats), null);
   assert.equal(matchCategoryByName('angular kurs', cats), null); // so'z ichida emas, boshida
 });
+
+// ── Bitta xabardan bir nechta yozuv ──────────────────────────────
+const { formatBatchText, batchKeyboard } = require('../dist/utils/entry-format');
+const { BATCH_UNDO_CALLBACK_RE, batchUndoCallbackData, parseBatchUndoCallback } = require('../dist/utils/quick-entry');
+const G = 'clx1a2b3c4d5e6f7g8h9i0jgg';
+const row = (type, amount, description, extra = {}) => ({ type, amount, currency: 'UZS', description, day: TODAY, ...extra });
+
+test('formatBatchText: qatorlar, jami, sana, hisob', () => {
+  const t = formatBatchText([row('EXPENSE', 27000, 'banan'), row('EXPENSE', 31000, 'non')], TODAY, '💳 Humo');
+  assert.match(t, /✅ 2 ta yozuv saqlandi/);
+  assert.match(t, /🔴 Chiqim: 27 000 so'm — banan/);
+  assert.match(t, /🔴 Chiqim: 31 000 so'm — non/);
+  assert.match(t, /📊 Jami chiqim: 58 000 so'm/);
+  assert.doesNotMatch(t, /Jami kirim/);
+  assert.match(t, /📅 Bugun, 13\.10/);
+  assert.match(t, /💳 Humo$/);
+});
+
+test('formatBatchText: kirim + chiqim, ovoz prefiksi', () => {
+  const t = formatBatchText([row('INCOME', 200000, 'oylik'), row('EXPENSE', 50000, 'taksi')], TODAY, null, '🎙 matn\n\n');
+  assert.ok(t.startsWith('🎙 matn\n\n'));
+  assert.match(t, /➕ Kirim: 200 000 so'm — oylik/);
+  assert.match(t, /📊 Jami chiqim: 50 000 so'm/);
+  assert.match(t, /📊 Jami kirim: 200 000 so'm/);
+});
+
+test('bekor qilish callback: to\'g\'ri data qabul, noto\'g\'ri rad', () => {
+  const data = batchUndoCallbackData(G, 12345);
+  assert.equal(data, `exp:ball:${G}:12345`);
+  assert.ok(Buffer.byteLength(data) <= 64);
+  assert.deepEqual(parseBatchUndoCallback(data), { groupId: G, msgId: 12345n });
+  assert.equal(batchKeyboard(G, 12345)[0][0].data, data);
+  for (const bad of [
+    'exp:ball:', `exp:ball:${G}`, `exp:ball:${G}:`, `exp:ball:${G}:abc`, `exp:ball:${G}:-1`,
+    `exp:ball:${G}:1234567890123`, `exp:ball:BAD:1`, `exp:ball:${G}:1 `, `x exp:ball:${G}:1`, `exp:undo:${G}`,
+  ]) {
+    assert.equal(BATCH_UNDO_CALLBACK_RE.test(bad), false, bad);
+  }
+  assert.equal(parseBatchUndoCallback(undefined), null);
+  assert.throws(() => batchUndoCallbackData('bad id', 1));
+  assert.throws(() => batchUndoCallbackData(G, 0));
+});

@@ -6,3 +6,4 @@ export * from './utils/date-token';
 export * from './utils/accounts';
 export * from './utils/date-columns';
 export * from './utils/history';
+export * from './utils/multi-entry';

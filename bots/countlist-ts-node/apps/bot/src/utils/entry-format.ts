@@ -2,7 +2,7 @@
 // Markup'ga handler'da aylantiriladi, shuning uchun bazasiz test qilinadi.
 
 import { Currency, LocalDate, compareLocalDate, formatAmount, formatShortDate, addDays } from '@expense-tracker/shared';
-import { datePickerOptions, txCallback, undoCallbackData } from './quick-entry';
+import { batchUndoCallbackData, datePickerOptions, txCallback, undoCallbackData } from './quick-entry';
 
 export interface Button {
   text: string;
@@ -109,4 +109,47 @@ export function matchCategoryByName(description: string, categories: Array<{ id:
     if (hit && (!best || name.length > best.len)) best = { id: c.id, len: name.length };
   }
   return best?.id ?? null;
+}
+
+export interface BatchRow {
+  type: 'EXPENSE' | 'INCOME';
+  amount: number;
+  currency: string;
+  description: string;
+  day: LocalDate;
+}
+
+/** 27000 → "27 000 so'm" (yig'ma ro'yxatda "27k" emas, aniq summa kerak). */
+function exactAmount(amount: number, currency: string): string {
+  if (currency !== 'UZS') return formatAmount(amount, currency as Currency);
+  return `${Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} so'm`;
+}
+
+function totalsLine(rows: BatchRow[], type: BatchRow['type']): string | null {
+  const sums = new Map<string, number>();
+  for (const r of rows) if (r.type === type) sums.set(r.currency, (sums.get(r.currency) ?? 0) + r.amount);
+  if (sums.size === 0) return null;
+  return [...sums].map(([cur, sum]) => exactAmount(sum, cur)).join(' + ');
+}
+
+/** Bitta xabardan bir nechta yozuv: qatorlar, jami, sana, hisob. */
+export function formatBatchText(rows: BatchRow[], today: LocalDate, accountName: string | null, prefix = ''): string {
+  const lines = [`${prefix}✅ ${rows.length} ta yozuv saqlandi`, ''];
+  for (const r of rows) {
+    lines.push(`${r.type === 'INCOME' ? '➕ Kirim' : '🔴 Chiqim'}: ${exactAmount(r.amount, r.currency)} — ${r.description}`);
+  }
+  lines.push('');
+  const expense = totalsLine(rows, 'EXPENSE');
+  const income = totalsLine(rows, 'INCOME');
+  if (expense) lines.push(`📊 Jami chiqim: ${expense}`);
+  if (income) lines.push(`📊 Jami kirim: ${income}`);
+  const days = new Map<string, LocalDate>();
+  for (const r of rows) days.set(`${r.day.year}-${r.day.month}-${r.day.day}`, r.day);
+  lines.push(`📅 ${[...days.values()].map((d) => dayLabel(d, today)).join(', ')}`);
+  if (accountName) lines.push(accountName);
+  return lines.join('\n');
+}
+
+export function batchKeyboard(groupId: string, telegramMsgId: number): Button[][] {
+  return [[{ text: '↩️ Hammasini bekor qilish', data: batchUndoCallbackData(groupId, telegramMsgId) }]];
 }

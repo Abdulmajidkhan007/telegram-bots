@@ -39,6 +39,24 @@ export function parseUndoCallback(data: string | undefined): string | null {
   return m ? m[1] : null;
 }
 
+// ── Ko'p yozuvni birdan bekor qilish ─────────────────────────────
+// Bitta xabardan chiqqan yozuvlar bir xil telegramMsgId ga ega — alohida
+// "partiya" ustuni yo'q. "exp:ball:<groupId>:<msgId>": 10 + 32 + 1 + 12 ≤ 64 bayt.
+export const BATCH_UNDO_CALLBACK_RE = new RegExp(`^exp:ball:(${ID}):(\\d{1,12})$`);
+
+export function batchUndoCallbackData(groupId: string, telegramMsgId: number): string {
+  assertId(groupId);
+  if (!Number.isSafeInteger(telegramMsgId) || telegramMsgId <= 0 || telegramMsgId >= 1e12) {
+    throw new Error(`Kutilmagan xabar ID: ${telegramMsgId}`);
+  }
+  return checked(`exp:ball:${groupId}:${telegramMsgId}`);
+}
+
+export function parseBatchUndoCallback(data: string | undefined): { groupId: string; msgId: bigint } | null {
+  const m = data ? BATCH_UNDO_CALLBACK_RE.exec(data) : null;
+  return m ? { groupId: m[1], msgId: BigInt(m[2]) } : null;
+}
+
 // ── Yozuvni tahrirlash tugmalari ─────────────────────────────────
 // Qisqa prefikslar: ikki cuid (25+25) + prefiks 64 baytga sig'ishi kerak.
 export const TX_ACCOUNT_RE = new RegExp(`^ta:(${ID}):(${ID})$`);

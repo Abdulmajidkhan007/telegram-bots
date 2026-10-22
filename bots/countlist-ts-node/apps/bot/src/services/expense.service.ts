@@ -5,6 +5,7 @@ import {
   getDayOfYear,
   dateColumns,
   parseQuickEntry,
+  parseMultiEntry,
   localDateInTz,
   localDateToStorage,
   LocalDate,
@@ -15,6 +16,10 @@ import { deleteCacheValue } from '../utils/redis';
 import { matchCategoryByName } from '../utils/entry-format';
 
 export type CreateResult = { ok: true; expense: Expense } | { ok: false; error: DateTokenError };
+
+export type CreateManyResult =
+  | { ok: true; expenses: Expense[]; accountId: string | null }
+  | { ok: false; error: DateTokenError };
 
 export class ExpenseService {
   constructor(private prisma: PrismaClient) {}
@@ -66,6 +71,74 @@ export class ExpenseService {
     await this.invalidateGroupCache(params.groupId);
     logger.info(`${expense.type} created: ${expense.id} - ${entry.amount} ${entry.currency}`);
     return { ok: true, expense };
+  }
+
+  /**
+   * Bitta xabardan ≥2 tranzaksiya. null — ko'p rejim emas (chaqiruvchi
+   * createFromText ga o'tadi). Hammasi bitta tranzaksiyada: yo hammasi yoziladi,
+   * yo hech biri. Hisob — asosiy hisob, kategoriya — createFromText'dagidek.
+   */
+  async createManyFromText(params: {
+    rawText: string;
+    userId: string;
+    groupId: string;
+    timeZone: string;
+    telegramMsgId: bigint;
+    source?: 'TEXT' | 'VOICE';
+  }): Promise<CreateManyResult | null> {
+    const today = localDateInTz(new Date(), params.timeZone);
+    const parsed = parseMultiEntry(params.rawText, today);
+    if (!parsed) return null;
+    if ('error' in parsed) return { ok: false, error: parsed.error };
+
+    const accountId = await this.primaryAccountId(params.groupId);
+    const data: Prisma.ExpenseUncheckedCreateInput[] = [];
+    for (const entry of parsed.entries) {
+      const categoryId = entry.kind === 'expense'
+        ? await this.resolveCategoryId(params.groupId, entry.description, entry.categoryHint)
+        : null;
+      const at = entry.date ? localDateToStorage(entry.date) : new Date();
+      data.push({
+        userId: params.userId,
+        groupId: params.groupId,
+        categoryId,
+        accountId,
+        type: entry.kind === 'income' ? 'INCOME' : 'EXPENSE',
+        amount: new Prisma.Decimal(entry.amount),
+        currency: entry.currency,
+        description: entry.description,
+        rawText: params.rawText,
+        ...dateColumns(at, entry.date ?? today),
+        source: params.source ?? 'TEXT',
+        telegramMsgId: params.telegramMsgId,
+      });
+    }
+
+    const expenses = await this.prisma.$transaction(data.map((d) => this.prisma.expense.create({ data: d })));
+    await this.invalidateGroupCache(params.groupId);
+    logger.info(`batch created: ${expenses.length} ta, msg ${params.telegramMsgId}`);
+    return { ok: true, expenses, accountId };
+  }
+
+  /** Bir xabardan chiqqan yozuvlarni birdan bekor qiladi (cancelByAuthor kabi shartlar). */
+  async cancelBatchByAuthor(params: {
+    telegramMsgId: bigint;
+    userId: string;
+    groupId: string;
+    notBefore: Date;
+  }): Promise<number> {
+    const res = await this.prisma.expense.updateMany({
+      where: {
+        telegramMsgId: params.telegramMsgId,
+        userId: params.userId,
+        groupId: params.groupId,
+        status: 'ACTIVE',
+        createdAt: { gte: params.notBefore },
+      },
+      data: { status: 'DELETED', deletedAt: new Date() },
+    });
+    if (res.count > 0) await this.invalidateGroupCache(params.groupId);
+    return res.count;
   }
 
   private async primaryAccountId(groupId: string): Promise<string | null> {
