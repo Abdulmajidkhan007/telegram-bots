@@ -121,8 +121,8 @@ Bir faylni ikki ishchi bir vaqtda o'zgartirmaydi:
 
 | Ishchi | Band | Asosiy fayllar | Bog'liqlik | Holat |
 |---|---|---|---|---|
-| W1 | Ko'p tranzaksiyali parser (2, 3) | `shared/utils/expense-parser.ts` (+ yangi fayl), `bot/services/expense.service.ts`, `bot/handlers/message.handler.ts`, `bot/handlers/entry.handler.ts`, `bot/utils/entry-format.ts` | — | ⏳ |
-| W2 | Transfer (4b) | `schema` (`Transfer` modeli), `shared/utils/accounts.ts`, `bot/services/account.service.ts`, `bot/commands/accounts.command.ts`, `bot/utils/accounts.ts`, `apps/api/.../accounts.service.ts` | W1 bilan fayl kesishmaydi | ⏳ |
+| W1 | Ko'p tranzaksiyali parser (2, 3) | `shared/utils/expense-parser.ts` (+ yangi fayl), `bot/services/expense.service.ts`, `bot/handlers/message.handler.ts`, `bot/handlers/entry.handler.ts`, `bot/utils/entry-format.ts` | — | ⏳ `session_018fgySpy4d6dYqik2u1M2FU` |
+| W2 | Transfer (4b) | `schema` (`Transfer` modeli), `shared/utils/accounts.ts`, `bot/services/account.service.ts`, `bot/commands/accounts.command.ts`, `bot/utils/accounts.ts`, `apps/api/.../accounts.service.ts` | W1 bilan fayl kesishmaydi | ⏳ `session_01CerwXyZa4BboAKAwnbJU1M` |
 | W3 | Paketlar, limitlar, to'lov (7, 8) | `schema`, yangi `bot/services/billing*`, `message.handler.ts` (ovoz limiti) | W1 va W2 merge'dan keyin | kutmoqda |
 
 ## 6. Egasidan kerak
