@@ -86,3 +86,74 @@ test("ro'yxat: asosiy ⭐, yopilganlar alohida, manfiy balans", () => {
   assert.match(formatAccountList([], new Map(), false), /hali yo'q/);
   assert.equal(formatBalance(1_500_000, 'UZS'), "1.5 mln so'm");
 });
+
+// ─── Transfer ───────────────────────────────────────────────────
+const {
+  ACC_TRANSFER_PICK_RE, transferPickData, transferStage, applyTransferPick, parseTransferAmount,
+  validateTransfer, formatTransferDone,
+} = require('../dist/utils/accounts');
+
+test('transfer: from −, to +, transfersiz chaqiruv o\'zgarmaydi', () => {
+  const accs = [acc(A, 'Humo', { initialBalance: 1_000_000 }), acc(B, 'Naqd')];
+  const without = computeBalances(accs, []);
+  assert.equal(without.get(A), 1_000_000);
+  const b = computeBalances(accs, [], [{ fromAccountId: A, toAccountId: B, currency: 'UZS', amount: 300_000 }]);
+  assert.equal(b.get(A), 700_000);
+  assert.equal(b.get(B), 300_000);
+});
+
+test('transfer: valyutasi mos kelmagan tomon e\'tiborga olinmaydi', () => {
+  const b = computeBalances([acc(A, 'Humo'), acc(B, 'USD', { currency: 'USD' })], [],
+    [{ fromAccountId: A, toAccountId: B, currency: 'UZS', amount: 100 }]);
+  assert.equal(b.get(A), -100);
+  assert.equal(b.get(B), 0);
+});
+
+test('validateTransfer: bir xil hisob, ≤0 summa, valyuta mos emas', () => {
+  const u = { id: A, currency: 'UZS' };
+  const v = { id: B, currency: 'UZS' };
+  assert.equal(validateTransfer(u, v, 1000), null);
+  assert.equal(validateTransfer(u, u, 1000), 'SAME_ACCOUNT');
+  assert.equal(validateTransfer(u, v, 0), 'BAD_AMOUNT');
+  assert.equal(validateTransfer(u, v, -5), 'BAD_AMOUNT');
+  assert.equal(validateTransfer(u, v, NaN), 'BAD_AMOUNT');
+  assert.equal(validateTransfer(u, { id: B, currency: 'USD' }, 10), 'CURRENCY_MISMATCH');
+});
+
+test('transfer callback regex: noto\'g\'ri data rad, to\'g\'risi 64 baytdan kichik', () => {
+  const d = transferPickData('from', A);
+  assert.ok(Buffer.byteLength(d) <= 64);
+  assert.deepEqual(ACC_TRANSFER_PICK_RE.exec(d).slice(1), ['from', A]);
+  for (const bad of ['acc:xf:x:' + A, 'acc:xf:from:', 'acc:xf:from:ABC', 'acc:xf:from:' + A + 'x!', 'acc:xf:from:' + A + ':1', 'xacc:xf:to:' + A]) {
+    assert.equal(ACC_TRANSFER_PICK_RE.test(bad), false, bad);
+  }
+  assert.throws(() => transferPickData('to', 'bad id'));
+});
+
+test('transfer qadamlari: from → to → amount, noto\'g\'ri tartib va bir xil hisob rad', () => {
+  assert.equal(transferStage({}), 'from');
+  assert.equal(applyTransferPick({}, 'to', B), null);
+  const d1 = applyTransferPick({}, 'from', A);
+  assert.deepEqual(d1, { fromId: A });
+  assert.equal(transferStage(d1), 'to');
+  assert.equal(applyTransferPick(d1, 'from', B), null);
+  assert.equal(applyTransferPick(d1, 'to', A), null);
+  const d2 = applyTransferPick(d1, 'to', B);
+  assert.deepEqual(d2, { fromId: A, toId: B });
+  assert.equal(transferStage(d2), 'amount');
+});
+
+test('parseTransferAmount: faqat summa qabul qilinadi', () => {
+  assert.equal(parseTransferAmount('500 000'), 500_000);
+  assert.equal(parseTransferAmount('1,5 mln'), 1_500_000);
+  assert.equal(parseTransferAmount('50k'), 50_000);
+  assert.equal(parseTransferAmount('taksi 50k'), null);
+  assert.equal(parseTransferAmount('salom'), null);
+  assert.equal(parseTransferAmount('0'), null);
+  assert.equal(parseTransferAmount('-5000'), null);
+});
+
+test('formatTransferDone', () => {
+  const t = formatTransferDone(acc(A, 'Humo'), acc(B, 'Naqd', { icon: '💵' }), 500_000);
+  assert.match(t, /^✅ Transfer: 500k so'm · 💳 Humo → 💵 Naqd$/);
+});

@@ -28,11 +28,21 @@ export class AccountsService {
       where: { groupId, status: 'ACTIVE', accountId: { in: accounts.map((a) => a.id) } },
       _sum: { amount: true },
     });
+    const transfers = await this.prisma.transfer.groupBy({
+      by: ['fromAccountId', 'toAccountId', 'currency'],
+      where: { groupId, deletedAt: null },
+      _sum: { amount: true },
+    });
     const balances = computeBalances(accounts, raw.map((r) => ({
       accountId: r.accountId,
       type: r.type,
       currency: r.currency,
       amount: Number(r._sum.amount ?? 0),
+    })), transfers.map((t) => ({
+      fromAccountId: t.fromAccountId,
+      toAccountId: t.toAccountId,
+      currency: t.currency,
+      amount: Number(t._sum.amount ?? 0),
     })));
     return accounts.map((a) => ({ ...a, balance: balances.get(a.id) ?? 0 }));
   }
