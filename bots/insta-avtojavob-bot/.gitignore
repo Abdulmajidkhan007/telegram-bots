@@ -1,0 +1,10 @@
+# Muhit o'zgaruvchilari — HECH QACHON commit qilinmaydi
+.env
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Bot ma'lumoti (foydalanuvchilar, to'lovlar)
+data/
+*.tmp

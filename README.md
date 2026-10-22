@@ -1,6 +1,6 @@
 # 🤖 Telegram Bots Monorepo
 
-**15 ta mustaqil Telegram bot — bitta repoda.** Har bot `bots/<nom>/` papkasida to'liq
+**16 ta mustaqil Telegram bot — bitta repoda.** Har bot `bots/<nom>/` papkasida to'liq
 alohida loyiha: o'z kodi, o'z `package.json`/`requirements.txt`, o'z `.env.example`,
 o'z `README.md`. Papkani nusxalab olsangiz — bot mustaqil ishlaydi.
 
@@ -28,6 +28,7 @@ o'z `README.md`. Papkani nusxalab olsangiz — bot mustaqil ishlaydi.
 | 13 | [`kino-bot`](bots/kino-bot) | Python | **Kino kodi** bo'yicha videoni beradi: majburiy obuna, admin panel, reklama, statistika, `/backup` va `/restore` |
 | 14 | [`hr-bot`](bots/hr-bot) | Python | **HR bot** (ko'p kompaniyali): vakansiya havolasi, PDF CV, **Gemini** ball, HR qarorlari, yopilganda **har** nomzodga javob |
 | 15 | [`ovoz-bot`](bots/ovoz-bot) | Python | **Ovoz → matn** (o'zbek/rus/ingliz) va **matn → ovozli xabar** — Gemini 3.8 TTS, kunlik limit |
+| 16 | [`insta-avtojavob-bot`](bots/insta-avtojavob-bot) | Node | Instagram'ga **AI avto-javob** ulash qo'llanmasi: bepul qadamlar (obuna), pullik qo'llanma + AI shablonlar, qo'lda to'lov, admin panel |
 
 Batafsil ma'lumot — har bot papkasidagi `README.md` da.
 
@@ -45,7 +46,7 @@ git clone https://github.com/Abdulmajidkhan007/save-video-downloader-bot.git
 cd save-video-downloader-bot
 ```
 
-Bitta buyruq — **hamma 15 ta bot** yuklab olinadi.
+Bitta buyruq — **hamma 16 ta bot** yuklab olinadi.
 
 ### 2. Botlar ro'yxatini ko'rish
 
@@ -133,7 +134,7 @@ npm run check     # testlar + kalit tekshiruvi
 │   │   ├── src/  package.json  .env.example  README.md
 │   ├── anonim-bot/
 │   ├── quiz-bot/
-│   └── ...                     # jami 15 ta
+│   └── ...                     # jami 16 ta
 ├── tools/
 │   ├── run.js                  # boshqaruvchi CLI (list/setup/install/start/doctor)
 │   ├── registry.js             # bots.json ustidagi toza mantiq
