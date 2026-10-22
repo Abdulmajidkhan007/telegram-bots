@@ -2,14 +2,22 @@ import { Telegraf } from 'telegraf';
 import { BotContext } from '../types/context';
 import { mainInlineKeyboard } from '../keyboards/main.keyboard';
 import { sendLoginLink } from './login.command';
+import { BillingService } from '../services/billing.service';
+import { handlePayStart } from './tarif.card';
 
-export function registerStartCommand(bot: Telegraf<BotContext>): void {
+export function registerStartCommand(
+  bot: Telegraf<BotContext>,
+  billing: BillingService,
+  adminId: bigint | null,
+): void {
   bot.start(async (ctx) => {
     const firstName = ctx.from?.first_name || 'Do\'stim';
     const isGroup = ctx.chat?.type === 'group' || ctx.chat?.type === 'supergroup';
 
     // Guruhdagi "Shaxsiy chatda olish" tugmasi t.me/<bot>?start=login ga olib keladi.
     if (ctx.payload === 'login') return sendLoginLink(ctx);
+    // Karta to'lovi deep-link'i: start=pay_<groupId>_<plan> (chek guruhga emas, shaxsiy chatga).
+    if (await handlePayStart(ctx, billing, adminId, ctx.payload ?? '')) return;
 
     if (!isGroup) {
       await ctx.replyWithMarkdownV2(

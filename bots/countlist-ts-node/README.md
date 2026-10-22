@@ -262,6 +262,33 @@ yarn db:migrate     # Migration yaratish va ishga tushurish
 > (`cd packages/database && npx prisma db push`). `/transfer` (hisoblar orasida
 > o'tkazma) yangi `transfers` jadvalini qo'shadi: deploy'da `db push` ni bir marta bajaring.
 
+### Pullik paketlar (Plus / Pro / Max) — ixtiyoriy, standart holatda O'CHIQ
+
+Obuna birligi — **guruh**. `BILLING_ENABLED=1` bo'lmasa bot avvalgidek ishlaydi: limit tekshiruvi ham,
+DB so'rovi ham yo'q; `/tarif` faqat «Pullik paketlar hali yoqilmagan» deydi.
+
+Limitlar (oyiga, guruhga; matnli yozuv va transfer cheklanmaydi):
+
+| | Free | Plus | Pro | Max |
+|---|---|---|---|---|
+| 🎙 Ovozli xabar | 30 | 300 | 1000 | 3000 |
+| 💳 Hisoblar | 3 | 10 | 30 | 100 |
+
+Yoqish tartibi:
+
+1. Yangi jadvallar (`group_subscriptions`, `payments`, `usage_counters`): `cd packages/database && npx prisma db push`
+   (flag o'chiq bo'lsa ham xavfsiz — jadvallar bo'sh turadi).
+2. Railway Variables (qiymatlarni egasi belgilaydi, `.env.example` da izohlari bor):
+   - `TARIF_PLUS_NARX` / `TARIF_PRO_NARX` / `TARIF_MAX_NARX` — karta narxi (so'm). Bo'sh bo'lsa o'sha paket sotilmaydi.
+   - ⭐ Stars: `TOLOV_STARS=1` + `TARIF_*_STARS`.
+   - 💳 Karta: `TOLOV_KARTA`, `TOLOV_KARTA_EGASI` (+ `ADMIN_TELEGRAM_ID` — chek shunga boradi).
+3. `BILLING_ENABLED=1` — oxirida, qayta ishga tushirish.
+4. Tekshirish: guruhda `/tarif`. Sovg'a / xato tuzatish: admin `/grant <guruh_telegram_id> <plus|pro|max> <kun>`
+   (flag yoqilmagan bo'lsa ham ishlaydi — obunani oldindan tayyorlab qo'yish mumkin).
+
+Karta oqimi: `/tarif` → 💳 tugma → botning shaxsiy chati (`start=pay_<groupId>_<plan>`) → chek rasmi → admin ✅/❌.
+Chek guruhga yuborilmaydi. Admin pul bank ilovasida kelganini ko'rgandan keyin bosadi.
+
 ### 7. Default kategoriyalarni seed qilish (ixtiyoriy)
 
 ```bash

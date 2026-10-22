@@ -11,6 +11,8 @@ import { AccountService } from '../services/account.service';
 import { handleAccountText } from '../commands/accounts.command';
 import { EntryUi } from './entry.handler';
 import { groupTimeZone } from '../utils/group-time';
+import { BillingService } from '../services/billing.service';
+import { limitReachedText } from '../services/billing.logic';
 
 function dateErrorText(error: DateTokenError): string {
   // Hozircha yagona xato turi — kelajak sana; switch yangi tur qo'shilsa TS ogohlantiradi.
@@ -36,6 +38,7 @@ export function registerMessageHandlers(
   accountService: AccountService,
   entryUi: EntryUi,
   prisma: PrismaClient,
+  billing: BillingService,
 ): void {
   bot.on('text', async (ctx) => {
     const text = ctx.message.text.trim();
@@ -144,8 +147,17 @@ export function registerMessageHandlers(
     if (voice.duration > MAX_VOICE_SECONDS) return;
 
     try {
+      // Paket limiti: transkripsiyadan OLDIN (API xarajati ketmasin). Flag o'chiq → DB'ga tegmaydi.
+      const gate = await billing.gate(ctx.dbGroup.id, 'voice');
+      if (!gate.allowed) {
+        await ctx.reply(limitReachedText('voice', gate), { reply_parameters: { message_id: ctx.message.message_id } });
+        return;
+      }
       const link = await ctx.telegram.getFileLink(voice.file_id);
       const text = await transcribeVoice(link.toString(), config.voice);
+      // Muvaffaqiyatli transkripsiyadan KEYIN (atomik increment). Hisoblash xatosi yozuvni to'xtatmasin.
+      await billing.recordUsage(ctx.dbGroup.id, 'voice').catch(
+        (err) => logger.error(`Ovoz hisoblagichi yozilmadi (guruh ${ctx.dbGroup!.id}):`, err));
 
       const many = text
         ? await expenseService.createManyFromText({

@@ -2,7 +2,7 @@ import { Context } from 'telegraf';
 import { User, Group } from '@prisma/client';
 
 export interface SessionData {
-  step?: 'cat:add' | 'cat:edit' | 'tx:newcat' | 'acc:add' | 'acc:xfer';
+  step?: 'cat:add' | 'cat:edit' | 'tx:newcat' | 'acc:add' | 'acc:xfer' | 'pay:receipt' | 'pay:reject';
   editingCategoryId?: string;
   /** tx:newcat — qaysi yozuvga yangi kategoriya qo'yiladi va qaysi xabar yangilanadi. */
   editingExpenseId?: string;
@@ -10,6 +10,11 @@ export interface SessionData {
   /** acc:xfer — transfer qadamlari: qayerdan / qayerga (hisob ID'lari). */
   transferFromId?: string;
   transferToId?: string;
+  /** pay:receipt — qaysi guruh va paket uchun chek kutilmoqda. */
+  payGroupId?: string;
+  payPlan?: 'PLUS' | 'PRO' | 'MAX';
+  /** pay:reject (admin) — rad etish sababi kutilayotgan to'lov. */
+  payRejectId?: string;
 }
 
 export interface BotContext extends Context {

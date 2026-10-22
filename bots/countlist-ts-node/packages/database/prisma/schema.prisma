@@ -34,6 +34,7 @@ model User {
   notifications    Notification[]
   auditLogs        AuditLog[]
   refreshTokens    RefreshToken[]
+  payments         Payment[]
 
   @@map("users")
   @@index([telegramId])
@@ -72,6 +73,9 @@ model Group {
   settings         GroupSettings?
   accounts         Account[]
   transfers        Transfer[]
+  subscription     GroupSubscription?
+  payments         Payment[]
+  usageCounters    UsageCounter[]
 
   @@map("groups")
   @@index([telegramId])
@@ -424,4 +428,87 @@ model RefreshToken {
   @@map("refresh_tokens")
   @@index([token])
   @@index([userId])
+}
+
+// ─── BILLING (BILLING_ENABLED=1 bo'lgandagina ishlatiladi) ─────────
+// Obuna birligi — GURUH. Jadvallar bo'sh turaveradi, flag o'chiq bo'lsa bot ularga tegmaydi.
+enum Plan {
+  FREE
+  PLUS
+  PRO
+  MAX
+}
+
+enum PaymentMethod {
+  CARD
+  STARS
+}
+
+enum SubscriptionSource {
+  CARD
+  STARS
+  ADMIN
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  REFUNDED
+}
+
+model GroupSubscription {
+  id        String             @id @default(cuid())
+  groupId   String             @unique @map("group_id")
+  plan      Plan               @default(FREE)
+  expiresAt DateTime           @map("expires_at")
+  source    SubscriptionSource
+  updatedAt DateTime           @updatedAt @map("updated_at")
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@map("group_subscriptions")
+}
+
+model Payment {
+  id               String        @id @default(cuid())
+  groupId          String        @map("group_id")
+  userId           String        @map("user_id")
+  plan             Plan
+  method           PaymentMethod
+  /// CARD — so'm (UZS), STARS — yulduzlar soni (XTR)
+  amount           Int
+  currency         String
+  status           PaymentStatus @default(PENDING)
+  receiptFileId    String?       @map("receipt_file_id")
+  /// Bir xil chek qayta kelganini aniqlash uchun (file_id har safar boshqacha)
+  receiptUniqueId  String?       @map("receipt_unique_id")
+  /// Stars: takroriy successful_payment ikki marta hisoblanmasin
+  telegramChargeId String?       @unique @map("telegram_charge_id")
+  /// Qaror chiqargan adminning Telegram ID'si
+  decidedBy        BigInt?       @map("decided_by")
+  createdAt        DateTime      @default(now()) @map("created_at")
+  decidedAt        DateTime?     @map("decided_at")
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+  @@index([userId, status])
+  @@index([groupId])
+  @@index([receiptUniqueId])
+}
+
+model UsageCounter {
+  id      String @id @default(cuid())
+  groupId String @map("group_id")
+  feature String
+  /// 'YYYY-MM' (Asia/Tashkent)
+  period  String
+  count   Int    @default(0)
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, feature, period])
+  @@map("usage_counters")
 }

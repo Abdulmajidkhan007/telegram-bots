@@ -3,13 +3,16 @@ import { PrismaClient } from '@prisma/client';
 import { BotContext } from '../types/context';
 import { config } from '../config';
 import { formatAmount } from '@expense-tracker/shared';
+import { BillingService } from '../services/billing.service';
+import { PLAN_NAMES, parseGrantArgs, MAX_GRANT_DAYS } from '../services/billing.logic';
+import { logger } from '../utils/logger';
 
 function isAdmin(ctx: BotContext): boolean {
   if (!config.bot.adminId) return false;
   return ctx.dbUser?.telegramId === config.bot.adminId;
 }
 
-export function registerAdminCommands(bot: Telegraf<BotContext>, prisma: PrismaClient): void {
+export function registerAdminCommands(bot: Telegraf<BotContext>, prisma: PrismaClient, billing: BillingService): void {
   bot.command('admin', async (ctx) => {
     if (!isAdmin(ctx)) return ctx.reply('❌ Bu komanda faqat admin uchun.');
 
@@ -34,6 +37,27 @@ export function registerAdminCommands(bot: Telegraf<BotContext>, prisma: PrismaC
         [Markup.button.callback('📊 Top 10 sarflovchi', 'admin:topusers')],
       ]),
     );
+  });
+
+  // /grant <guruh_telegram_id> <plan> <kun> — sovg'a yoki xato tuzatish. BILLING_ENABLED'ga
+  // bog'liq emas: flagni yoqishdan oldin ham obuna tayyorlab qo'yish mumkin.
+  bot.command('grant', async (ctx) => {
+    if (!isAdmin(ctx)) return ctx.reply('❌ Bu komanda faqat admin uchun.');
+    const args = parseGrantArgs(ctx.message.text);
+    if (!args) {
+      return ctx.reply(`Format: /grant {guruh_telegram_id} {plus|pro|max} {kun 1–${MAX_GRANT_DAYS}}\nMasalan: /grant -1001234567890 pro 30`);
+    }
+    try {
+      const res = await billing.grant(args.groupTelegramId, args.plan, args.days);
+      if (!res) return ctx.reply('❌ Bunday guruh topilmadi (bot guruhda bo\'lishi va unda kamida bitta xabar yozilgan bo\'lishi kerak).');
+      const until = res.expiresAt.toISOString().slice(0, 10);
+      await ctx.reply(`✅ «${res.group.title}»: ${PLAN_NAMES[res.plan]} — ${until} gacha.`);
+      await ctx.telegram.sendMessage(Number(args.groupTelegramId), `🎁 Guruhga ${PLAN_NAMES[res.plan]} paketi berildi — ${until} gacha. /tarif`).catch(
+        (e) => logger.warn(`Guruhga (${res.group.id}) grant xabari ketmadi: ${e?.message ?? e}`));
+    } catch (err) {
+      logger.error('/grant xatosi:', err);
+      await ctx.reply('❌ Saqlab bo\'lmadi, loglarni ko\'ring.');
+    }
   });
 
   bot.command('allusers', async (ctx) => {

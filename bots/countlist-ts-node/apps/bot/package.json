@@ -6,7 +6,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "tsc -p ../../packages/shared && tsc && node --require ./test/resolve-shared.js --test test/voice.service.test.js test/profile.test.js test/reminder.test.js test/quick-entry.test.js test/session.test.js test/accounts.test.js test/entry-format.test.js"
+    "test": "tsc -p ../../packages/shared && tsc && node --require ./test/resolve-shared.js --test test/voice.service.test.js test/profile.test.js test/reminder.test.js test/quick-entry.test.js test/session.test.js test/accounts.test.js test/entry-format.test.js test/billing.test.js"
   },
   "dependencies": {
     "telegraf": "^4.16.3",

@@ -1,8 +1,10 @@
 import { PrismaClient, Prisma } from '@prisma/client';
+import { BillingService } from './billing.service';
+import { limitReachedText } from './billing.logic';
 import { AccountRow, TxSum, TransferSum, computeBalances, reorder, sortAccounts, validateTransfer, TransferError } from '../utils/accounts';
 
 export class AccountService {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private prisma: PrismaClient, private billing?: BillingService) {}
 
   async list(groupId: string): Promise<AccountRow[]> {
     const rows = await this.prisma.account.findMany({ where: { groupId, deletedAt: null } });
@@ -56,6 +58,11 @@ export class AccountService {
 
   async create(groupId: string, data: { name: string; icon: string; initialBalance: number }) {
     const accounts = await this.list(groupId);
+    // Paket limiti (faqat BILLING_ENABLED=1): chaqiruvchi xato matnini foydalanuvchiga ko'rsatadi.
+    if (this.billing) {
+      const gate = await this.billing.gateCount(groupId, 'accounts', accounts.filter((a) => !a.isHidden).length);
+      if (!gate.allowed) throw new Error(limitReachedText('accounts', gate));
+    }
     const sortOrder = accounts.length ? Math.max(...accounts.map((a) => a.sortOrder)) + 1 : 0;
     return this.prisma.account.create({
       data: {
