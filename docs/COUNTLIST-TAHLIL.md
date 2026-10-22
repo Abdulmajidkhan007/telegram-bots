@@ -13,14 +13,14 @@
 | # | Imkoniyat (raqobatchida) | countlist | Kod qayerda | Nima qilish kerak | Hajm | Holat |
 |---|---|---|---|---|---|---|
 | 1 | Ovozli xabar → matn, «🎙 Eshitildi: «…»» | ✅ | `bot/handlers/message.handler.ts:122-166` (handler), `bot/services/voice.service.ts:61-113` (Gemini/Whisper), matn `message.handler.ts:157` (`🎙 <matn>`) | Ishlaydi, faqat API limiti tugagan (2-bo'lim). Kalit/billing — egasi. Ixtiyoriy: Gemini «thinking»ni o'chirish (narx ↓, 2-bo'lim) | kichik | egasidan kalit/billing |
-| 2 | Bitta xabardan bir nechta tranzaksiya + «📊 Jami» | ❌ | Parser bitta summa oladi: `shared/utils/expense-parser.ts:182-188` (`parseTransactionText`), `:275-285` (`parseQuickEntry`); servis bitta yozuv yaratadi: `bot/services/expense.service.ts:27-69` | Xabarni bo'laklarga ajratish (`,` `;` yangi qator, «va»), har bo'lak — alohida yozuv, javobda ro'yxat + Jami + sana; «Bekor qilish» hammasini bekor qiladi. Ovozga ham ishlaydi (STT matni shu parserdan o'tadi) | katta | ishchi W1 |
-| 3 | Kirim va chiqim bitta xabarda | ⚠️ | Kirim bor, lekin faqat xabar boshidagi `+` bilan: `shared/utils/expense-parser.ts:173-188` (`SIGN_RE`); bitta xabarda bittasi | W1 bilan birga: har bo'lak o'z ishorasi bilan (`+200 ming oylik, 50 ming taksi`), Jami'da chiqim/kirim alohida | (W1 ichida) | ishchi W1 |
+| 2 | Bitta xabardan bir nechta tranzaksiya + «📊 Jami» | ❌ | Parser bitta summa oladi: `shared/utils/expense-parser.ts:182-188` (`parseTransactionText`), `:275-285` (`parseQuickEntry`); servis bitta yozuv yaratadi: `bot/services/expense.service.ts:27-69` | Xabarni bo'laklarga ajratish (`,` `;` yangi qator, «va»), har bo'lak — alohida yozuv, javobda ro'yxat + Jami + sana; «Bekor qilish» hammasini bekor qiladi. Ovozga ham ishlaydi (STT matni shu parserdan o'tadi) | katta | ✅ kod — PR #59 (2026-10-22), Telegram'da sinalmagan |
+| 3 | Kirim va chiqim bitta xabarda | ⚠️ | Kirim bor, lekin faqat xabar boshidagi `+` bilan: `shared/utils/expense-parser.ts:173-188` (`SIGN_RE`); bitta xabarda bittasi | W1 bilan birga: har bo'lak o'z ishorasi bilan (`+200 ming oylik, 50 ming taksi`), Jami'da chiqim/kirim alohida | (W1 ichida) | ✅ kod — PR #59, Telegram'da sinalmagan |
 | 4 | Bir nechta hisob, «❓ Qaysi hisobga?» | ⚠️ | Hisoblar bor: `schema:203-219` (`Account`), `/hisoblar`: `bot/commands/accounts.command.ts:72-73`. Yozuv avtomatik birinchi hisobga tushadi: `bot/services/expense.service.ts:71-78`; hisobni almashtirish tugmalari saqlangan xabarning o'zida: `bot/utils/entry-format.ts:61-72` (9 tagacha, `:32`) | Raqobatchi avval so'raydi (+1 bosish). Bizda avval saqlanadi, keyin tugma bilan o'zgaradi — tezroq. **Tavsiya: o'zgartirmaslik.** Agar egasi xohlasa — guruh sozlamasi «hisobni so'rab yoz» | kichik | egasi qarori |
-| 4b | 🔄 Transfer (hisoblar orasida) | ❌ | `schema:195-198` — `TransactionType` faqat `EXPENSE`/`INCOME`; balans: `shared/utils/accounts.ts:26` (`computeBalances`) | Alohida `Transfer` modeli (statistikaga aralashmasin), balansga qo'shish, bot oqimi `/transfer` (hisob → hisob → summa) | katta | ishchi W2 |
+| 4b | 🔄 Transfer (hisoblar orasida) | ❌ | `schema:195-198` — `TransactionType` faqat `EXPENSE`/`INCOME`; balans: `shared/utils/accounts.ts:26` (`computeBalances`) | Alohida `Transfer` modeli (statistikaga aralashmasin), balansga qo'shish, bot oqimi `/transfer` (hisob → hisob → summa) | katta | ✅ kod — PR #58 (2026-10-22), Telegram/DB'da sinalmagan; deploy'da `prisma db push` |
 | 5 | «✅ Muvaffaqiyatli saqlandi!» + hisob + sana | ✅ | `bot/utils/entry-format.ts:47-59` — «✅ Xarajat/Daromad yozildi», summa, kategoriya, hisob, sana, muallif; «↩️ Bekor qilish» `:70` | Yo'q (bizda ko'proq ma'lumot) | — | bor |
 | 6 | Asosiy reply-menyu (💰 Hisoblar · ➕ Tranzaksiya · 🔄 Transfer · ⚙️ Sozlamalar) | ❌ | Faqat inline menyu: `bot/keyboards/main.keyboard.ts:4-24`; `Markup.keyboard` hech qayerda yo'q. **Muhim:** bot faqat guruhda yozadi — `bot/middlewares/group.middleware.ts:24-35` (`dbGroup` faqat group/supergroup), `bot/handlers/message.handler.ts:90` | Guruhda reply-klaviatura hammaning ekranini egallaydi — guruh uchun yaramaydi. Raqobatchi shaxsiy chatda ishlaydi. Shaxsiy chat rejimi — yangi mahsulot yo'nalishi (shaxsiy «guruh»), cheklov davrida (CLAUDE.md) egasi qaror qiladi | katta | egasi qarori |
-| 7 | Paketlar (Plus/Pro/Max) va limitlar | ❌ | Obuna/to'lov/usage modeli yo'q (`schema` da `Subscription`/`Payment` yo'q). Reja bor: `docs/BOT-TARIFLARI.md:139-147` | 3-bo'lim. Feature flag bilan, narx egasi tasdiqlamaguncha o'chiq | katta | ishchi W3 (W1, W2 dan keyin) |
-| 8 | To'lov | ❌ | countlist'da yo'q. Repoda bor: `bots/hr-bot/hr_bot/billing.py`, `handlers/payment.py` (Telegram Stars obuna havolasi + karta/chek + admin tasdiq) | hr-bot mantig'ini TS'ga ko'chirish (4-bo'lim) | katta | ishchi W3 |
+| 7 | Paketlar (Plus/Pro/Max) va limitlar | ❌ | Obuna/to'lov/usage modeli yo'q (`schema` da `Subscription`/`Payment` yo'q). Reja bor: `docs/BOT-TARIFLARI.md:139-147` | 3-bo'lim. Feature flag bilan, narx egasi tasdiqlamaguncha o'chiq | katta | ✅ kod — PR #60, `BILLING_ENABLED` ortida, O'CHIQ; narx egasi tasdig'ini kutadi |
+| 8 | To'lov | ❌ | countlist'da yo'q. Repoda bor: `bots/hr-bot/hr_bot/billing.py`, `handlers/payment.py` (Telegram Stars obuna havolasi + karta/chek + admin tasdiq) | hr-bot mantig'ini TS'ga ko'chirish (4-bo'lim) | katta | ✅ kod — PR #60 (Stars + karta/chek), O'CHIQ; sinalmagan |
 
 **Topilgan qo'shimcha muammo:** CI countlist testlarini ishga tushirmaydi —
 `.github/workflows/ci.yml` faqat `npm test` (ildiz `package.json:20`:
@@ -121,11 +121,21 @@ Bir faylni ikki ishchi bir vaqtda o'zgartirmaydi:
 
 | Ishchi | Band | Asosiy fayllar | Bog'liqlik | Holat |
 |---|---|---|---|---|
-| W1 | Ko'p tranzaksiyali parser (2, 3) | `shared/utils/expense-parser.ts` (+ yangi fayl), `bot/services/expense.service.ts`, `bot/handlers/message.handler.ts`, `bot/handlers/entry.handler.ts`, `bot/utils/entry-format.ts` | — | ⏳ `session_018fgySpy4d6dYqik2u1M2FU` |
-| W2 | Transfer (4b) | `schema` (`Transfer` modeli), `shared/utils/accounts.ts`, `bot/services/account.service.ts`, `bot/commands/accounts.command.ts`, `bot/utils/accounts.ts`, `apps/api/.../accounts.service.ts` | W1 bilan fayl kesishmaydi | ⏳ `session_01CerwXyZa4BboAKAwnbJU1M` |
-| W3 | Paketlar, limitlar, to'lov (7, 8) | `schema`, yangi `bot/services/billing*`, `message.handler.ts` (ovoz limiti) | W1 va W2 merge'dan keyin | kutmoqda |
+| W1 | Ko'p tranzaksiyali parser (2, 3) | `shared/utils/expense-parser.ts` (+ yangi fayl), `bot/services/expense.service.ts`, `bot/handlers/message.handler.ts`, `bot/handlers/entry.handler.ts`, `bot/utils/entry-format.ts` | — | ✅ merge #59 |
+| W2 | Transfer (4b) | `schema` (`Transfer` modeli), `shared/utils/accounts.ts`, `bot/services/account.service.ts`, `bot/commands/accounts.command.ts`, `bot/utils/accounts.ts`, `apps/api/.../accounts.service.ts` | W1 bilan fayl kesishmaydi | ✅ merge #58 |
+| W3 | Paketlar, limitlar, to'lov (7, 8) | `schema`, yangi `bot/services/billing*`, `message.handler.ts` (ovoz limiti) | W1 va W2 merge'dan keyin | ✅ merge #60 |
 
-## 6. Egasidan kerak
+## 6. Yoqish tartibi (egasi uchun)
+
+1. Railway'da `cd packages/database && npx prisma db push` (yangi jadvallar: `transfers`,
+   `group_subscriptions`, `payments`, `usage_counters`).
+2. Narx/to'lov env'lari (`bots/countlist-ts-node/.env.example`, README «Pullik paketlar»).
+3. Oxirida `BILLING_ENABLED=1`. Bo'sh qoldirilsa bot avvalgidek bepul va limitsiz.
+
+Ma'lum kamchilik: oylik ovoz limiti tugagach har ovozli xabarga «limit tugadi» javobi
+beriladi (kuniga bir marta cheklash — keyingi kichik ish).
+
+## 7. Egasidan kerak
 
 1. Gemini: AI Studio'da limitni ko'rish va billing yoqish (yoki `OPENAI_API_KEY`).
 2. Paket narxlari va limitlar (3-bo'lim taklifi) — tasdiq.

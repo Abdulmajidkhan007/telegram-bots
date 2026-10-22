@@ -4,7 +4,7 @@
 > Umumiy reja, navbat va «yangi loyiha yo'q» qoidasi — profil repoda:
 > https://github.com/Abdulmajidkhan007/Abdulmajidkhan007/blob/main/docs/REJA.md
 >
-> Oxirgi tekshiruv: 2026-10-22 (koddan). Oxirgi kod o'zgarishi: 2026-10-22 (insta-avtojavob-bot).
+> Oxirgi tekshiruv: 2026-10-22 (koddan). Oxirgi kod o'zgarishi: 2026-10-22 (countlist-ts-node).
 
 ## Umumiy
 
@@ -29,7 +29,7 @@
 | `kino-bot` | Python | ✅ | Railway'da Volume shart (`DATA_DIR=/data`). `railway.toml` bor |
 | `killspam-bot` | Python | — | Ochiq: @KillSpam_007_Bot. Baza kerak |
 | `xulosa-ai-bot` | Python | — | Userbot (`STRING_SESSION`) — shaxsiy |
-| `countlist-ts-node` | TS | — | Ochiq: @COUNTLIST_BOT. PostgreSQL/Redis; 2026-10-13: Mini App «Tarix», hisoblar, daromad, tezkor kiritish |
+| `countlist-ts-node` | TS | — | Ochiq: @COUNTLIST_BOT. PostgreSQL/Redis; 2026-10-13: Mini App «Tarix», hisoblar, daromad, tezkor kiritish. 2026-10-22: bir xabardan ko'p tranzaksiya, hisoblar orasida transfer, Plus/Pro/Max + Stars/karta to'lovi — kodda bor, `BILLING_ENABLED` o'chiq, Telegram'da sinalmagan (`docs/COUNTLIST-TAHLIL.md`) |
 | `atoyo-ai-bot` | Python | — | Userbot — ichki guruh |
 | `atoyo-rag-bot` | Python | — | Ochiq: @Atoyo_service_bot. Docker + n8n |
 | `hr-bot` | Python | ✅ | MVP (1–3 fazalar) + to'lov (4), Business (5), deploy fayllari (6) — 2026-10-12. `railway.toml` bor |
@@ -49,6 +49,6 @@
 
 ## Hujjatlar
 
-`docs/DEPLOY.md` (Railway) · `docs/BOT-TARIFLARI.md` (Bepul/Plus/Pro/Max) ·
+`docs/DEPLOY.md` (Railway) · `docs/COUNTLIST-TAHLIL.md` (countlist: raqobatchi, paketlar) · `docs/BOT-TARIFLARI.md` (Bepul/Plus/Pro/Max) ·
 `docs/HR-BOT-PROMPT.md`, `docs/OVOZ-BOT-PROMPT.md`, `docs/BOT-FACTORY-*.md`
 (fazalar) · `docs/KALI-LINUX.md` · `docs/ARXITEKTURA-TARIXI.md` (qarorlar tarixi).
