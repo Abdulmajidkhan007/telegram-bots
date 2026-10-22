@@ -2,12 +2,13 @@ import { Telegraf, Markup } from 'telegraf';
 import { PrismaClient } from '@prisma/client';
 import { localDateInTz } from '@expense-tracker/shared';
 import { BotContext } from '../types/context';
-import { ExpenseService } from '../services/expense.service';
+import { ExpenseService, CreateManyResult } from '../services/expense.service';
 import { AccountService } from '../services/account.service';
 import { logger } from '../utils/logger';
 import { groupTimeZone, todayIn } from '../utils/group-time';
 import {
   UNDO_WINDOW_MS,
+  BATCH_UNDO_CALLBACK_RE,
   TX_ACCOUNT_RE,
   TX_BACK_RE,
   TX_CAT_MENU_RE,
@@ -21,6 +22,8 @@ import {
 import {
   Button,
   EntryView,
+  batchKeyboard,
+  formatBatchText,
   Option,
   categoryKeyboard,
   dateKeyboard,
@@ -92,6 +95,32 @@ export class EntryUi {
     await ctx.reply(formatEntryText(v, todayIn(tz), prefix), {
       reply_parameters: { message_id: replyTo },
       ...markup(kb),
+    });
+  }
+
+  /** Bir xabardan ≥2 yozuv: bitta umumiy javob va "Hammasini bekor qilish" tugmasi. */
+  async replyBatch(
+    ctx: BotContext,
+    created: Extract<CreateManyResult, { ok: true }>,
+    replyTo: number,
+    prefix = '',
+  ): Promise<void> {
+    if (!ctx.dbGroup) return;
+    const tz = groupTimeZone(ctx.dbGroup.timezone);
+    const account = created.accountId
+      ? await this.prisma.account.findUnique({ where: { id: created.accountId }, select: { icon: true, name: true } })
+      : null;
+    const rows = created.expenses.map((e) => ({
+      type: e.type,
+      amount: Number(e.amount),
+      currency: e.currency,
+      description: e.description,
+      day: localDateInTz(e.date, tz),
+    }));
+    const text = formatBatchText(rows, todayIn(tz), account ? `${account.icon} ${account.name}` : null, prefix);
+    await ctx.reply(text, {
+      reply_parameters: { message_id: replyTo },
+      ...markup(batchKeyboard(ctx.dbGroup.id, replyTo)),
     });
   }
 
@@ -179,6 +208,36 @@ export class EntryUi {
   }
 
   register(bot: Telegraf<BotContext>): void {
+    // Ko'p yozuvni birdan bekor qilish. Guruh ID callback'da bor, lekin
+    // ishonilmaydi: faqat joriy guruh bilan mos kelsa ishlaydi.
+    bot.action(BATCH_UNDO_CALLBACK_RE, async (ctx) => {
+      if (!ctx.dbGroup || !ctx.dbUser) return ctx.answerCbQuery();
+      const [, groupId, rawMsgId] = ctx.match;
+      if (groupId !== ctx.dbGroup.id) return ctx.answerCbQuery(NOT_ALLOWED, { show_alert: true });
+      try {
+        const count = await this.expenses.cancelBatchByAuthor({
+          telegramMsgId: BigInt(rawMsgId),
+          userId: ctx.dbUser.id,
+          groupId,
+          notBefore: new Date(Date.now() - UNDO_WINDOW_MS),
+        });
+        if (count === 0) {
+          return ctx.answerCbQuery(
+            "Bekor qilib bo'lmadi: faqat yozgan odam, 24 soat ichida va bir marta bekor qila oladi.",
+            { show_alert: true },
+          );
+        }
+        await ctx.answerCbQuery(`Bekor qilindi (${count} ta)`);
+        const old = ctx.callbackQuery.message && 'text' in ctx.callbackQuery.message
+          ? ctx.callbackQuery.message.text : '';
+        await ctx.editMessageText(`❌ Hammasi bekor qilindi\n\n${old}`).catch((err) =>
+          logger.warn(`Bekor qilish xabarini yangilab bo'lmadi: ${err?.message ?? err}`));
+      } catch (err) {
+        logger.error('Batch undo error:', err);
+        await ctx.answerCbQuery("❌ Bekor qilishda xato. Qayta urinib ko'ring.", { show_alert: true });
+      }
+    });
+
     // Hisob tanlash.
     bot.action(TX_ACCOUNT_RE, async (ctx) => {
       if (!ctx.dbGroup || !ctx.dbUser) return ctx.answerCbQuery();

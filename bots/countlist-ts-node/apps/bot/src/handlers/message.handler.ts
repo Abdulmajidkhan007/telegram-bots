@@ -91,6 +91,22 @@ export function registerMessageHandlers(
     if (text.length < 3) return;
 
     try {
+      const many = await expenseService.createManyFromText({
+        rawText: text,
+        userId: ctx.dbUser.id,
+        groupId: ctx.dbGroup.id,
+        timeZone: groupTimeZone(ctx.dbGroup.timezone),
+        telegramMsgId: BigInt(ctx.message.message_id),
+      });
+      if (many) {
+        if ('error' in many) {
+          await ctx.reply(dateErrorText(many.error), { reply_parameters: { message_id: ctx.message.message_id } });
+          return;
+        }
+        await entryUi.replyBatch(ctx, many, ctx.message.message_id);
+        return;
+      }
+
       const result = await expenseService.createFromText({
         rawText: text,
         userId: ctx.dbUser.id,
@@ -130,6 +146,27 @@ export function registerMessageHandlers(
     try {
       const link = await ctx.telegram.getFileLink(voice.file_id);
       const text = await transcribeVoice(link.toString(), config.voice);
+
+      const many = text
+        ? await expenseService.createManyFromText({
+            rawText: text,
+            userId: ctx.dbUser.id,
+            groupId: ctx.dbGroup.id,
+            timeZone: groupTimeZone(ctx.dbGroup.timezone),
+            telegramMsgId: BigInt(ctx.message.message_id),
+            source: 'VOICE',
+          })
+        : null;
+      if (many) {
+        if ('error' in many) {
+          await ctx.reply(`🎙 ${text}\n\n${dateErrorText(many.error)}`, {
+            reply_parameters: { message_id: ctx.message.message_id },
+          });
+          return;
+        }
+        await entryUi.replyBatch(ctx, many, ctx.message.message_id, `🎙 ${text}\n\n`);
+        return;
+      }
 
       const result = text
         ? await expenseService.createFromText({
