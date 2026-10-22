@@ -27,6 +27,7 @@ model User {
   // Relations
   groupMembers     GroupMember[]
   expenses         Expense[]
+  transfers        Transfer[]
   monthlyLimits    MonthlyLimit[]
   recurringExpenses RecurringExpense[]
   exports          Export[]
@@ -70,6 +71,7 @@ model Group {
   exports          Export[]
   settings         GroupSettings?
   accounts         Account[]
+  transfers        Transfer[]
 
   @@map("groups")
   @@index([telegramId])
@@ -215,11 +217,39 @@ model Account {
   updatedAt      DateTime  @updatedAt @map("updated_at")
   deletedAt      DateTime? @map("deleted_at")
 
-  group    Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  expenses Expense[]
+  group        Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  expenses     Expense[]
+  transfersOut Transfer[] @relation("TransferFrom")
+  transfersIn  Transfer[] @relation("TransferTo")
 
   @@map("accounts")
   @@index([groupId, isHidden])
+}
+
+// Hisoblar orasida o'tkazma. Expense'dan ALOHIDA: transfer xarajat ham, daromad ham
+// emas — statistika, limit va analytics uni sanamaydi; faqat hisob balansiga ta'sir qiladi.
+model Transfer {
+  id            String    @id @default(cuid())
+  groupId       String    @map("group_id")
+  userId        String    @map("user_id")
+  fromAccountId String    @map("from_account_id")
+  toAccountId   String    @map("to_account_id")
+  amount        Decimal   @db.Decimal(15, 2)
+  currency      String    @default("UZS")
+  note          String?
+  date          DateTime  @default(now())
+  createdAt     DateTime  @default(now()) @map("created_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  group       Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user        User    @relation(fields: [userId], references: [id])
+  fromAccount Account @relation("TransferFrom", fields: [fromAccountId], references: [id])
+  toAccount   Account @relation("TransferTo", fields: [toAccountId], references: [id])
+
+  @@map("transfers")
+  @@index([groupId, deletedAt])
+  @@index([fromAccountId])
+  @@index([toAccountId])
 }
 
 enum ExpenseStatus {
