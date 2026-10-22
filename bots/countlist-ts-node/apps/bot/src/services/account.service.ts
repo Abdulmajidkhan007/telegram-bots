@@ -1,5 +1,5 @@
 import { PrismaClient, Prisma } from '@prisma/client';
-import { AccountRow, TxSum, computeBalances, reorder, sortAccounts } from '../utils/accounts';
+import { AccountRow, TxSum, TransferSum, computeBalances, reorder, sortAccounts, validateTransfer, TransferError } from '../utils/accounts';
 
 export class AccountService {
   constructor(private prisma: PrismaClient) {}
@@ -40,7 +40,18 @@ export class AccountService {
       currency: r.currency,
       amount: Number(r._sum.amount ?? 0),
     }));
-    return { accounts, balances: computeBalances(accounts, sums) };
+    const rawTransfers = await this.prisma.transfer.groupBy({
+      by: ['fromAccountId', 'toAccountId', 'currency'],
+      where: { groupId, deletedAt: null },
+      _sum: { amount: true },
+    });
+    const transfers: TransferSum[] = rawTransfers.map((t) => ({
+      fromAccountId: t.fromAccountId,
+      toAccountId: t.toAccountId,
+      currency: t.currency,
+      amount: Number(t._sum.amount ?? 0),
+    }));
+    return { accounts, balances: computeBalances(accounts, sums, transfers) };
   }
 
   async create(groupId: string, data: { name: string; icon: string; initialBalance: number }) {
@@ -93,5 +104,40 @@ export class AccountService {
   async belongsToGroup(groupId: string, accountId: string): Promise<boolean> {
     const n = await this.prisma.account.count({ where: { id: accountId, groupId, deletedAt: null } });
     return n > 0;
+  }
+
+  /**
+   * Transfer yaratadi. Hamma narsa DB'dan qayta tekshiriladi (session/callback'ga ishonilmaydi):
+   * foydalanuvchi guruh a'zosi, ikkala hisob shu guruhniki, ochiq va valyuta mos.
+   */
+  async createTransfer(input: {
+    groupId: string;
+    userId: string;
+    fromAccountId: string;
+    toAccountId: string;
+    amount: number;
+  }): Promise<{ ok: true; from: AccountRow; to: AccountRow } | { ok: false; error: TransferError | 'NOT_MEMBER' | 'NOT_FOUND' }> {
+    const member = await this.prisma.groupMember.findFirst({
+      where: { groupId: input.groupId, userId: input.userId, isActive: true },
+      select: { id: true },
+    });
+    if (!member) return { ok: false, error: 'NOT_MEMBER' };
+    const visible = await this.visible(input.groupId);
+    const from = visible.find((a) => a.id === input.fromAccountId);
+    const to = visible.find((a) => a.id === input.toAccountId);
+    if (!from || !to) return { ok: false, error: 'NOT_FOUND' };
+    const error = validateTransfer(from, to, input.amount);
+    if (error) return { ok: false, error };
+    await this.prisma.transfer.create({
+      data: {
+        groupId: input.groupId,
+        userId: input.userId,
+        fromAccountId: from.id,
+        toAccountId: to.id,
+        amount: new Prisma.Decimal(input.amount),
+        currency: from.currency,
+      },
+    });
+    return { ok: true, from, to };
   }
 }

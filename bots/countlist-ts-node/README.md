@@ -258,6 +258,10 @@ yarn db:generate    # Prisma client generate
 yarn db:migrate     # Migration yaratish va ishga tushurish
 ```
 
+> Repoda `migrations/` papkasi yo'q — sxema `prisma db push` bilan qo'llanadi
+> (`cd packages/database && npx prisma db push`). `/transfer` (hisoblar orasida
+> o'tkazma) yangi `transfers` jadvalini qo'shadi: deploy'da `db push` ni bir marta bajaring.
+
 ### 7. Default kategoriyalarni seed qilish (ixtiyoriy)
 
 ```bash
