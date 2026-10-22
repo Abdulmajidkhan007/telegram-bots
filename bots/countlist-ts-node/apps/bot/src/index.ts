@@ -23,6 +23,8 @@ import { ReminderService } from './services/reminder.service';
 import { AccountService } from './services/account.service';
 import { registerAccountCommands } from './commands/accounts.command';
 import { EntryUi } from './handlers/entry.handler';
+import { BillingService } from './services/billing.service';
+import { registerTarifCommand } from './commands/tarif.command';
 
 async function bootstrap() {
   const prisma = new PrismaClient();
@@ -34,7 +36,13 @@ async function bootstrap() {
   const userService = new UserService(prisma);
   const expenseService = new ExpenseService(prisma);
   const exportService = new ExportService(prisma);
-  const accountService = new AccountService(prisma);
+  // BILLING_ENABLED=1 bo'lmasa BillingService hech narsa qilmaydi (DB so'rovi ham yo'q).
+  const billing = new BillingService(prisma, config.billing);
+  if (config.billing.invalid.length > 0) {
+    logger.error(`Narx env noto'g'ri (musbat butun son bo'lsin), plan sotilmaydi: ${config.billing.invalid.join(', ')}`);
+  }
+  logger.info(config.billing.enabled ? 'Billing yoqilgan (BILLING_ENABLED=1)' : 'Billing o\'chiq (BILLING_ENABLED=1 emas)');
+  const accountService = new AccountService(prisma, billing);
   const entryUi = new EntryUi(prisma, expenseService, accountService);
   const reminderService = new ReminderService(prisma, expenseService);
   // Jadval yaratilmasa bot baribir ishlaydi: har /reminder va har daqiqalik
@@ -48,19 +56,21 @@ async function bootstrap() {
   bot.use(botSession());
   bot.use(groupMiddleware(userService));
 
-  registerStartCommand(bot);
+  registerStartCommand(bot, billing, config.bot.adminId);
   registerHelpCommand(bot);
   registerStatsCommands(bot, expenseService);
   registerExportCommand(bot);
   registerLoginCommand(bot);
   registerCategoryCommands(bot, prisma);
-  registerAdminCommands(bot, prisma);
+  registerAdminCommands(bot, prisma, billing);
   registerReminderCommand(bot, reminderService);
   registerAccountCommands(bot, accountService);
+  // Matn/chek middleware'lari message handler'dan OLDIN (qadamga tegishli bo'lmasa next()).
+  registerTarifCommand(bot, billing, accountService, config.bot.adminId);
 
   registerCallbackHandlers(bot, expenseService, exportService, prisma);
   entryUi.register(bot);
-  registerMessageHandlers(bot, expenseService, accountService, entryUi, prisma);
+  registerMessageHandlers(bot, expenseService, accountService, entryUi, prisma, billing);
 
   bot.catch((err, ctx) => {
     logger.error(`Bot error for ${ctx.updateType}:`, err);
