@@ -2,7 +2,7 @@
   "name": "telegram-bots-monorepo",
   "version": "1.0.0",
   "private": true,
-  "description": "15 ta mustaqil Telegram bot bitta repoda. Har biri bots/<id>/ papkasida.",
+  "description": "16 ta mustaqil Telegram bot bitta repoda. Har biri bots/<id>/ papkasida.",
   "author": "@Abdulloh_77700 (https://t.me/Abdulloh_77700)",
   "license": "MIT",
   "engines": {
@@ -17,7 +17,7 @@
     "start:all": "node tools/run.js start all --all",
     "bot": "node tools/run.js start",
     "scan": "node tools/scan-secrets.js",
-    "test": "node --test tools/registry.test.js",
+    "test": "node --test tools/registry.test.js && npm test --prefix bots/insta-avtojavob-bot",
     "check": "npm run test && npm run scan",
     "env": "node tools/set-env.js",
     "setup:local": "bash tools/setup-local.sh",

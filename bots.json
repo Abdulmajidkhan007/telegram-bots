@@ -66,6 +66,26 @@
       "requires": []
     },
     {
+      "id": "insta-avtojavob-bot",
+      "name": "Instagram Avto-javob Qo'llanma Bot",
+      "desc": "Instagram'ga AI avto-javobni tayyor xizmat orqali ulash qo'llanmasi: bepul qadamlar (obuna), pullik qo'llanma + AI shablonlar, qo'lda to'lov, admin panel.",
+      "runtime": "node",
+      "autoStart": false,
+      "install": [
+        [
+          "npm",
+          "install"
+        ]
+      ],
+      "start": [
+        [
+          "node",
+          "src/index.js"
+        ]
+      ],
+      "requires": []
+    },
+    {
       "id": "gemini-qa-bot",
       "name": "Gemini Q&A Bot",
       "desc": "Google Gemini API asosidagi savol-javob boti: suhbat konteksti, rate limit, /reset.",
