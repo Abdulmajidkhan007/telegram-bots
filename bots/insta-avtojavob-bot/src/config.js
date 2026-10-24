@@ -2,7 +2,21 @@
 
 // Muhit o'zgaruvchilarini o'qish va tekshirish. Noto'g'ri qiymat jim o'tkazilmaydi.
 
+const fs = require('fs');
 const path = require('path');
+const dotenv = require('dotenv');
+
+// README «cp .env.example .env → npm start» deydi: .env ni bot papkasidan o'qiymiz
+// (cwd qayerda bo'lishidan qat'i nazar). Railway'da fayl yo'q — env tayyor, mavjudi
+// ustidan yozilmaydi.
+const ENV_FILE = path.join(__dirname, '..', '.env');
+
+function loadEnvFile(file = ENV_FILE, env = process.env) {
+  if (!fs.existsSync(file)) return false;
+  const res = dotenv.config({ path: file, processEnv: env });
+  if (res.error) throw new Error(`.env o'qilmadi (${file}): ${res.error.message}`);
+  return true;
+}
 
 function parseAdminIds(raw) {
   const ids = [];
@@ -41,4 +55,4 @@ function loadConfig(env = process.env) {
   };
 }
 
-module.exports = { loadConfig, parseAdminIds, parseChannel };
+module.exports = { loadConfig, loadEnvFile, ENV_FILE, parseAdminIds, parseChannel };

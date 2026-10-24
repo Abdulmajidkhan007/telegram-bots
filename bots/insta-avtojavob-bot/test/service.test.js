@@ -7,7 +7,7 @@ const os = require('os');
 const path = require('path');
 const { Store, DEFAULT_PRICES } = require('../src/store');
 const svc = require('../src/service');
-const { parseAdminIds, parseChannel } = require('../src/config');
+const { parseAdminIds, parseChannel, loadConfig, loadEnvFile } = require('../src/config');
 const { formatSom } = require('../src/format');
 
 const from = (id) => ({ id, first_name: 'Ali', username: 'ali' });
@@ -124,4 +124,19 @@ test('config: ADMIN_IDS va kanal tekshiruvi', () => {
   assert.strictEqual(parseChannel('kanal_nomi'), '@kanal_nomi');
   assert.strictEqual(parseChannel(''), null);
   assert.throws(() => parseChannel('@a b'), /CHANNEL_USERNAME/);
+});
+
+// Regressiya: .env yuklanmas edi — README bo'yicha ishga tushirish «BOT_TOKEN berilmagan» bilan yiqilardi.
+test('.env fayli o‘qiladi, mavjud env ustidan yozilmaydi', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'insta-env-'));
+  const file = path.join(dir, '.env');
+  fs.writeFileSync(file, 'BOT_TOKEN=123:abc\nADMIN_IDS=111,222\nCARD_HOLDER=FAYLDAN\n');
+  const env = { CARD_HOLDER: 'MUHITDAN' };
+  assert.strictEqual(loadEnvFile(file, env), true);
+  const cfg = loadConfig(env);
+  assert.strictEqual(cfg.token, '123:abc');
+  assert.deepStrictEqual(cfg.adminIds, [111, 222]);
+  assert.strictEqual(cfg.cardHolder, 'MUHITDAN');
+  assert.strictEqual(loadEnvFile(path.join(dir, 'yoq.env'), {}), false);
+  fs.rmSync(dir, { recursive: true, force: true });
 });
