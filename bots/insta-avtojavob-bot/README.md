@@ -33,22 +33,24 @@ npm start
 Botni majburiy obuna kanalida **admin** qiling (aks holda obuna tekshirib bo'lmaydi).
 Holat `DATA_DIR/db.json` da (atomik yoziladi); Railway'da `DATA_DIR=/data` + Volume kerak.
 
-## Qo'llanma matnini almashtirish
+## Qo'llanma matni
 
-Pullik qism hozircha **NAMUNA** matn. Haqiqiy matn (`Chatplace.txt`) `src/guide-text.js`
-dagi `PAID_PAGES` ga qo'yiladi, so'ng `IS_PLACEHOLDER = false`. Har bo'lim Telegram
-chegarasiga (4096 belgi) sig'ishi testda tekshiriladi.
+Pullik qism (7 bo'lim, `src/guide-text.js` → `PAID_PAGES`) egasining `Chatplace.txt`
+faylidan yozilgan (2026-10-25): ChatPlace zanjiri, Instagram'ni tayyorlash, ulash, kalit
+so'z boti, AI «miya», leadlarni Telegram guruhga yuborish, sinash. Har bo'lim Telegram
+chegarasiga (4096) sig'ishi va faqat ruxsat etilgan HTML teglari testda tekshiriladi.
+ChatPlace menyu nomlari interfeysi o'zgarsa — shu faylda yangilanadi.
 
 ## Test
 
 `npm test` — service, kontent va soxta bot bilan handler oqimlari (internetsiz).
 
-## Ishga tushirishgacha qolgan ishlar (2026-10-24)
+## Ishga tushirishgacha qolgan ishlar (2026-10-25)
 
 Kod va testlar tayyor; **haqiqiy Telegram'da hali sinalmagan** (sessiya konteyneridan
 Telegram API yopiq). Egasi qiladi:
 
-- [ ] Haqiqiy qo'llanma matni (`Chatplace.txt`) → `PAID_PAGES`, `IS_PLACEHOLDER = false`
+- [x] Haqiqiy qo'llanma matni (`Chatplace.txt`) → `PAID_PAGES` (2026-10-25)
 - [ ] @BotFather'dan token; kanal tayyor va bot unda **admin**
 - [ ] `ADMIN_IDS`, `CARD_NUMBER`, `CARD_HOLDER` — `.env` (lokal) yoki Railway Variables
 - [ ] Railway: Volume `/data` + `DATA_DIR=/data`
