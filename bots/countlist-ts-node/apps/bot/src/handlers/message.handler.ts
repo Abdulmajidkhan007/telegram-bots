@@ -12,7 +12,7 @@ import { handleAccountText } from '../commands/accounts.command';
 import { EntryUi } from './entry.handler';
 import { groupTimeZone } from '../utils/group-time';
 import { BillingService } from '../services/billing.service';
-import { limitReachedText } from '../services/billing.logic';
+import { limitReachedText, shouldSendLimitNotice } from '../services/billing.logic';
 
 function dateErrorText(error: DateTokenError): string {
   // Hozircha yagona xato turi — kelajak sana; switch yangi tur qo'shilsa TS ogohlantiradi.
@@ -138,6 +138,9 @@ export function registerMessageHandlers(
     logger.info('GEMINI_API_KEY ham, OPENAI_API_KEY ham yo\'q — ovozli xabarlar orqali xarajat qo\'shish o\'chiq.');
   }
 
+  // Guruh → oxirgi «limit tugadi» xabari vaqti (kuniga bir marta).
+  const limitNoticeAt = new Map<string, number>();
+
   bot.on('voice', async (ctx) => {
     // Kalit bo'lmasa jim turamiz: guruhdagi har ovozli xabarga "sozlanmagan"
     // deb javob berish suhbatni buzadi. Holat ishga tushishda log'da ko'rinadi.
@@ -150,7 +153,9 @@ export function registerMessageHandlers(
       // Paket limiti: transkripsiyadan OLDIN (API xarajati ketmasin). Flag o'chiq → DB'ga tegmaydi.
       const gate = await billing.gate(ctx.dbGroup.id, 'voice');
       if (!gate.allowed) {
-        await ctx.reply(limitReachedText('voice', gate), { reply_parameters: { message_id: ctx.message.message_id } });
+        if (shouldSendLimitNotice(limitNoticeAt, ctx.dbGroup.id, Date.now())) {
+          await ctx.reply(limitReachedText('voice', gate), { reply_parameters: { message_id: ctx.message.message_id } });
+        }
         return;
       }
       const link = await ctx.telegram.getFileLink(voice.file_id);

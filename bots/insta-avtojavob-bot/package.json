@@ -8,7 +8,7 @@
     "test": "node --test test/service.test.js test/content.test.js test/handlers.test.js"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20.12"
   },
   "dependencies": {
     "node-telegram-bot-api": "0.66.0"

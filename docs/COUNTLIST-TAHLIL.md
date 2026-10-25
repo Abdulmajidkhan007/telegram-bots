@@ -132,8 +132,9 @@ Bir faylni ikki ishchi bir vaqtda o'zgartirmaydi:
 2. Narx/to'lov env'lari (`bots/countlist-ts-node/.env.example`, README «Pullik paketlar»).
 3. Oxirida `BILLING_ENABLED=1`. Bo'sh qoldirilsa bot avvalgidek bepul va limitsiz.
 
-Ma'lum kamchilik: oylik ovoz limiti tugagach har ovozli xabarga «limit tugadi» javobi
-beriladi (kuniga bir marta cheklash — keyingi kichik ish).
+~~Ma'lum kamchilik: limit tugagach har ovozli xabarga «limit tugadi» javobi.~~ Tuzatildi
+2026-10-24: guruhga 24 soatda bir marta (`shouldSendLimitNotice`, test bilan; haqiqiy
+botda hali sinalmagan — `BILLING_ENABLED=1` yoqilgach tekshiriladi).
 
 ## 7. Egasidan kerak
 

@@ -276,3 +276,18 @@ export function limitReachedText(feature: Feature, r: LimitResult): string {
     ? `🎙 Oylik ovozli limit tugadi (${Math.min(r.used, r.limit)}/${r.limit}). /tarif`
     : `💳 Hisoblar limiti tugadi (${Math.min(r.used, r.limit)}/${r.limit}). /tarif`;
 }
+
+/** «Limit tugadi» xabari guruhga shu oraliqda bir martadan ko'p yuborilmaydi. */
+export const LIMIT_NOTICE_INTERVAL_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Limit tugagach har ovozli xabarga javob berish guruh suhbatini buzadi —
+ * xabarni guruhga 24 soatda bir marta yuboramiz. `last` — guruh → oxirgi xabar vaqti
+ * (xotirada; qayta ishga tushsa bitta ortiqcha xabar ketishi mumkin, zarari yo'q).
+ */
+export function shouldSendLimitNotice(last: Map<string, number>, groupId: string, now: number): boolean {
+  const prev = last.get(groupId);
+  if (prev !== undefined && now - prev < LIMIT_NOTICE_INTERVAL_MS) return false;
+  last.set(groupId, now);
+  return true;
+}

@@ -3,7 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert');
 const { TEMPLATES, SAFETY_RULES, buildTemplate } = require('../src/templates');
-const { FREE_STEPS, PAID_PAGES } = require('../src/guide-text');
+const { FREE_STEPS, PAID_PAGES, IS_PLACEHOLDER } = require('../src/guide-text');
 const { escapeHtml, TG_LIMIT } = require('../src/format');
 const { parseCallback } = require('../src/router');
 
@@ -41,5 +41,22 @@ test('parseCallback: to‘g‘rilarini taniydi, noto‘g‘ri/zararlisini rad et
   assert.deepStrictEqual(parseCallback('adm:price:monthly'), { type: 'adminPrice', key: 'monthly' });
   for (const bad of ['tpl:../etc', 'tpl:yoq', 'pay:ok:1;2', 'adm:price:xyz', 'free:-1', 'free:999', '', null, 'x'.repeat(80)]) {
     assert.strictEqual(parseCallback(bad), null, String(bad));
+  }
+});
+
+test('pullik qo‘llanma haqiqiy matn: namuna emas, faqat ruxsat etilgan HTML teglar', () => {
+  assert.strictEqual(IS_PLACEHOLDER, false);
+  assert.ok(PAID_PAGES.length >= 4 && PAID_PAGES.length <= 99); // guide:<1-2 raqam>
+  for (const [i, page] of PAID_PAGES.entries()) {
+    assert.doesNotMatch(page, /NAMUNA|Namuna/, `bo‘lim ${i}`);
+    // Telegram HTML: noma'lum teg yoki ochiq qolgan "<" xabarni butunlay rad ettiradi.
+    const tags = page.match(/<[^>]*>/g) || [];
+    for (const t of tags) assert.match(t, /^<\/?(b|i|code|pre)>$/, `bo‘lim ${i}: ${t}`);
+    for (const tag of ['b', 'i', 'code', 'pre']) {
+      const open = (page.match(new RegExp(`<${tag}>`, 'g')) || []).length;
+      const close = (page.match(new RegExp(`</${tag}>`, 'g')) || []).length;
+      assert.strictEqual(open, close, `bo‘lim ${i}: <${tag}> yopilmagan`);
+    }
+    assert.ok(!/<(?![/a-z])/.test(page), `bo‘lim ${i}: ochiq "<"`);
   }
 });

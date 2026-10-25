@@ -4,13 +4,14 @@
 // MUHIM: bot Instagram parolini, kod yoki karta ma'lumotini HECH KIMDAN so'ramaydi.
 
 const TelegramBot = require('node-telegram-bot-api');
-const { loadConfig } = require('./config');
+const { loadConfig, loadEnvFile } = require('./config');
 const { Store } = require('./store');
 const { createHandlers } = require('./handlers');
 const { IS_PLACEHOLDER } = require('./guide-text');
 
 let config;
 try {
+  loadEnvFile();
   config = loadConfig();
 } catch (err) {
   console.error('Xato:', err.message);

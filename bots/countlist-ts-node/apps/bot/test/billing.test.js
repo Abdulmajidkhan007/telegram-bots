@@ -203,3 +203,14 @@ test('recordUsage: atomik upsert + increment', async () => {
   assert.equal(arg.create.count, 1);
   assert.equal(arg.create.period, '2026-10');
 });
+
+// Regressiya: limit tugagach har ovozli xabarga «limit tugadi» javobi ketardi.
+test('shouldSendLimitNotice: guruhga 24 soatda bir marta', () => {
+  const last = new Map();
+  const t = NOW.getTime();
+  assert.equal(L.shouldSendLimitNotice(last, GID, t), true);
+  assert.equal(L.shouldSendLimitNotice(last, GID, t + 60_000), false);
+  assert.equal(L.shouldSendLimitNotice(last, 'boshqa-guruh', t + 60_000), true);
+  assert.equal(L.shouldSendLimitNotice(last, GID, t + DAY - 1), false);
+  assert.equal(L.shouldSendLimitNotice(last, GID, t + DAY), true);
+});
