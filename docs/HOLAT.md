@@ -21,7 +21,7 @@
 | `save-video-downloader-bot` | Node | ✅ | Ochiq: @Uzb_saver_007_bot. `railway.toml` bor |
 | `anonim-bot` | Node | ✅ | Ochiq: @Anonim_007_bot. `railway.toml` bor |
 | `arxiv-topadi-bot` | Node | ✅ | Ochiq: @arxiv_topadi_bot |
-| `insta-avtojavob-bot` | Node | ''� | 2026-10-25: karkas, to'lov oqimi, admin panel, 29 test; pullik qo'llanma (7 bo'lim) Chatplace.txt dan yozildi. Haqiqiy Telegram'da sinalmagan, ishga tushirilmagan — qolgan ishlar bot README'sida |
+| `insta-avtojavob-bot` | Node | — | 2026-10-25: karkas, to'lov oqimi, admin panel, 29 test; pullik qo'llanma (7 bo'lim) Chatplace.txt dan yozildi. Haqiqiy Telegram'da sinalmagan, ishga tushirilmagan — qolgan ishlar bot README'sida |
 | `gemini-qa-bot` | Node | ✅ | E'lon qilinmagan |
 | `idfinder-bot` | Node | ✅ | Ochiq: @IDFINDER007BOT |
 | `malware-bot` | Node | ✅ | Ochiq: @Tekshiruvchi_07_bot (VirusTotal) |
