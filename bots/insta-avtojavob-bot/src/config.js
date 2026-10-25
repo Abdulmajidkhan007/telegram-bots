@@ -4,17 +4,25 @@
 
 const fs = require('fs');
 const path = require('path');
-const dotenv = require('dotenv');
+const { parseEnv } = require('util');
 
 // README «cp .env.example .env → npm start» deydi: .env ni bot papkasidan o'qiymiz
 // (cwd qayerda bo'lishidan qat'i nazar). Railway'da fayl yo'q — env tayyor, mavjudi
-// ustidan yozilmaydi.
+// ustidan yozilmaydi. Node'ning o'z parseEnv'i (20.12+): root CI bot testlarini
+// `npm install` siz ishga tushiradi, tashqi paket bo'lsa test yiqiladi.
 const ENV_FILE = path.join(__dirname, '..', '.env');
 
 function loadEnvFile(file = ENV_FILE, env = process.env) {
   if (!fs.existsSync(file)) return false;
-  const res = dotenv.config({ path: file, processEnv: env });
-  if (res.error) throw new Error(`.env o'qilmadi (${file}): ${res.error.message}`);
+  let parsed;
+  try {
+    parsed = parseEnv(fs.readFileSync(file, 'utf8'));
+  } catch (err) {
+    throw new Error(`.env o'qilmadi (${file}): ${err.message}`);
+  }
+  for (const [key, value] of Object.entries(parsed)) {
+    if (env[key] === undefined) env[key] = value;
+  }
   return true;
 }
 
