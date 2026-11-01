@@ -22,12 +22,16 @@
 | 7 | Paketlar (Plus/Pro/Max) va limitlar | ❌ | Obuna/to'lov/usage modeli yo'q (`schema` da `Subscription`/`Payment` yo'q). Reja bor: `docs/BOT-TARIFLARI.md:139-147` | 3-bo'lim. Feature flag bilan, narx egasi tasdiqlamaguncha o'chiq | katta | ✅ kod — PR #60, `BILLING_ENABLED` ortida, O'CHIQ; narx egasi tasdig'ini kutadi |
 | 8 | To'lov | ❌ | countlist'da yo'q. Repoda bor: `bots/hr-bot/hr_bot/billing.py`, `handlers/payment.py` (Telegram Stars obuna havolasi + karta/chek + admin tasdiq) | hr-bot mantig'ini TS'ga ko'chirish (4-bo'lim) | katta | ✅ kod — PR #60 (Stars + karta/chek), O'CHIQ; sinalmagan |
 
-**Topilgan qo'shimcha muammo:** CI countlist testlarini ishga tushirmaydi —
-`.github/workflows/ci.yml` faqat `npm test` (ildiz `package.json:20`:
-`tools/registry.test.js` + insta-avtojavob). countlist testlari (shared 45, bot 43 —
-2026-10-22 lokal yashil) faqat qo'lda. Shuning uchun countlist PR'larida «CI yashil»
-yetarli emas — nazoratchi testlarni lokal ishga tushiradi. CI'ga qo'shish — alohida
-kichik ish (yarn install ~90 s + `prisma generate`).
+**Topilgan qo'shimcha muammo (2026-11-01: hal qilindi):** CI countlist testlarini ishga
+tushirmasdi (`ci.yml` faqat ildiz `npm test`). Endi `.github/workflows/countlist.yml`
+alohida job: `yarn install --frozen-lockfile` (cache) → `prisma generate` → shared / bot / api
+`test` (har biri avval `tsc`, so'ng `node --test`). PR'da faqat `bots/countlist-ts-node/**`
+yoki workflow o'zgarsa, `main` push'da har doim. Lokal natija: shared 59, bot 74, api 23 —
+hammasi yashil, DB/Redis/internet kerak emas (hammasi mock). Shu ish bilan `yarn.lock`
+commit qilindi (avval yo'q edi — o'rnatish takrorlanmas edi).
+Qolgan: `apps/web` `tsc` da 4 ta eski xato (`CategoriesPage.tsx:131-147`, `editState` null) —
+shuning uchun web CI'ga kirmadi; kod mantig'iga tegilmadi. Haqiqiy DB kerak bo'ladigan
+integratsion testlar yo'q.
 
 ## 2. AI/STT: qaysi API, nega «limit tugadi», narx
 

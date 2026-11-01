@@ -1,0 +1,39 @@
+name: countlist-ts-node
+
+# Alohida workflow: paths filtri faqat shu botga ta'sir qiladi, asosiy `CI` (ci.yml)
+# esa har PR'da ishlayveradi. `main` ga push'da filtrsiz — har doim yuradi.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - 'bots/countlist-ts-node/**'
+      - '.github/workflows/countlist.yml'
+
+defaults:
+  run:
+    working-directory: bots/countlist-ts-node
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: yarn
+          cache-dependency-path: bots/countlist-ts-node/yarn.lock
+      - name: Install (lockfile bilan)
+        run: yarn install --frozen-lockfile
+      # Prisma Client turlari bot/api typecheck uchun kerak (bazaga ulanmaydi).
+      - name: Prisma generate
+        run: yarn db:generate
+      # Har paketning `test` skripti avval `tsc` (typecheck) ni, so'ng `node --test` ni
+      # ishga tushiradi. Testlar mock bilan ishlaydi — DB/Redis/internet kerak emas.
+      - name: shared (typecheck + test)
+        run: yarn workspace @expense-tracker/shared test
+      - name: bot (typecheck + test)
+        run: yarn workspace @expense-tracker/bot test
+      - name: api (typecheck + test)
+        run: yarn workspace @expense-tracker/api test

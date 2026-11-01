@@ -4,7 +4,7 @@
 > Umumiy reja, navbat va «yangi loyiha yo'q» qoidasi — profil repoda:
 > https://github.com/Abdulmajidkhan007/Abdulmajidkhan007/blob/main/docs/REJA.md
 >
-> Oxirgi tekshiruv: 2026-10-22 (koddan). Oxirgi kod o'zgarishi: 2026-10-22 (countlist-ts-node).
+> Oxirgi tekshiruv: 2026-11-01. Oxirgi kod o'zgarishi: 2026-10-22 (countlist-ts-node). 2026-11-01: countlist testlari CI'da.
 
 ## Umumiy
 
@@ -12,6 +12,7 @@
 - `npm run start` — `autoStart: true` bo'lgan 9 tasini birdan ishga tushiradi;
   qolgan 6 tasi qo'shimcha xizmat (baza, userbot sessiyasi, Docker) talab qiladi.
 - CI (`.github/workflows/ci.yml`): har push'da testlar + kalit skaneri.
+- CI (`.github/workflows/countlist.yml`, 2026-11-01): countlist `yarn install` + `prisma generate` + shared 59 / bot 74 / api 23 test (tsc bilan). `apps/web` kirmagan — `tsc` da 4 eski xato.
 - Repo **public** — kalitlar faqat env'da (`CLAUDE.md` → Xavfsizlik).
 
 ## Botlar
